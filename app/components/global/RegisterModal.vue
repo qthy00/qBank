@@ -1,0 +1,257 @@
+<!-- 注册模态窗口 -->
+<template>
+  <ClientOnly>
+    <el-dialog
+        v-model="modalStates.register"
+        center
+        :show-close="false"
+        class="p-0! !rounded-2xl max-w-md"
+        width="90%"
+        header-class="!pb-0"
+        :lock-scroll="true"
+        @close="close"
+    >
+      <div class="p-6 md:p-8">
+        <!-- 头部 -->
+        <div class="flex justify-between items-center mb-6">
+          <h2 class="text-xl font-bold text-gray-900">创建新账户</h2>
+          <button @click="closeModal('register')" class="text-gray-500 hover:text-gray-700">
+            <Icon name="fa-times"/>
+          </button>
+        </div>
+
+        <!-- 注册表单 -->
+        <el-form
+            ref="registerFormRef"
+            v-loading="formLoading"
+            :model="registerData"
+            :rules="formRules"
+            label-position="top"
+            size="large"
+        >
+          <el-form-item prop="username" label="用户名" class="!mt-3">
+            <el-input
+                placeholder="请输入用户名"
+                v-model="registerData.username"
+                :prefix-icon="Avatar"
+            >
+              <template #suffix>
+                <div v-if="iconChecked == true">
+                  <Icon name="ep:circle-check-filled" class="text-green-500"/>
+                </div>
+                <div v-else-if="iconChecked == false">
+                  <Icon name="ep:circle-close-filled" class="text-red-500"/>
+                </div>
+              </template>
+            </el-input>
+          </el-form-item>
+          <el-form-item label="邮箱" prop="email">
+            <el-input
+                v-model="registerData.email"
+                placeholder="请输入您的邮箱"
+                :prefix-icon="Message"
+            />
+          </el-form-item>
+          <el-form-item prop="password" label="密码">
+            <el-input
+                v-model="registerData.password"
+                placeholder="请输入密码"
+                :prefix-icon="Lock"
+                show-password
+                type="password"
+            />
+          </el-form-item>
+          <el-form-item prop="confirmPassword" label="确认密码">
+            <el-input
+                v-model="registerData.confirmPassword"
+                placeholder="请再次输入密码"
+                :prefix-icon="Lock"
+                show-password
+                type="password"
+            />
+          </el-form-item>
+
+          <el-form-item prop="agree">
+            <el-checkbox v-model="registerData.agree">
+              我已阅读并同意
+              <a href="#" class="text-blue-500">用户服务条款</a> 和
+              <a href="#" class="text-blue-500">隐私政策</a>
+            </el-checkbox>
+          </el-form-item>
+
+          <el-form-item>
+            <el-button
+                type="primary"
+                class="w-full py-3 text-white rounded-full text-base font-semibold bg-gradient-to-r from-[#4e9fff] to-[#7c6aff]"
+                @click="submitForm"
+            >
+              立即注册
+            </el-button>
+          </el-form-item>
+        </el-form>
+        <div class="mt-6 text-center text-sm">
+          <span class="text-gray-600">已有账户？</span>
+          <button
+              link
+              @click="handleOpenLoginModal"
+              class="text-blue-600 font-medium hover:underline"
+          >
+            立即登录
+          </button>
+        </div>
+      </div>
+    </el-dialog>
+  </ClientOnly>
+</template>
+
+<script setup lang="ts">
+import * as LoginApi from '~/api/login'
+import {Avatar, Lock, Message} from '@element-plus/icons-vue'
+import {useModalStore} from '~/stores/modal.ts'
+
+
+const message = useMessage() // 消息弹窗
+const { modalStates, closeModal, openModal } = useModal()
+
+
+const iconChecked = ref<boolean>()
+const formLoading = ref(false)
+const registerFormRef = ref()
+// 表单数据
+const registerData = ref({
+  username: '',
+  email: '',
+  password: '',
+  confirmPassword: '',
+  agree: false,
+})
+const equalToPassword = (rule, value, callback) => {
+  if (registerData.value.password !== value) {
+    callback(new Error('两次输入的密码不一致'))
+  } else {
+    callback()
+  }
+}
+
+const needAgree = (rule, value, callback) => {
+  if (!registerData.value.agree) {
+    callback(new Error('请勾选并同意用户协议和隐私政策'))
+  } else {
+    callback()
+  }
+}
+
+const checkedUsername = async (rule, value, callback) => {
+  if (!value) {
+    return callback(new Error('请输入您的账号'))
+  }
+
+  if (value.length < 4 || value.length > 30) {
+    return callback(new Error('用户账号长度必须介于 4 和 30 之间'))
+  }
+
+  if (!/^[a-zA-Z0-9_]+$/.test(value)) {
+    return callback(new Error('只能包含字母、数字和下划线'))
+  }
+
+  try {
+    await LoginApi.checkUsername(value.trim())
+    iconChecked.value = true
+    callback() // 校验通过
+  } catch (err) {
+    iconChecked.value = false
+    setTimeout(() => {
+      iconChecked.value = undefined
+    }, 5000)
+    callback(new Error('用户名已存在'))
+  }
+}
+
+const formRules = {
+  username: [
+    {required: true, trigger: 'blur', validator: checkedUsername},
+    {
+      required: true,
+      min: 4,
+      max: 30,
+      message: '用户账号长度必须介于 4 和 30 之间',
+      trigger: 'blur',
+    },
+    {
+      required: true,
+      pattern: /^[a-zA-Z0-9_]+$/,
+      message: '只能包含字母、数字和下划线',
+      trigger: 'blur',
+    },
+  ],
+  email: [
+    {required: true, trigger: 'blur', message: '请输入您的邮箱'},
+    {type: 'email', message: '请输入正确的邮箱地址', trigger: 'blur'},
+  ],
+  password: [
+    {required: true, trigger: 'blur', message: '请输入您的密码'},
+    {min: 8, max: 16, message: '密码长度介于8 ~ 16之间，包含字母和数字', trigger: 'blur'},
+    {pattern: /^[^<>"'|\\]+$/, message: '不能包含非法字符：< > " \' \\\ |', trigger: 'blur'},
+  ],
+  confirmPassword: [
+    {required: true, trigger: 'blur', message: '请再次输入您的密码'},
+    {required: true, validator: equalToPassword, trigger: 'blur'},
+  ],
+  agree: [
+    {
+      required: true,
+      trigger: ['change', 'blur'],
+      validator: needAgree,
+    },
+  ],
+}
+
+// 处理注册
+const submitForm = async () => {
+  await registerFormRef.value.validate()
+  if (!registerData.value.agree) {
+    message.error('请勾选并同意用户协议和隐私政策')
+    return
+  }
+  formLoading.value = true
+  try {
+    const data = {
+      userName: registerData.value.username,
+      email: registerData.value.email,
+      password: registerData.value.password,
+    }
+    await LoginApi.register(data)
+    message.success('注册成功，请登录')
+    closeModal('register')
+  } catch (e) {
+    message.error('注册失败：' + e)
+  } finally {
+    formLoading.value = false
+  }
+}
+
+// 重置表单
+const close = () => {
+  registerData.value = {
+    username: '',
+    email: '',
+    password: '',
+    confirmPassword: '',
+    agree: false,
+  }
+  registerFormRef.value?.resetFields()
+}
+
+
+const handleOpenLoginModal = () => {
+  closeModal('register')
+  openModal('login')
+}
+</script>
+
+<style scoped>
+/* 按钮悬停效果 */
+button[type='submit']:hover {
+  box-shadow: 0 4px 12px rgba(59, 130, 246, 0.2);
+}
+</style>

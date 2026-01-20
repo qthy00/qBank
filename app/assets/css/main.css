@@ -1,0 +1,13 @@
+/*
+ * 引入全局样式
+ * 2025年5月24日 15:27:20
+ */
+
+/* 标准化格式 */
+@import url(./hy.resetstyles.css);
+@import url(./color.css);
+@import url(./icon.css);
+@import url(./style.css);
+/*@import "tailwindcss";*/
+
+/*@plugin "daisyui";*/

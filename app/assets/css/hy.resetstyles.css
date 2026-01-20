@@ -1,0 +1,516 @@
+/*
+  名称：好游企业官网
+  日期：2025年4月5日 21:26:35
+  作者：尹玲玲
+  版本：V1.2.1
+  描述：用于在所有网页项目中统一基础样式和结构。所有网页在开发时需首先引用此文件，以保证一致的外观和行为。
+*/
+
+/* 文件
+   ========================================================================== */
+
+/**
+ * 1.在所有浏览器中更正线条高度。
+ * 2.防止在iOS中更改方向后调整字体大小。
+ */
+
+html {
+    /* 修正默认行高 */
+    line-height: 1.15;
+    /* 禁止iOS字体缩放 */
+    -webkit-text-size-adjust: 100%;
+}
+
+/* 小节
+   ========================================================================== */
+
+/**
+ * 在所有浏览器中删除边距。
+ */
+
+body {
+    margin: 0;
+}
+
+/**
+ * 在IE中一致地呈现“main”元素。
+ */
+
+main {
+    display: block;
+}
+
+/**
+ * 在Chrome、Firefox和Safari中，更正“section”和“article”上下文中“h1”元素的字体大小和边距。
+ */
+
+h1 {
+    font-size: 2em;
+    margin: 0.67em 0;
+}
+
+/* 分组内容
+   ========================================================================== */
+
+/**
+ * 1.在Firefox中添加正确的方框大小。
+ * 2.在Edge和IE中显示溢出。
+ */
+
+hr {
+    box-sizing: content-box;
+    /* 1 */
+    height: 0;
+    /* 1 */
+    overflow: visible;
+    /* 2 */
+}
+
+/**
+ * 1.更正所有浏览器中字体大小的继承和缩放。
+ * 2.更正所有浏览器中的奇数“em”字体大小。
+ */
+
+pre {
+    font-family: monospace, monospace;
+    /* 1 */
+    font-size: 1em;
+    /* 2 */
+}
+
+/* 文本级语义
+   ========================================================================== */
+
+/**
+ * 删除IE 10中活动链接上的灰色背景。
+ */
+
+a {
+    background-color: transparent;
+}
+
+/**
+ * 1.删除Chrome 57中的底部边框-
+ * 2.在Chrome、Edge、IE、Opera和Safari中添加正确的文本装饰。
+ */
+
+abbr[title] {
+    border-bottom: none;
+    /* 1 */
+    text-decoration: underline;
+    /* 2 */
+    text-decoration: underline dotted;
+    /* 2 */
+}
+
+/**
+ * 统一了段落和行内元素的基准样式，清除了默认外边距，避免浏览器默认样式带来的不一致。
+ * 设置字体大小默认16像素
+ * 设置字体粗细默认400，normal正常粗细
+ * 设置默认边距为0
+ * 设置默认行高为26像素
+ */
+/* p,
+span {
+    font-size: 16px;
+    font-weight: 400;
+    margin: 0;
+    line-height: 26px;
+} */
+
+/**
+ * 在Chrome、Edge和Safari中添加正确的字体大小。
+ */
+
+b,
+strong {
+    font-weight: bolder;
+}
+
+/**
+ * 1.更正所有浏览器中字体大小的继承和缩放。
+ * 2.更正所有浏览器中的奇数“em”字体大小。
+ */
+
+code,
+kbd,
+samp {
+    font-family: monospace, monospace;
+    /* 1 */
+    font-size: 1em;
+    /* 2 */
+}
+
+/**
+ * 在所有浏览器中添加正确的字体大小。
+ */
+
+small {
+    font-size: 80%;
+}
+
+/**
+ * 防止“sub”和“sup”元素影响所有浏览器中的行高。
+ */
+
+sub,
+sup {
+    font-size: 75%;
+    line-height: 0;
+    position: relative;
+    vertical-align: baseline;
+}
+
+sub {
+    bottom: -0.25em;
+}
+
+sup {
+    top: -0.5em;
+}
+
+/* 嵌入式内容
+   ========================================================================== */
+
+/**
+ * 删除IE 10中链接内图像的边框。
+ */
+
+img {
+    border-style: none;
+}
+
+/* 形式
+   ========================================================================== */
+
+/**
+ * 1.更改所有浏览器中的字体样式。
+ * 2.删除Firefox和Safari中的边距。
+ */
+
+button,
+input,
+optgroup,
+select,
+textarea {
+    font-family: inherit;
+    /* 1 */
+    font-size: 100%;
+    /* 1 */
+    line-height: 1.15;
+    /* 1 */
+    margin: 0;
+    /* 2 */
+}
+
+/**
+ *  在Edge和IE浏览器中显示溢出。
+ */
+
+button,
+input {
+    /* 1 */
+    overflow: visible;
+}
+
+/**
+ * 1. 删除Edge、Firefox和IE中文本转换的继承。
+ * 2. 删除Firefox中文本转换的继承。
+ */
+
+button,
+select {
+    /* 1 */
+    text-transform: none;
+}
+
+/**
+ * 更正无法在iOS和Safari中设置可点击类型的样式的问题。
+ */
+
+button,
+[type="button"],
+[type="reset"],
+[type="submit"] {
+    -webkit-appearance: button;
+}
+
+/**
+ * 删除Firefox中的内部边框和填充。
+ */
+
+button::-moz-focus-inner,
+[type="button"]::-moz-focus-inner,
+[type="reset"]::-moz-focus-inner,
+[type="submit"]::-moz-focus-inner {
+    border-style: none;
+    padding: 0;
+}
+
+/**
+ * 恢复先前规则未设置的焦点样式。
+ */
+
+button:-moz-focusring,
+[type="button"]:-moz-focusring,
+[type="reset"]:-moz-focusring,
+[type="submit"]:-moz-focusring {
+    outline: 1px dotted ButtonText;
+}
+
+/**
+ * 更正Firefox中的填充。
+ */
+
+fieldset {
+    padding: 0.35em 0.75em 0.625em;
+}
+
+/**
+ *  1.更正Edge和IE中的文本换行。
+ *  2.更正IE中“fieldset”元素的颜色继承。
+ *  3.删除填充，这样开发人员在所有浏览器中清空“字段集”元素时就不会被遗漏。
+ */
+
+legend {
+    box-sizing: border-box;
+    /* 1 */
+    color: inherit;
+    /* 2 */
+    display: table;
+    /* 1 */
+    max-width: 100%;
+    /* 1 */
+    padding: 0;
+    /* 3 */
+    white-space: normal;
+    /* 1 */
+}
+
+/**
+ * 在Chrome、Firefox和Opera中添加正确的垂直对齐方式。
+ */
+
+progress {
+    vertical-align: baseline;
+}
+
+/**
+ * 删除IE 10+中的默认垂直滚动条。
+ */
+
+textarea {
+    overflow: auto;
+}
+
+/**
+ * 1.在IE 10中添加正确的方框大小。
+ * 2.移除IE 10中的填充。
+ */
+
+[type="checkbox"],
+[type="radio"] {
+    box-sizing: border-box;
+    /* 1 */
+    padding: 0;
+    /* 2 */
+}
+
+/**
+ * 更正Chrome中递增和递减按钮的光标样式。
+ */
+
+[type="number"]::-webkit-inner-spin-button,
+[type="number"]::-webkit-outer-spin-button {
+    height: auto;
+}
+
+/**
+ * 1.更正Chrome和Safari中的奇怪外观。
+ * 2.在Safari中更正轮廓样式。
+ */
+
+[type="search"] {
+    -webkit-appearance: textfield;
+    /* 1 */
+    outline-offset: -2px;
+    /* 2 */
+}
+
+/**
+ * 在macOS上删除Chrome和Safari中的内部填充。
+ */
+
+[type="search"]::-webkit-search-decoration {
+    -webkit-appearance: none;
+}
+
+/**
+ * 1.更正无法在iOS和Safari中设置可点击类型的样式的问题。
+ * 2.在Safari中将字体属性更改为“inherit”。
+ */
+
+::-webkit-file-upload-button {
+    -webkit-appearance: button;
+    /* 1 */
+    font: inherit;
+    /* 2 */
+}
+
+/* 交互类
+   ========================================================================== */
+
+/*
+ * 在Edge、IE 10+和Firefox中添加正确的显示。
+ */
+
+details {
+    display: block;
+}
+
+/*
+ * 在所有浏览器中添加正确的显示。
+ */
+
+summary {
+    display: list-item;
+}
+
+/* 其他杂项
+   ========================================================================== */
+
+/**
+ * 在IE 10+中添加正确的显示。
+ */
+
+template {
+    display: none;
+}
+
+/**
+ * 在IE 10中添加正确的显示。
+ */
+
+[hidden] {
+    display: none;
+}
+
+/**
+ *  元素的内边距,外边距 设置为0
+ */
+body,
+h1,
+h2,
+h3,
+h4,
+h5,
+h6,
+p,
+blockquote,
+pre,
+dl,
+dd,
+ol,
+ul,
+figure,
+hr,
+fieldset,
+legend {
+    margin: 0;
+    padding: 0;
+}
+
+/**
+ *  去除列表项前面的默认样式
+ */
+ol,
+ul,
+li {
+    list-style: none;
+}
+
+/**
+ *  去除链接文本的下划线,设置链接文本的颜色
+ */
+a {
+    text-decoration: none;
+    color: #333;
+}
+
+/**
+ *  图像顶部与其父元素的顶部对齐
+ */
+img {
+    vertical-align: top;
+}
+
+/**
+ *  设置默认字体大小 和 字体样式
+ *  无衬线体
+ */
+body {
+    font-size: 14px;
+    font-family: '微软雅黑', '黑体', 'sans-serif', "Courier New";
+}
+
+/**
+ *  核心盒模型规范 (推荐)
+ */
+*,
+*::before,
+*::after {
+    /* 统一盒模型 */
+    box-sizing: border-box;
+    margin: 0;
+    padding: 0;
+}
+
+/* 按钮和链接重置 */
+button {
+    background-color: transparent;
+    background-image: none;
+    border: none;
+    cursor: pointer;
+}
+
+a {
+    background-color: transparent;
+    color: inherit;
+    text-decoration: none;
+}
+
+/* 媒体元素重置 */
+img,
+video,
+canvas,
+audio,
+iframe,
+embed,
+object {
+    /* 消除基线对齐间隙 */
+    display: block;
+    max-width: 100%;
+    height: auto;
+}
+
+/* 表格重置 */
+table {
+    border-collapse: collapse;
+    border-spacing: 0;
+}
+
+/* 隐藏属性增强 */
+[hidden] {
+    display: none !important;
+}
+
+/* 打印优化 */
+@media print {
+
+    *,
+    *::before,
+    *::after {
+        text-shadow: none !important;
+        box-shadow: none !important;
+    }
+}

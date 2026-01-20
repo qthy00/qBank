@@ -1,0 +1,161 @@
+/*@import "tailwindcss";*/
+
+/*@plugin "daisyui";*/
+
+
+
+@layer components {
+
+
+    /* ---- */
+
+    /* 成品中按钮样式 */
+    .hy-red-lg {
+        /* 红色中按钮 */
+        @apply text-lg px-3 py-1 bg-red-100 text-red-600 rounded-md hover:bg-red-200 transition whitespace-nowrap text-nowrap;
+    }
+
+    .hy-blue-lg {
+        /* 蓝色中按钮 */
+        @apply text-lg px-3 py-1 bg-blue-100 text-blue-600 rounded-md hover:bg-blue-200 transition whitespace-nowrap text-nowrap;
+    }
+
+    .hy-green-lg {
+        /* 绿色中按钮 */
+        @apply text-lg px-3 py-1 bg-green-100 text-green-600 rounded-md hover:bg-green-200 transition whitespace-nowrap text-nowrap;
+    }
+
+    .hy-yellow {
+        /* 黄色小按钮 */
+        @apply text-xs px-3 py-1 bg-yellow-200 text-yellow-600 rounded-md hover:bg-yellow-300 transition whitespace-nowrap text-nowrap;
+    }
+
+    .hy-gray {
+        /* 灰色小按钮 */
+        @apply text-xs px-3 py-1 bg-gray-200 text-gray-600 rounded-md hover:bg-gray-300 transition whitespace-nowrap text-nowrap;
+    }
+
+    .hy-green {
+        /* 绿色小按钮 */
+        @apply text-xs px-3 py-1 bg-green-200 text-green-600 rounded-md hover:bg-green-300 transition whitespace-nowrap text-nowrap;
+    }
+
+    .hy-blue {
+        /* 蓝色小按钮 */
+        @apply text-xs px-3 py-1 bg-blue-200 text-blue-600 rounded-md hover:bg-blue-300 transition whitespace-nowrap text-nowrap;
+    }
+
+    /* 下述代码必备，输入框的提示文本颜色，若删除部分浏览器提示文字无效，会变纯黑色 */
+    .placeholder::placeholder {
+        color: #7f8c8d;
+    }
+
+    .placeholder::-webkit-input-placeholder {
+        color: #7f8c8d;
+    }
+
+    .placeholder::-moz-placeholder {
+        color: #7f8c8d;
+    }
+
+    .placeholder:-ms-input-placeholder {
+        color: #7f8c8d;
+    }
+
+
+    /* 举报弹窗 */
+    .content-auto {
+        content-visibility: auto;
+    }
+
+    .animate-shake {
+        animation: shake 0.5s cubic-bezier(.36, .07, .19, .97) both;
+    }
+
+    .custom-radio-card {
+        @apply relative p-4 border-2 border-gray-100 rounded-lg cursor-pointer transition-all duration-300;
+    }
+
+    .custom-radio-card:has(input:checked) {
+        @apply border-blue-500 bg-blue-50;
+    }
+
+    .custom-radio-card input {
+        @apply absolute opacity-0;
+    }
+
+    .custom-radio-card .check-icon {
+        @apply absolute top-3 right-3 w-5 h-5 rounded-full bg-blue-500 text-white flex items-center justify-center opacity-0 transition-opacity;
+    }
+
+    .custom-radio-card:has(input:checked) .check-icon {
+        @apply opacity-100;
+    }
+
+
+
+    /* 测试 */
+
+
+    /* 选择题，选项样式，显示正确答案，样式2，目前在收藏夹中使用 */
+    .question-option2 {
+        @apply relative px-4 py-1 border border-(--color-border) rounded-lg mb-1 bg-(--color-btn-text) overflow-hidden transition-all duration-200;
+    }
+
+    .question-option2::after {
+        content: '';
+        @apply absolute top-1 right-1 w-4 h-4 opacity-0 invisible transition-all duration-200;
+        background-size: contain;
+        background-color: currentColor;
+        -webkit-mask-size: contain;
+        mask-size: contain;
+        -webkit-mask-repeat: no-repeat;
+        mask-repeat: no-repeat;
+        -webkit-mask-position: center;
+        mask-position: center;
+        mask-image: url("data:image/svg+xml,%3Csvg t='1746752198465' class='icon' viewBox='0 0 1024 1024' version='1.1' xmlns='http://www.w3.org/2000/svg' p-id='3512' width='200' height='200'%3E%3Cpath d='M823.695572 105.813237C770.817591 65.206355 710.245223 35.193354 644.489199 17.574079 371.423662-55.59361 90.746187 106.45561 17.578484 379.521142-55.589201 652.586675 106.460024 933.264157 379.525561 1006.431846 652.59108 1079.599534 933.268573 917.550315 1006.436258 644.484783 1024.055543 578.728753 1028.349689 511.265049 1019.622098 445.167928 1015.229243 411.899353 1007.559025 379.171383 996.757205 347.441803 991.358423 331.583207 985.185064 315.997012 978.262782 300.74125 970.726566 284.132464 951.153176 276.777694 934.544391 284.313912 917.935606 291.850132 910.58083 311.423527 918.117046 328.032314 924.149765 341.327601 929.529269 354.909529 934.233222 368.72706 943.640847 396.361313 950.319032 424.856379 954.142656 453.813967 961.738652 511.341108 958.001273 570.057531 942.638981 627.390354 878.912289 865.221624 634.451256 1006.361267 396.619981 942.634571 158.788706 878.907873 17.649069 634.446841 81.375761 396.615571 145.102471 158.7843 389.563503 17.644657 627.394761 81.371354 684.727584 96.733637 737.446193 122.855181 783.468168 158.197081 795.043417 167.086128 806.167034 176.538199 816.80348 186.51721 830.104625 198.996223 851.003584 198.32975 863.48259 185.028598 875.961614 171.727448 875.295139 150.828495 861.993977 138.349482 849.775699 126.886409 836.995905 116.02704 823.695572 105.813237L823.695572 105.813237ZM395.061454 653.061426C407.224101 669.301138 430.540449 671.970455 446.058634 658.899722L922.681896 257.44719C937.593616 244.887276 939.500122 222.617117 926.940221 207.705398 914.380302 192.793679 892.110134 190.887165 877.198415 203.447079L400.575152 604.899611 451.572332 610.737908 295.762884 402.699264C284.075562 387.094218 261.95073 383.918272 246.345682 395.605589 230.740635 407.292906 227.564683 429.417736 239.252005 445.02278L395.061454 653.061426 395.061454 653.061426Z' fill='%23000000' p-id='3513'%3E%3C/path%3E%3C/svg%3E");
+    }
+
+    /* 单题目内容页，显示成正确答案样式。 */
+    .question-option {
+        @apply relative px-4 py-3 border border-(--color-border) rounded-lg mb-3 bg-(--color-btn-text) overflow-hidden transition-all duration-200;
+    }
+
+    .question-option::after {
+        content: '';
+        @apply absolute top-1 right-1 w-4 h-4 opacity-0 invisible transition-all duration-200;
+        background-size: contain;
+        background-color: currentColor;
+        -webkit-mask-size: contain;
+        mask-size: contain;
+        -webkit-mask-repeat: no-repeat;
+        mask-repeat: no-repeat;
+        -webkit-mask-position: center;
+        mask-position: center;
+        mask-image: url("data:image/svg+xml,%3Csvg t='1746752198465' class='icon' viewBox='0 0 1024 1024' version='1.1' xmlns='http://www.w3.org/2000/svg' p-id='3512' width='200' height='200'%3E%3Cpath d='M823.695572 105.813237C770.817591 65.206355 710.245223 35.193354 644.489199 17.574079 371.423662-55.59361 90.746187 106.45561 17.578484 379.521142-55.589201 652.586675 106.460024 933.264157 379.525561 1006.431846 652.59108 1079.599534 933.268573 917.550315 1006.436258 644.484783 1024.055543 578.728753 1028.349689 511.265049 1019.622098 445.167928 1015.229243 411.899353 1007.559025 379.171383 996.757205 347.441803 991.358423 331.583207 985.185064 315.997012 978.262782 300.74125 970.726566 284.132464 951.153176 276.777694 934.544391 284.313912 917.935606 291.850132 910.58083 311.423527 918.117046 328.032314 924.149765 341.327601 929.529269 354.909529 934.233222 368.72706 943.640847 396.361313 950.319032 424.856379 954.142656 453.813967 961.738652 511.341108 958.001273 570.057531 942.638981 627.390354 878.912289 865.221624 634.451256 1006.361267 396.619981 942.634571 158.788706 878.907873 17.649069 634.446841 81.375761 396.615571 145.102471 158.7843 389.563503 17.644657 627.394761 81.371354 684.727584 96.733637 737.446193 122.855181 783.468168 158.197081 795.043417 167.086128 806.167034 176.538199 816.80348 186.51721 830.104625 198.996223 851.003584 198.32975 863.48259 185.028598 875.961614 171.727448 875.295139 150.828495 861.993977 138.349482 849.775699 126.886409 836.995905 116.02704 823.695572 105.813237L823.695572 105.813237ZM395.061454 653.061426C407.224101 669.301138 430.540449 671.970455 446.058634 658.899722L922.681896 257.44719C937.593616 244.887276 939.500122 222.617117 926.940221 207.705398 914.380302 192.793679 892.110134 190.887165 877.198415 203.447079L400.575152 604.899611 451.572332 610.737908 295.762884 402.699264C284.075562 387.094218 261.95073 383.918272 246.345682 395.605589 230.740635 407.292906 227.564683 429.417736 239.252005 445.02278L395.061454 653.061426 395.061454 653.061426Z' fill='%23000000' p-id='3513'%3E%3C/path%3E%3C/svg%3E");
+    }
+
+    .question-option-correct {
+        /* 这里设置正确的外边框 */
+        @apply border-2 border-(--color-info) bg-(--color-info)/10;
+    }
+
+    .question-option-correct::after {
+        content: '';
+        /* 这里设置正确图标的显示颜色 */
+        @apply opacity-100 visible text-(--color-info);
+    }
+
+    .question-option-correct .option-marker {
+        /* 这里设置正确的选项号颜色 */
+        @apply border-2 border-(--color-info) bg-(--color-info) text-(--color-btn-text);
+    }
+
+    .option-marker {
+        @apply flex-shrink-0 w-6 h-6 rounded-full border-2 border-(--color-border) flex items-center justify-center mr-3 mt-0.5 text-(--color-text-secondary) transition-all duration-200;
+    }
+
+    /* 题目选项结束 */
+
+
+}
