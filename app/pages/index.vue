@@ -1,6 +1,7 @@
 <script setup lang="ts">
 import {CmsCategoryApi} from '~/api/category'
 import {ArticleApi} from "~/api/article";
+import {questionApi} from "~/api/qbank";
 
 // 禁用所有布局
 definePageMeta({
@@ -51,9 +52,9 @@ const {data: news} = await ArticleApi.getContentList({
   sort: "Recent",
   tag: '考试动态',
   status: 0,
-  limit: 12,
+  limit: 14,
 }, true)
-// const news = ref([])
+const {data: examCalendar} = await questionApi.getExamCalendarInfo({group: true}, true)
 
 
 // 控制悬浮详情显示/隐藏
@@ -220,7 +221,7 @@ onMounted(() => {
     </div>
 
     <!-- 考试动态,考试日历 -->
-    <div class="container mx-auto grid grid-cols-12 gap-5 min-h-[316px]">
+    <div class="container mx-auto grid grid-cols-12 gap-5 h-[310px]">
       <!-- 左侧考试动态区域 -->
       <div class="col-span-12 lg:col-span-9 bg-(--color-bg-container) pt-4 pl-4 pr-4 pb-2">
         <div class="flex justify-between items-center mb-4">
@@ -236,16 +237,18 @@ onMounted(() => {
             <div class="flex justify-between items-center border-b border-(--color-border) py-2">
               <a
                   :href="item.link"
-                  class="px-3 text-nowrap bg-(--color-btn-primary) text-(--color-bg-container) hover:bg-(--color-btn-hover) rounded-full mr-2">一级建造师</a>
+                  class="px-3 cursor-pointer text-nowrap bg-(--color-btn-primary) text-(--color-bg-container) hover:bg-(--color-btn-hover) rounded-full mr-2">
+                {{item.categoryName}}
+              </a>
               <a
                   href="#"
-                  class="min-w-0 flex items-center text-(--color-text-primary) hover:text-(--color-text-hover) transition-colors duration-200">
-                <span class="flex-1 truncate whitespace-nowrap overflow-hidden">
+                  class="min-w-0 flex justify-start text-(--color-text-primary) hover:text-(--color-text-hover) transition-colors duration-200">
+                <span class="truncate items-start">
                  {{item.title}}
                 </span>
               </a>
               <span class="text-(--color-text-primary) whitespace-nowrap ml-2 flex-shrink-0">
-                {{ formatDate(item.createTime, 'YYYY-MM-DD') }}
+                {{ formatDate(item.publishDate, 'YYYY-MM-DD') }}
               </span>
             </div>
           </div>
@@ -253,7 +256,7 @@ onMounted(() => {
       </div>
 
       <!-- 右侧考试日历区域 -->
-      <div class="hidden lg:flex lg:col-span-3 bg-(--color-bg-container) p-4 flex-col min-h-0">
+      <div class="hidden lg:flex lg:col-span-3 bg-(--color-bg-container) p-4 flex-col h-310px">
         <div class="flex justify-between items-center mb-4">
           <h2 class="text-xl font-bold">考试日历</h2>
           <a
@@ -264,27 +267,23 @@ onMounted(() => {
         </div>
 
         <!-- 滚动内容区域 -->
-        <div class="flex-grow min-h-0 overflow-y-auto max-h-full custom-scrollbar pr-1 overscroll-contain">
-          <div>
+<!--        <div class="flex-grow min-h-0 overflow-y-auto max-h-full pr-1 overscroll-contain">-->
             <!-- 考试日历条目 -->
-            <div class="flex justify-between items-center border-b border-(--color-border) py-2">
+            <el-scrollbar class="h-full">
+            <div
+                v-for="item in examCalendar" :key="item.id"
+                class="flex justify-between items-center border-b border-(--color-border) py-2">
               <a
                   href="#"
                   class="flex-1 text-(--color-text-primary) truncate hover:text-(--color-text-hover) transition-colors duration-200">
-                数学
+                {{item.name}}
               </a>
-              <span class="text-(--color-text-primary) whitespace-nowrap ml-2">2025-04-25</span>
+              <span class="text-(--color-text-primary) whitespace-nowrap ml-2">
+                {{ item.examTime ? formatDate(item.examTime, 'YYYY-MM-DD') : '--' }}
+              </span>
             </div>
-            <div class="flex justify-between items-center border-b border-(--color-border) py-2">
-              <a
-                  href="#"
-                  class="flex-1 text-(--color-text-primary) truncate hover:text-(--color-text-hover) transition-colors duration-200">
-                英语
-              </a>
-              <span class="text-(--color-text-primary) whitespace-nowrap ml-2">2025-04-26</span>
-            </div>
-          </div>
-        </div>
+            </el-scrollbar>
+<!--        </div>-->
       </div>
     </div>
 
