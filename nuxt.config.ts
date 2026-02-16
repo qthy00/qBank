@@ -16,6 +16,32 @@ export default defineNuxtConfig({
             captcha_enable: process.env.NUXT_CAPTCHA_ENABLE
         }
     },
+    app: {
+        head: {
+            titleTemplate: '%s - 学次元_在线题库',
+            title: '学次元在线题库',
+            meta: [
+                { name: 'viewport', content: 'width=device-width, initial-scale=1' },
+                {
+                    name: 'keywords',
+                    content: '学次元题库,在线题库系统,学习资源平台,在线智刷题题库软件,含解析的在线练习题库',
+                    tagPriority: 1,
+                },
+                {
+                    name: 'description',
+                    content: '学次元题库是专业的在线题库平台，涵盖中小学、高校全学科、职业考试等练习题资源，支持智能刷题、错题整理、定制化出题等功能，为学生提供高效学习工具，为教育机构赋能数字化教学管理。',
+                    tagPriority: 1,
+                },
+                // {  name:"baidu-site-verification", content:"codeva-w2YAhxVIdI" },
+                // {  name:"msvalidate.01", content:"7638BE55E64104B446CF610E1463BC5F" }
+            ],
+            script: [{ src: process.env.NUXT_BAIDU_ANALYTICS }],
+            link: [],
+            style: [],
+            noscript: []
+        },
+        baseURL: '/',
+    },
     hooks: {
         // 构建开始前触发（nuxt build 时执行）
     },
@@ -44,30 +70,7 @@ export default defineNuxtConfig({
         url: 'https://www.xueciyuan.com',
         name: "学次元-在线题库",
     },
-    app: {
-        head: {
-            titleTemplate: '%s - 学次元_在线题库',
-            title: '学次元在线题库',
-            meta: [
-                { name: 'viewport', content: 'width=device-width, initial-scale=1' },
-                {
-                    name: 'keywords',
-                    content: '学次元题库,在线题库系统,学习资源平台,在线智刷题题库软件,含解析的在线练习题库'
-                },
-                {
-                    name: 'description',
-                    content: '学次元题库是专业的在线题库平台，涵盖中小学、高校全学科、职业考试等练习题资源，支持智能刷题、错题整理、定制化出题等功能，为学生提供高效学习工具，为教育机构赋能数字化教学管理。'
-                },
-                // {  name:"baidu-site-verification", content:"codeva-w2YAhxVIdI" },
-                // {  name:"msvalidate.01", content:"7638BE55E64104B446CF610E1463BC5F" }
-            ],
-            script: [{ src: process.env.NUXT_BAIDU_ANALYTICS }],
-            link: [],
-            style: [],
-            noscript: []
-        },
-        baseURL: '/',
-    },
+
     components: [
         {
             path: '~/components',
