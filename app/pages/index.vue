@@ -54,7 +54,7 @@ const {data: news} = await ArticleApi.getContentList({
   status: 0,
   limit: 14,
 }, true)
-const {data: examCalendar} = await questionApi.getExamCalendarInfo({group: true}, true)
+const {data: examCalendar} = await questionApi.getExamInfoList({group: true}, true)
 
 
 // 控制悬浮详情显示/隐藏
@@ -223,6 +223,28 @@ const examsData = [
   }
 ]
 
+const examItems = ref([])
+const loadExamItems = async (catalogId: number) => {
+  console.log('获取考试信息')
+
+  try{
+    examItems.value = await questionApi.getExamInfoList({catalogId})
+  }catch (e){
+    console.log(e)
+  }
+}
+
+
+const questions = ref([])
+const loadQuestions = async () => {
+  console.log('获取题目')
+  try{
+    questions.value = await questionApi.getSimpleQuestions({ limit: 15})
+  }catch (e){
+    console.log(e)
+  }
+}
+
 const slides = [
   // {image: 'https://dd.qthy.cc/102/hyserver//image/232411/94b9c7049777f64ee4af0dc1c18b2d8a.jpg', title: '', desc: ''},
   // {image: 'https://dd.qthy.cc/102/hyserver//image/202411/44523192f6fb63e1a394a046dc34b9b5.jpg', title: '', desc: ''},
@@ -232,7 +254,10 @@ const slides = [
 
 
 onMounted(() => {
-
+  await Promise.all([
+    loadExamItems(),
+    loadQuestions()
+  ])
 })
 
 
@@ -401,76 +426,37 @@ onMounted(() => {
     />
 
     <!-- 题目列表 -->
-    <div class="container mx-auto px-4 mt-1.5 bg-(--color-bg-container) p-4">
-      <!-- 顶部标题栏 -->
-      <div class="flex justify-between items-center border-b border-(--color-border) pb-2 mb-4">
-        <h2 class="text-lg font-semibold text-(--color-text-primary)">最新题目</h2>
-        <div class="flex justify-end">
-          <a
-              href="#"
-              class="text-(--color-text-secondary) px-3 rounded-full flex items-center border border-(--color-border) hover:bg-(--color-disabled)">
-            <span class="mr-1">更多</span> <i class="hy-ico-djt ic-12"/>
-          </a>
-        </div>
-      </div>
-
-      <!-- Grid 三列题目卡片布局 -->
-      <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-x-6 gap-y-4">
-        <!-- 题目卡片 -->
-        <div class="border-b border-(--color-border) pb-3">
-          <div class="text-sm text-(--color-text-secondary) mb-1">二级建造师 · 单选题</div>
-          <div
-              class="text-(--color-text-primary) hover:text-(--color-text-hover) cursor-pointer transition-colors duration-200
-                      truncate whitespace-nowrap overflow-hidden">
-            建设工程项目总投资包括哪几项费用？
-          </div>
-        </div>
-        <div class="border-b border-(--color-border) pb-3">
-          <div class="text-sm text-(--color-text-secondary) mb-1">监理工程师 · 判断题</div>
-          <div
-              class="text-(--color-text-primary) hover:text-(--color-text-hover) cursor-pointer transition-colors duration-200
-                      truncate whitespace-nowrap overflow-hidden">
-            施工组织总设计是施工阶段的重要技术。
-          </div>
-        </div>
-        <div class="border-b border-(--color-border) pb-3">
-          <div class="text-sm text-(--color-text-secondary) mb-1">一级建造师 · 多选题</div>
-          <div
-              class="text-(--color-text-primary) hover:text-(--color-text-hover) cursor-pointer transition-colors duration-200
-                      truncate whitespace-nowrap overflow-hidden">
-            下列哪些属于建筑工程施工质量事故？
+    <ClientOnly>
+      <div class="container mx-auto px-4 mt-1.5 bg-(--color-bg-container) p-4">
+        <!-- 顶部标题栏 -->
+        <div class="flex justify-between items-center border-b border-(--color-border) pb-2 mb-4">
+          <h2 class="text-lg font-semibold text-(--color-text-primary)">最新题目</h2>
+          <div class="flex justify-end">
+            <a
+                href="#"
+                class="text-(--color-text-secondary) px-3 rounded-full flex items-center border border-(--color-border) hover:bg-(--color-disabled)">
+              <span class="mr-1">更多</span> <i class="hy-ico-djt ic-12"/>
+            </a>
           </div>
         </div>
 
-        <div class="border-b border-(--color-border) pb-3">
-          <div class="text-sm text-(--color-text-secondary) mb-1">二级建造师 · 单选题</div>
-          <div
-              class="text-(--color-text-primary) hover:text-(--color-text-hover) cursor-pointer transition-colors duration-200
+        <!-- Grid 三列题目卡片布局 -->
+        <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-x-6 gap-y-4">
+          <!-- 题目卡片 -->
+
+          <div v-for="question in questions" :key="question.id" class="border-b border-(--color-border) pb-3">
+            <div class="text-sm text-(--color-text-secondary) mb-1">{{ question.categoryName}} · {{question.typeName}}</div>
+            <div
+                class="text-(--color-text-primary) hover:text-(--color-text-hover) cursor-pointer transition-colors duration-200
                       truncate whitespace-nowrap overflow-hidden">
-            建设工程项目总投资包括哪几项费用？
+              {{question.title}}
+            </div>
           </div>
-        </div>
-        <div class="border-b border-(--color-border) pb-3">
-          <div class="text-sm text-(--color-text-secondary) mb-1">监理工程师 · 判断题</div>
-          <div
-              class="text-(--color-text-primary) hover:text-(--color-text-hover) cursor-pointer transition-colors duration-200
-                      truncate whitespace-nowrap overflow-hidden">
-            施工组织总设计是施工阶段的重要技术。
-          </div>
-        </div>
-        <div class="border-b border-(--color-border) pb-3">
-          <div class="text-sm text-(--color-text-secondary) mb-1">一级建造师 · 多选题</div>
-          <div
-              class="text-(--color-text-primary) hover:text-(--color-text-hover) cursor-pointer transition-colors duration-200
-                      truncate whitespace-nowrap overflow-hidden">
-            下列哪些属于建筑工程施工质量事故？
-          </div>
+
         </div>
 
       </div>
-
-    </div>
-
+    </ClientOnly>
     <!-- 底部 -->
     <Footer/>
   </div>

@@ -118,7 +118,11 @@ export const questionApi = {
     return await httpGet('getMistakeStats', `/member/mistakes/stats?categoryId=${categoryId}`)
   },
 
-  getExamCalendarInfo: async (query, server: boolean = false) => {
-    return await httpGet('getMistakeStats', `/cms/qBank/exam-info`, {query}, server)
+  getExamInfoList: async (query, server: boolean = false) => {
+    return await httpGet('getExamInfoList', `/cms/qBank/exam-info`, {query}, server)
+  },
+
+  getSimpleQuestions: async (query, server: boolean = false) => {
+    return await httpGet('getSimpleQuestions', `/cms/qBank/simple-questions`, {query}, server)
   },
 }
