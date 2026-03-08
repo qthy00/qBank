@@ -61,14 +61,21 @@ const {data: examCalendar} = await questionApi.getExamInfoList({group: true}, tr
 const showSubmenu = ref(false)
 // 当前悬浮详情的渲染数据
 const currentSubmenu = reactive({
-  title: '一级建造师',
-  items: categories.value[0].children
+  title: '',
+  items: [] as any[]
 })
+
+// 当初始化categories后，更新currentSubmenu
+watch(() => categories.value, (newCategories) => {
+  if (newCategories?.length > 0) {
+    currentSubmenu.title = newCategories[0]?.name ?? ''
+    currentSubmenu.items = newCategories[0]?.children ?? []
+  }
+}, { immediate: true })
 // 防抖计时器（防止 hover 闪烁）
 let hoverTimer: number | null = null
 // 鼠标进入左侧列表项
 const handleMouseEnter = (catalog: any, e: MouseEvent) => {
-  console.log('进入', catalog)
   // 清除之前的防抖计时器
   if (hoverTimer) clearTimeout(hoverTimer)
   // 更新当前详情数据
@@ -89,10 +96,6 @@ const handleMouseLeave = () => {
   }, 200)
 }
 
-const handleSubmenuItemEnter = (catalog: any, e: MouseEvent) => {
-  currentSubmenu.title = catalog.name
-}
-
 // 鼠标进入悬浮区域（取消隐藏）
 const handleSubmenuEnter = () => {
   if (hoverTimer) clearTimeout(hoverTimer)
@@ -104,37 +107,32 @@ const handleSubmenuLeave = () => {
   showSubmenu.value = false
 }
 
-const currentDetail = ref(categories.value[0])
+const currentDetail = ref(categories.value[0] ?? null)
 // Tab切换
-const activeTab = ref(categories.value ? categories.value[0]?.children[0]?.id : '1')
+const activeTab = ref(categories.value?.[0]?.children?.[0]?.id ?? '1')
 const switchTab = async (tabId: string) => {
   activeTab.value = tabId
   // 更新当前 Tab 的激活状态
-  currentDetail.value.children.forEach(tab => {
-    tab.active = tab.id === tabId
-  })
-  // 加载对应的详情数据
- // currentDetail
+  if (currentDetail.value?.children) {
+    currentDetail.value.children.forEach(tab => {
+      tab.active = tab.id === tabId
+    })
+  }
 }
 
 // 加载详情数据
 const loadDetailData = async (tabId: string) => {
   try {
     loading.value = true
-    // 这里可以根据需要调用 getExamDetail(tabId) 获取单个 Tab 的详情
-    // 现在的逻辑是从全部数据中获取对应 Tab 的详情
-    const result = await getExamData()
-    if (result.code === 200) {
-      currentDetail.value = result.data.details[tabId]
-    }
+    // TODO: 实现详情数据加载逻辑
+    // const result = await questionApi.getExamDetail(tabId)
   } catch (err) {
-    error.value = '加载详情数据失败'
     console.error('加载详情数据失败:', err)
   } finally {
     loading.value = false
   }
 }
-console.log('currentDetail===', currentDetail.value)
+// console.log('currentDetail===', currentDetail.value)
 // if(categories.value && categories.value[0].id) {
 //   const {data} = await CmsCategoryApi.getCategoryList({
 //     id: categories.value[0].id,
@@ -253,7 +251,7 @@ const slides = [
 ]
 
 
-onMounted(() => {
+onMounted(async () => {
   await Promise.all([
     loadExamItems(),
     loadQuestions()
@@ -322,8 +320,7 @@ onMounted(() => {
             <!-- 顶部新增模块 -->
             <div class="bg-(--color-shadow) rounded-lg p-4 space-y-4 ">
               <ul class="flex flex-wrap gap-3 mx-3">
-                <li v-for="item in currentSubmenu.items" :key="item.id"
-                    @mouseenter="handleSubmenuItemEnter(item, $event)">
+                <li v-for="item in currentSubmenu.items" :key="item.id">
                   <a :href="item.url"
                      class="cursor-pointer block px-3 py-1 border border-solid border-(--color-border) rounded hover:text-(--color-nav-text-hover) hover:border-(--color-nav-text-hover) text-sm">
                     {{ item.name }}
