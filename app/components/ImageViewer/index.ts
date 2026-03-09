@@ -1,7 +1,7 @@
 import ImageViewer from './src/HyImageViewer.vue'
 import { isClient } from '@/utils/is'
 import { createVNode, render, type VNode } from 'vue'
-import type { ImageViewerProps } from '@/types/image'
+import type { ImageViewerProps } from '~/types/image'
 
 let instance: Nullable<VNode> = null
 

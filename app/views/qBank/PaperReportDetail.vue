@@ -188,7 +188,7 @@
 import CategoryHeader from './components/report/CategoryHeader.vue'
 import QuestionItem from './components/report/QuestionItem.vue'
 import { type HeaderInfo } from '~/components/PdfExportButton/pdf-export-util'
-import type { PaperReport, QuestionAnswerVO } from '@/types/qBank'
+import type { PaperReport, QuestionAnswerVO } from '~/types/qBank'
 import { getTypeName } from './func'
 import { formatDate, formatPast2 } from '@/utils/formatTime'
 import { questionApi } from '@/api/qbank'

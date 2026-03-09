@@ -224,7 +224,7 @@
 <script setup lang="ts">
 import { type HeaderInfo } from '~/components/PdfExportButton/pdf-export-util'
 import { questionTypes } from './func'
-import type { PaperReport } from '@/types/qBank'
+import type { PaperReport } from '~/types/qBank'
 import { questionApi } from '@/api/qbank'
 import { formatPast2 } from '@/utils/formatTime'
 import logo from '@/assets/images/gj_logo.png'

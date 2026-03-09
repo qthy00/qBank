@@ -114,7 +114,7 @@ import OptionItem from './OptionItem.vue'
 import AnalysisSection from './AnalysisSection.vue'
 import { judgeOptions } from '~/views/qBank/func.ts'
 import { stripHtmlTags } from '@/utils'
-import type { FillIn, QuestionItem } from '@/types/qBank'
+import type { FillIn, QuestionItem } from '~/types/qBank'
 
 
 const props = defineProps({

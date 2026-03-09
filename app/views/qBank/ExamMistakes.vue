@@ -234,7 +234,7 @@
 <script setup lang="ts">
 import { questionApi, type SubjectVO, typeNames } from '@/api/qbank'
 import { getSubQuestionTypeClass, typeMap } from './func.ts'
-import type { WrongQuestion } from '@/types/qBank'
+import type { WrongQuestion } from '~/types/qBank'
 import { formatDate } from '@/utils/formatTime.ts'
 
 const stat = useStatistics()

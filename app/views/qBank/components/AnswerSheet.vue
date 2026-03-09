@@ -1,6 +1,6 @@
 <script setup lang="ts">
 import { typeNames } from '@/api/qbank'
-import type { AnswerCache, PaperQuestion, QuestionVO } from '@/types/qBank'
+import type { AnswerCache, PaperQuestion, QuestionVO } from '~/types/qBank'
 
 const appStore = useAppStore()
 const {isMobile} = storeToRefs(appStore)

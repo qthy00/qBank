@@ -1,6 +1,6 @@
 <script setup lang="ts">
 import { typeMap } from '~/views/qBank/func.ts'
-import type { BaseType } from '@/types/qBank'
+import type { BaseType } from '~/types/qBank'
 import { questionApi } from '@/api/qbank'
 
 const questionStore = useQBankStore()

@@ -458,7 +458,7 @@
 import PaperSetting from './components/PaperSetting.vue'
 import AnswerSheet from './components/AnswerSheet.vue'
 import AIGeneratingDialog from '@/components/AIGeneratingDialog.vue'
-import type { AnswerCache, Paper, AnswerDetail } from '@/types/qBank'
+import type { AnswerCache, Paper, AnswerDetail } from '~/types/qBank'
 import { judgeOptions, getSubQuestionTypeClass } from './func.ts'
 import { questionApi, typeNames } from '~/api/qbank'
 import { getCurrentDate } from '@/utils/formatTime'
