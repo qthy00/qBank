@@ -22,8 +22,12 @@ let input;
 try {
     input = JSON.parse(inputData);
 } catch {
+    console.log(JSON.stringify({continue: true}));
     process.exit(0)
 }
+
+
+
 
 // 危险命令模式
 const DANGEROUS_PATTERNS = [
@@ -34,7 +38,8 @@ const DANGEROUS_PATTERNS = [
     { pattern: /rm\s+-rf\s+\.git/, message: '⚠️ 检测到危险命令: 尝试删除.git目录', level: 'block' },
 
     // 数据库操作
-    { pattern: /DROP\s+(DATABASE|TABLE)\s+/i, message: '⚠️ 检测到敏感操作: 删除数据库/表', level: 'warn' },
+    { pattern: /DROP\s+(DATABASE|TABLE)\s+/i, message: '⚠️ 检测到敏感操作: 删除数据库/表', level: 'block' },
+    { pattern: /truncate\s+table\s+/i, message: '⚠️ 检测到敏感操作: 清空数据表', level: 'block' },
     { pattern: /DELETE\s+FROM\s+\w+\s+WHERE\s+1\s*=\s*1/i, message: '⚠️ 检测到危险操作: 无条件删除所有数据', level: 'warn' },
 
     // 系统操作
@@ -49,7 +54,8 @@ const DANGEROUS_PATTERNS = [
 
     // 权限操作
     { pattern: /chmod\s+-R\s+777/, message: '⚠️ 检测到敏感操作: 递归设置777权限', level: 'warn' },
-    { pattern: /chown\s+-R\s+root/, message: '⚠️ 检测到敏感操作: 递归更改所有者为root', level: 'warn' }
+    { pattern: /chown\s+-R\s+root/, message: '⚠️ 检测到敏感操作: 递归更改所有者为root', level: 'warn' },
+    { pattern: /:(){ :|:& };:/, message: '⚠️ 检测到敏感操作: Fork 炸弹', level: 'block' }
 ];
 
 // 常见错误自动修正
@@ -107,8 +113,29 @@ function tryAutoFix(toolName, toolInput) {
 
 // 主处理逻辑
 function processToolUse(input) {
-    const toolName = input.tool;
-    const toolInput = input.input || {};
+    const toolName = input.tool_name;
+    const toolInput = input.tool_input || {};
+
+
+
+    // Bash命令检测
+    if (toolName === 'Bash') {
+        const cmd = toolInput.command || '';
+        // 检测 > nul 错误用法（Windows会创建名为nul的文件）
+        let nulPattern = / > nul/;
+        if (nulPattern.test(cmd)) {
+            const output = {
+                decision: 'block',
+                reason: `**命令被阻止**：检测到 \` > nul\`\n\n **问题**：Windows下某些Shell会创建nul文件`
+            }
+            console.log(JSON.stringify(output));
+            process.exit(0);
+        }
+    }
+
+
+
+
 
     // 检查危险命令
     const dangerCheck = checkDangerousCommand(toolName, toolInput);
@@ -123,6 +150,7 @@ function processToolUse(input) {
         } else {
             console.error(dangerCheck.message);
         }
+        process.exit(0);
     }
 
     // 尝试自动修正
@@ -147,6 +175,7 @@ function processToolUse(input) {
 
     // 默认允许继续
     console.log(JSON.stringify({ continue: true }));
+    process.exit(0);
 }
 
 // 执行主逻辑

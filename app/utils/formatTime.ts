@@ -1,5 +1,5 @@
 import dayjs from 'dayjs'
-import type { TableColumnCtx } from 'element-plus'
+import type {TableColumnCtx} from 'element-plus'
 
 /**
  * 日期快捷选项适用于 el-date-picker
@@ -468,3 +468,40 @@ export function getCurrentDate(format: string = 'YYYY-MM-DD HH:mm:ss'): string {
   return  dayjs().format(format)
 }
 
+/**
+ * 计算指定日期距离今天的倒计时天数
+ * @param targetDateStr 目标日期字符串，格式为 "YYYY-MM-DD"
+ * @returns 距今的倒计时天数（数字）
+ * @throws 日期格式错误时抛出异常
+ */
+export function calculateCountdownDays(targetDateStr: string): number {
+  // 1. 解析目标日期字符串
+  const targetDate = new Date(targetDateStr);
+
+  // 验证日期格式是否有效
+  if (isNaN(targetDate.getTime())) {
+    throw new Error(`无效的日期格式：${targetDateStr}，请使用 "YYYY-MM-DD" 格式`);
+  }
+
+  // 2. 获取当前日期（重置时分秒为0，避免当天不同时间点计算误差）
+  const now = new Date();
+  const currentDate = new Date(now.getFullYear(), now.getMonth(), now.getDate());
+
+  // 3. 比较日期，若目标日期已过期则加一年
+  let compareDate = new Date(
+      targetDate.getFullYear(),
+      targetDate.getMonth(),
+      targetDate.getDate()
+  );
+  if (compareDate < currentDate) {
+    compareDate = new Date(
+        compareDate.getFullYear() + 1,
+        compareDate.getMonth(),
+        compareDate.getDate()
+    );
+  }
+
+  // 4. 计算时间差（毫秒）并转换为天数（1天 = 24*60*60*1000 毫秒）
+  const timeDiff = compareDate.getTime() - currentDate.getTime();
+  return Math.ceil(timeDiff / (1000 * 60 * 60 * 24));
+}
