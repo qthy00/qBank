@@ -1,4 +1,5 @@
 import {httpGet, httpPost } from "~/composables/useHttp";
+import type {examsInfoVO, examsItemVO} from "~/types/qBank/examInfo";
 
 export const typeNames: Record<number, string> = {
   0: '单选题',
@@ -118,11 +119,16 @@ export const questionApi = {
     return await httpGet('getMistakeStats', `/member/mistakes/stats?categoryId=${categoryId}`)
   },
 
-  getExamInfoList: async (query, server: boolean = false) => {
+  getExamInfoList: async (query:any, server: boolean = false) => {
     return await httpGet('getExamInfoList', `/cms/qBank/exam-info`, {query}, server)
   },
 
-  getSimpleQuestions: async (query, server: boolean = false) => {
+  getSimpleQuestions: async (query:any, server: boolean = false) => {
     return await httpGet('getSimpleQuestions', `/cms/qBank/simple-questions`, {query}, server)
+  },
+
+  /* 获取首页考试详情数据 */
+  getHomeExamDetail: async (categoryId?: number, server: boolean = false): Promise<examsItemVO[]> => {
+    return await httpGet('getHomeExamDetail', `/cms/qBank/exam-detail`, {query: {categoryId}}, server)
   },
 }

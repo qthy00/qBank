@@ -1,19 +1,34 @@
-export interface examsDataVO {
+export interface examsInfoVO {
+    categoryName: string
+    categoryUrl: string
+    exams: examsItemVO[]
+}
+
+
+export interface examsItemVO {
     id: number
     name: string
     image: string
     daysLeft: number
-    subjects: Array<SubjectVO>
-    news: Array<SubjectVO>
-    materials: Array<SubjectVO>
-    questionBanks: Array<string>
-    registrationItems: Array<string>
-    examItems: Array<string>
-    scoreItems: Array<string>
+    subjects: Subject[]
+    news: NewsItem[]
+    materials: Material[]
+    questionBanks: string[]
+    registrationItems: string[]
+    examItems: string[]
+    scoreItems: string[]
 }
 
-export interface SubjectVO {
+interface Subject {
     title: string
-    image?: string
-    description?: string
+    description: string
+}
+
+interface NewsItem {
+    title: string
+}
+
+interface Material {
+    title: string
+    image: string
 }

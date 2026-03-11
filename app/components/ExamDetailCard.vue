@@ -1,63 +1,147 @@
 <script setup lang="ts">
-interface Subject {
-  title: string
-  description: string
-}
+import type {examsInfoVO, examsItemVO} from "~/types/qBank/examInfo";
+import {questionApi} from "~/api/qbank";
 
-interface NewsItem {
-  title: string
-}
+const props = defineProps<examsInfoVO>()
 
-interface Material {
-  title: string
-  image: string
-}
+const activeTab = ref<number>(props.exams[0]?.id ?? 0)
 
-interface Exam {
-  id: string
-  name: string
-  image: string
-  daysLeft: number
-  subjects: Subject[]
-  news: NewsItem[]
-  materials: Material[]
-  questionBanks: string[]
-  registrationItems: string[]
-  examItems: string[]
-  scoreItems: string[]
-}
-
-const props = defineProps<{
-  categoryName: string
-  exams: Exam[]
-}>()
-
-const activeTab = ref(props.exams[0]?.id ?? '')
-
-const activateTab = (tabId: string) => {
+const activateTab = (tabId: number) => {
   activeTab.value = tabId
 }
 
-const currentExam = computed(() =>
-  props.exams.find(exam => exam.id === activeTab.value) ?? props.exams[0]
-)
+// const currentExam = computed(() =>
+//   props.exams.find(exam => exam.id === activeTab.value) ?? props.exams[0]
+// )
+
+// const {data: currentExam} = await questionApi.getExamInfoList(props.exams[0].id, true)
+const currentExam = ref<examsItemVO>()
+
+const defaultExamsData: examsItemVO[] = [
+  {
+    id: 1,
+    name: '一级建造师',
+    image: '/images/exam1.jpg',
+    daysLeft: 57,
+    subjects: [
+      { title: '专业', description: '专业讲师陪伴式备考' },
+      { title: '科学', description: '从入门到进阶多方位覆盖' },
+      { title: '智能', description: '多样化在线智能题库' },
+      { title: '规划', description: '阶段化学习目标' },
+      { title: '辅导', description: '考前冲刺指导' },
+      { title: '社区', description: '备考交流群活跃互动' }
+    ],
+    news: [
+      { title: '希赛荣获2024年度项目管理优秀合作培训机构奖' },
+      { title: '2024年一级建造师考试大纲解读' }
+    ],
+    materials: [
+      { title: '一级建造师题库', image: '/images/material1.jpg' },
+      { title: '高频考点精讲', image: '/images/material2.jpg' },
+      { title: '历年真题解析', image: '/images/material3.jpg' }
+    ],
+    questionBanks: ['章节练习', '历年真题', '高频考点', '模拟试卷'],
+    registrationItems: ['报名时间', '报名条件', '报名流程', '报名费用'],
+    examItems: ['章节练习', '历年真题', '模拟考试', '高频考点'],
+    scoreItems: ['查询成绩', '合格标准']
+  },
+  {
+    id: 2,
+    name: '二级建造师',
+    image: '/images/exam2.jpg',
+    daysLeft: 45,
+    subjects: [
+      { title: '专业', description: '专业讲师陪伴式备考' },
+      { title: '科学', description: '从入门到进阶多方位覆盖' },
+      { title: '智能', description: '多样化在线智能题库' }
+    ],
+    news: [
+      { title: '2024年二级建造师考试时间确定' },
+      { title: '二级建造师考试通过率分析' }
+    ],
+    materials: [
+      { title: '二级建造师题库', image: '/images/material4.jpg' },
+      { title: '高频考点精讲', image: '/images/material5.jpg' },
+      { title: '历年真题解析', image: '/images/material6.jpg' }
+    ],
+    questionBanks: ['章节练习', '历年真题', '高频考点', '模拟试卷'],
+    registrationItems: ['报名时间', '报名条件', '报名流程'],
+    examItems: ['章节练习', '历年真题', '模拟考试'],
+    scoreItems: ['查询成绩', '合格标准']
+  },
+  {
+    id: 3,
+    name: '造价工程师',
+    image: '/images/exam3.jpg',
+    daysLeft: 78,
+    subjects: [
+      { title: '专业', description: '专业讲师陪伴式备考' },
+      { title: '科学', description: '从入门到进阶多方位覆盖' },
+      { title: '智能', description: '多样化在线智能题库' },
+      { title: '规划', description: '阶段化学习目标' }
+    ],
+    news: [
+      { title: '造价工程师考试改革新政策解读' },
+      { title: '2024年造价工程师考试大纲变化' }
+    ],
+    materials: [
+      { title: '造价工程师题库', image: '/images/material7.jpg' },
+      { title: '高频考点精讲', image: '/images/material8.jpg' },
+      { title: '历年真题解析', image: '/images/material9.jpg' }
+    ],
+    questionBanks: ['章节练习', '历年真题', '高频考点', '模拟试卷'],
+    registrationItems: ['报名时间', '报名条件', '报名流程', '报名费用'],
+    examItems: ['章节练习', '历年真题', '模拟考试', '高频考点'],
+    scoreItems: ['查询成绩', '合格标准']
+  }
+]
+if(!currentExam.value) {
+  currentExam.value = defaultExamsData[0]
+}
+
+
+
+const loadingDetail = ref(false)
+const loadDetailData = async (categoryId?: number) => {
+  try {
+    loadingDetail.value = true
+    const result = await questionApi.getHomeExamDetail(categoryId)
+    if (result && result.length > 0) {
+      currentExam.value = result
+    }
+  } catch (err) {
+    console.error('加载考试详情数据失败:', err)
+    useMessage().error('加载考试详情失败，请稍后重试')
+  } finally {
+    loadingDetail.value = false
+  }
+}
+
+watch(activeTab, () => {
+  loadDetailData(activeTab.value)
+})
+
+
+onMounted(()=>{
+  loadDetailData(props.exams[0].id)
+})
 </script>
 
 <template>
   <div class="container mx-auto px-4 my-5 bg-(--color-bg-container) ">
     <!-- 顶部导航栏 -->
-    <div class="flex items-center justify-between py-4 border-b border-(--color-border) ">
+    <div class="flex items-center justify-between py-4 border-b-solid border-(--color-border) ">
       <div class="text-xl font-bold">{{ categoryName }}</div>
       <!-- Tab菜单 -->
-      <div class="flex-1 flex justify-center space-x-4" id="tab-menu">
+      <div class="flex flex-1 justify-center space-x-4">
         <a
-            v-for="(exam, index) in exams"
-            :key="index"
+            v-for="(exam) in exams.slice(0,5)"
+            :key="exam.id"
             href="#"
             @click.prevent="activateTab(exam.id)"
             :class="[
-            'tab-link border border-(--color-border) rounded-full bg-(--color-bg-container) text-(--color-text-secondary) px-3 py-1 hover:bg-(--color-btn-hover) hover:text-(--color-bg-container)',
-            activeTab === exam.id ? 'active-tab bg-(--color-btn-primary) text-(--color-bg-container)' : ''
+            'border border-solid border-(--color-border) rounded-full  px-3 py-2 hover:bg-(--color-btn-hover) hover:text-(--color-bg-container)',
+            activeTab === exam.id ? 'active-tab bg-(--color-btn-primary) text-(--color-bg-container)' : 'bg-(--color-bg-container) text-(--color-text-secondary)'
           ]"
         >
           {{ exam.name }}
@@ -65,8 +149,9 @@ const currentExam = computed(() =>
       </div>
       <!-- 右侧更多 -->
       <div class="flex justify-end">
-        <a href="#"
-           class="text-(--color-text-secondary) px-3 rounded-full flex items-center border border-(--color-border) hover:bg-(--color-disabled)">
+        <a
+          :href="categoryUrl ?? '/'"
+           class="text-(--color-text-secondary) px-3 py-2 rounded-full flex items-center border border-solid border-(--color-border) hover:bg-(--color-disabled)">
           <span class="mr-1 ">更多</span> <i class="hy-ico-djt ic-12"></i>
         </a>
       </div>
@@ -100,38 +185,40 @@ const currentExam = computed(() =>
 
       <!-- 中间区域 -->
       <div class="flex-[2] mb-4">
-        <div class="bg-(--color-bg-container-hover) p-4 h-full flex flex-col space-y-5">
-          <!-- 头条部分 -->
-          <a v-for="(newsItem, newsIndex) in currentExam.news" :key="newsIndex" href="" class="flex items-center space-x-2">
-            <div :class="[
+        <div class="bg-(--color-bg-container-hover) p-4 h-full flex flex-col justify-between space-y-5">
+         <div class="flex flex-col space-y-5">
+           <!-- 头条部分 -->
+           <a v-for="(newsItem, newsIndex) in currentExam.news" :key="newsIndex" href="" class="flex items-center space-x-2">
+             <div :class="[
               'text-white px-2 py-1 rounded-full text-sm',
               newsIndex === 0 ? 'bg-(--color-warning)' : 'bg-(--color-text-hover)'
             ]">
-              {{ newsIndex === 0 ? '头条' : '推荐' }}
-            </div>
-            <div class="relative inline-block text-(--color-text-primary) hover:text-(--color-text-hover) font-medium after:content-[''] after:absolute after:left-0 after:bottom-0 after:h-[1px] after:w-0 after:bg-current after:transition-all after:duration-300 hover:after:w-full">
-              {{ newsItem.title }}
-            </div>
-          </a>
+               {{ newsIndex === 0 ? '头条' : '推荐' }}
+             </div>
+             <div class="relative inline-block text-(--color-text-primary) hover:text-(--color-text-hover) font-medium after:content-[''] after:absolute after:left-0 after:bottom-0 after:h-[1px] after:w-0 after:bg-current after:transition-all after:duration-300 hover:after:w-full">
+               {{ newsItem.title }}
+             </div>
+           </a>
 
-          <!-- 备考资料 -->
-          <div class="border-b-1 border-(--color-border)">
-            <div class="text-(--color-text-primary) font-bold mb-3">备考资料</div>
-            <div class="grid grid-cols-3 gap-3 mb-3">
-              <!-- 图文块 -->
-              <a v-for="(material, matIndex) in currentExam.materials" :key="matIndex" href="#" class="block group">
-                <div class="flex flex-col items-center text-center">
-                  <div class="overflow-hidden w-full h-32 mb-2">
-                    <img :src="material.image" alt=""
-                         class="w-full h-full object-cover transform transition-transform duration-300 group-hover:scale-110">
-                  </div>
-                  <div class="text-sm text-(--color-text-secondary) hover:text-(--color-text-hover) line-clamp-2 text-wrap">
-                    {{ material.title }}
-                  </div>
-                </div>
-              </a>
-            </div>
-          </div>
+           <!-- 备考资料 -->
+           <div class="border-b-1 border-(--color-border)">
+             <div class="text-(--color-text-primary) font-bold mb-3">备考资料</div>
+             <div class="grid grid-cols-3 gap-3 mb-3">
+               <!-- 图文块 -->
+               <a v-for="(material, matIndex) in currentExam.materials" :key="matIndex" href="#" class="block group">
+                 <div class="flex flex-col items-center text-center">
+                   <div class="overflow-hidden w-full h-32 mb-2">
+                     <img :src="material.image" alt=""
+                          class="w-full h-full object-cover transform transition-transform duration-300 group-hover:scale-110">
+                   </div>
+                   <div class="text-sm text-(--color-text-secondary) hover:text-(--color-text-hover) line-clamp-2 text-wrap">
+                     {{ material.title }}
+                   </div>
+                 </div>
+               </a>
+             </div>
+           </div>
+         </div>
 
           <!-- 题库 -->
           <div class="mt-auto">
@@ -151,12 +238,10 @@ const currentExam = computed(() =>
 
       <!-- 右侧区域 -->
       <div class="flex-1 mb-4 bg-(--color-bg-container-hover)">
-        <div class="space-y-6">
-          <div class="relative bg-gradient-to-br from-(--color-btn-primary)/70 to-(--color-btn-hover)/90 p-1 mb-2 shadow-md overflow-hidden">
+        <div>
+          <div class="relative bg-gradient-to-br from-[var(--color-btn-primary-70)] to-[var(--color-btn-hover-90)] p-1 mb-2 shadow-md overflow-hidden">
             <!-- 装饰元素 -->
-            <div
-                class="absolute top-0 right-0 w-32 h-32 bg-white/10 rounded-full -translate-x-1/4 -translate-y-1/4">
-            </div>
+            <div class="absolute top-0 right-0 w-32 h-32 bg-white/10 rounded-full -translate-x-1/4 -translate-y-1/4"/>
             <div class="relative z-10 text-(--color-bg-container) text-lg mb-3 pt-2 text-center">距离考试剩余</div>
             <div class="relative z-10 flex justify-center items-center space-x-3 pb-2 text-(--color-bg-container)">
               <div>还有</div>
@@ -171,11 +256,15 @@ const currentExam = computed(() =>
             <div class="mb-5">
               <!-- 分类标题 -->
               <div class="mb-1 pb-1 flex items-center">
-                <div class="w-1.5 h-6 bg-(--color-btn-primary) rounded-full mr-3"></div>
+                <div class="w-1.5 h-6 bg-(--color-btn-primary) rounded-full mr-3"/>
                 <h3 class="text-lg tracking-tight">报名</h3>
               </div>
               <div class="flex flex-wrap pl-2 gap-3">
-                <a v-for="(item, idx) in currentExam.registrationItems" :key="idx" href="#" class="px-3 py-1 rounded hover:text-(--color-btn-hover) text-(--color-text-secondary) transition-transform duration-200 hover:scale-110 inline-block">
+                <a
+                    v-for="(item, idx) in currentExam.registrationItems"
+                    :key="idx"
+                    href="#"
+                    class="px-3 py-1 rounded hover:text-(--color-btn-hover) text-(--color-text-secondary) transition-transform duration-200 hover:scale-110 inline-block">
                   {{ item }}
                 </a>
               </div>
@@ -184,7 +273,7 @@ const currentExam = computed(() =>
             <div class="mb-5">
               <!-- 分类标题 -->
               <div class="mb-1 pb-1 flex items-center">
-                <div class="w-1.5 h-6 bg-(--color-btn-primary) rounded-full mr-3"></div>
+                <div class="w-1.5 h-6 bg-(--color-btn-primary) rounded-full mr-3"/>
                 <h3 class="text-lg tracking-tight">考试</h3>
               </div>
               <div class="flex flex-wrap pl-2 gap-3">

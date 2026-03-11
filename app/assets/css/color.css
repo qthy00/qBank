@@ -60,7 +60,9 @@
   --color-btn-text: #ffffff;
   --color-btn-bg-unselected: #dfdfdf;
   --color-btn-primary: #3498db;
+  --color-btn-primary-70: rgba(52, 152, 219, 0.7);
   --color-btn-hover: #2980b9;
+  --color-btn-hover-90: rgba(41, 128, 185, 0.9);
   --color-border: #bdc3c7;
   --color-shadow: rgba(0, 0, 0, 0.5);
   --color-warning: #e74c3c;

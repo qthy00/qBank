@@ -75,9 +75,10 @@ const instructions = `## 强制技能激活流程（必须执行）
 ---
 
 **关键规则（违反将导致任务失败）**：
-1. 禁止：你必须在步骤 2 调用 Skill() 工具，不能跳过直接实现。
-2. 评估（步骤 1）如果不激活（步骤 2）就毫无价值。
-3. 多个技能相关时，全部激活。
+1. 🈲禁止：评估后跳过 Skill() 直接实现。
+2. 🈲禁止：只调用部分技能（必须全部调用）。
+3. 🈲禁止：并行调用多个 Skill()（必须串行，一个一个来）
+4. ✅正确：评估 -> 逐个调用Skill() -> 全部完成后实现。
 
 **正确流程示例**：
 
@@ -93,7 +94,15 @@ const instructions = `## 强制技能激活流程（必须执行）
 > Skill(crud-development)
 > Skill(database-ops)
 
-[只有完成上述步骤后才开始实现]`;
+[只有完成上述步骤后才开始实现]
+
+
+**错误示例（禁止）**
+❌ 只调用部分技能
+❌ 列出技能但不调用Skill()
+❌ 并行调用（会导致只有一个生效）`;
+
+
 
 try{
     console.log(instructions);
@@ -102,29 +111,3 @@ try{
     console.error(`Skill evaluation hook error: ${error.message}`);
     process.exit(1);
 }
-
-
-
-
-const { exec } = require('child_process');
-
-const skillName = process.argv[2];
-
-if (!skillName) {
-  console.error('Please provide a skill name as an argument.');
-  process.exit(1);
-}
-
-exec(`claude skill eval ${skillName} --force`, (error, stdout, stderr) => {
-  if (error) {
-    console.error(`Error executing command: ${error.message}`);
-    return;
-  }
-  if (stderr) {
-    console.error(`Error: ${stderr}`);
-    return;
-  }
-  console.log(`Output: ${stdout}`);
-});
-
-process.exit(0);

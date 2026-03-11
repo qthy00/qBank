@@ -2,6 +2,7 @@
 import {CmsCategoryApi} from '~/api/category'
 import {ArticleApi} from "~/api/article";
 import {questionApi} from "~/api/qbank";
+import type {examsItemVO} from "~/types/qBank/examInfo";
 
 // 禁用所有布局
 definePageMeta({
@@ -11,42 +12,53 @@ definePageMeta({
 const useSystemTitleText = ref(useSystemTitle().value ?? '')
 
 useHead({
-  title: {name: '首页' + useSystemTitleText.value, tagPriority: 1 }
+  title: {textContent: '首页' + useSystemTitleText.value, tagPriority: 1 }
 })
 
+const slides = [
+  // {image: 'https://dd.qthy.cc/102/hyserver//image/232411/94b9c7049777f64ee4af0dc1c18b2d8a.jpg', title: '', desc: ''},
+  // {image: 'https://dd.qthy.cc/102/hyserver//image/202411/44523192f6fb63e1a394a046dc34b9b5.jpg', title: '', desc: ''},
+  {image: 'https://dd.qthy.cc/102/hyserver/image/202601/ae51ed22822ec07541d147fedb2b37d9.jpg', title: '', desc: ''},
+  {image: 'https://dd.qthy.cc/102/hyserver/cms/image/072506/64be7567510c464765059f244d2ccaa9.jpg', title: '', desc: ''}
+]
+
+
 const iconList = ["jz", "ck", "jr", "yl", "kg", "zige", "zc", "sh", "xl", "wy"]
-const loading = useState<boolean>('indexLoading', () => false);
+// const loading = useState<boolean>('indexLoading', () => false);
 
 
-const categories = ref([])
-// 初始加载（SSR）
-const initLoad = async () => {
-  if (categories.value?.length) return // 避免重复加载
-  loading.value = true
-  try {
-    const {data} = await CmsCategoryApi.getCategoryList()
-    if (data.value) {
-      categories.value = data.value
-    }
-  } catch (err) {
-    console.error('Failed to load categories:', err)
-    categories.value = []
-  } finally {
-    loading.value = false
-  }
-}
+// const categories = ref([])
+// // 初始加载（SSR）
+// const initLoad = async () => {
+//   if (categories.value?.length) return // 避免重复加载
+//   loading.value = true
+//   try {
+//     const {data} = await CmsCategoryApi.getCategoryList()
+//     if (data.value) {
+//       categories.value = data.value
+//     }
+//   } catch (err) {
+//     console.error('Failed to load categories:', err)
+//     categories.value = []
+//   } finally {
+//     loading.value = false
+//   }
+// }
 
-const isFirstLoad = ref(true)
-const route = useRoute()
-// 监听路由变化，标记非首次加载
-watch(route, () => {
-  isFirstLoad.value = false
-}, {immediate: false})
-// 仅首次加载（SSR + 客户端首次进入）执行
-if (isFirstLoad.value) {
-  await initLoad()
-}
+// const isFirstLoad = ref(true)
+// const route = useRoute()
+// // 监听路由变化，标记非首次加载
+// watch(route, () => {
+//   isFirstLoad.value = false
+// }, {immediate: false})
+// // 仅首次加载（SSR + 客户端首次进入）执行
+// if (isFirstLoad.value) {
+//   await initLoad()
+// }
 
+
+
+const {data: categories} = await CmsCategoryApi.getCategoryList()
 const {data: news} = await ArticleApi.getContentList({
   contentType: 'article',
   sort: "Recent",
@@ -55,6 +67,7 @@ const {data: news} = await ArticleApi.getContentList({
   limit: 14,
 }, true)
 const {data: examCalendar} = await questionApi.getExamInfoList({group: true}, true)
+const {data: questions} = await questionApi.getSimpleQuestions({limit: 15}, true)
 
 
 // 控制悬浮详情显示/隐藏
@@ -107,31 +120,7 @@ const handleSubmenuLeave = () => {
   showSubmenu.value = false
 }
 
-const currentDetail = ref(categories.value[0] ?? null)
-// Tab切换
-const activeTab = ref(categories.value?.[0]?.children?.[0]?.id ?? '1')
-const switchTab = async (tabId: string) => {
-  activeTab.value = tabId
-  // 更新当前 Tab 的激活状态
-  if (currentDetail.value?.children) {
-    currentDetail.value.children.forEach(tab => {
-      tab.active = tab.id === tabId
-    })
-  }
-}
-
-// 加载详情数据
-const loadDetailData = async (tabId: string) => {
-  try {
-    loading.value = true
-    // TODO: 实现详情数据加载逻辑
-    // const result = await questionApi.getExamDetail(tabId)
-  } catch (err) {
-    console.error('加载详情数据失败:', err)
-  } finally {
-    loading.value = false
-  }
-}
+// 加载详情数据（已迁移到下方实现）
 // console.log('currentDetail===', currentDetail.value)
 // if(categories.value && categories.value[0].id) {
 //   const {data} = await CmsCategoryApi.getCategoryList({
@@ -142,119 +131,59 @@ const loadDetailData = async (tabId: string) => {
 //   subCategories.value = data
 // }
 
-const examsData = [
-  {
-    id: 'tab1',
-    name: '一级建造师',
-    image: '/images/exam1.jpg',
-    daysLeft: 57,
-    subjects: [
-      { title: '专业', description: '专业讲师陪伴式备考' },
-      { title: '科学', description: '从入门到进阶多方位覆盖' },
-      { title: '智能', description: '多样化在线智能题库' },
-      { title: '规划', description: '阶段化学习目标' },
-      { title: '辅导', description: '考前冲刺指导' },
-      { title: '社区', description: '备考交流群活跃互动' }
-    ],
-    news: [
-      { title: '希赛荣获2024年度项目管理优秀合作培训机构奖' },
-      { title: '2024年一级建造师考试大纲解读' }
-    ],
-    materials: [
-      { title: '一级建造师题库', image: '/images/material1.jpg' },
-      { title: '高频考点精讲', image: '/images/material2.jpg' },
-      { title: '历年真题解析', image: '/images/material3.jpg' }
-    ],
-    questionBanks: ['章节练习', '历年真题', '高频考点', '模拟试卷'],
-    registrationItems: ['报名时间', '报名条件', '报名流程', '报名费用'],
-    examItems: ['章节练习', '历年真题', '模拟考试', '高频考点'],
-    scoreItems: ['查询成绩', '合格标准']
-  },
-  {
-    id: 'tab2',
-    name: '二级建造师',
-    image: '/images/exam2.jpg',
-    daysLeft: 45,
-    subjects: [
-      { title: '专业', description: '专业讲师陪伴式备考' },
-      { title: '科学', description: '从入门到进阶多方位覆盖' },
-      { title: '智能', description: '多样化在线智能题库' }
-    ],
-    news: [
-      { title: '2024年二级建造师考试时间确定' },
-      { title: '二级建造师考试通过率分析' }
-    ],
-    materials: [
-      { title: '二级建造师题库', image: '/images/material4.jpg' },
-      { title: '高频考点精讲', image: '/images/material5.jpg' },
-      { title: '历年真题解析', image: '/images/material6.jpg' }
-    ],
-    questionBanks: ['章节练习', '历年真题', '高频考点', '模拟试卷'],
-    registrationItems: ['报名时间', '报名条件', '报名流程'],
-    examItems: ['章节练习', '历年真题', '模拟考试'],
-    scoreItems: ['查询成绩', '合格标准']
-  },
-  {
-    id: 'tab3',
-    name: '造价工程师',
-    image: '/images/exam3.jpg',
-    daysLeft: 78,
-    subjects: [
-      { title: '专业', description: '专业讲师陪伴式备考' },
-      { title: '科学', description: '从入门到进阶多方位覆盖' },
-      { title: '智能', description: '多样化在线智能题库' },
-      { title: '规划', description: '阶段化学习目标' }
-    ],
-    news: [
-      { title: '造价工程师考试改革新政策解读' },
-      { title: '2024年造价工程师考试大纲变化' }
-    ],
-    materials: [
-      { title: '造价工程师题库', image: '/images/material7.jpg' },
-      { title: '高频考点精讲', image: '/images/material8.jpg' },
-      { title: '历年真题解析', image: '/images/material9.jpg' }
-    ],
-    questionBanks: ['章节练习', '历年真题', '高频考点', '模拟试卷'],
-    registrationItems: ['报名时间', '报名条件', '报名流程', '报名费用'],
-    examItems: ['章节练习', '历年真题', '模拟考试', '高频考点'],
-    scoreItems: ['查询成绩', '合格标准']
-  }
-]
 
-const examItems = ref([])
-const loadExamItems = async (catalogId: number) => {
-  console.log('获取考试信息')
+// const examItems = ref([])
+// const examsData = ref<examsItemVO[]>(defaultExamsData)
+// const loadingDetail = ref(false)
 
-  try{
-    examItems.value = await questionApi.getExamInfoList({catalogId})
-  }catch (e){
-    console.log(e)
-  }
-}
+/* 加载首页考试详情数据 */
+// const loadDetailData = async (categoryId?: number) => {
+//   try {
+//     loadingDetail.value = true
+//     const result = await questionApi.getHomeExamDetail(categoryId)
+//     if (result && result.length > 0) {
+//       examsData.value = result
+//     }
+//   } catch (err) {
+//     console.error('加载考试详情数据失败:', err)
+//     useMessage().error('加载考试详情失败，请稍后重试')
+//   } finally {
+//     loadingDetail.value = false
+//   }
+// }
+//
+// const loadExamItems = async (catalogId?: number) => {
+//   console.log('获取考试信息')
+//   try {
+//     const result = await questionApi.getExamInfoList({catalogId})
+//     if (result) {
+//       examItems.value = result
+//     }
+//   } catch (e) {
+//     console.error('加载考试信息失败:', e)
+//   }
+// }
 
+// const questions = ref([])
+// const loadQuestions = async () => {
+//   console.log('获取题目')
+//   try {
+//     const result = await questionApi.getSimpleQuestions({ limit: 15})
+//     if (result) {
+//       questions.value = result
+//     }
+//   } catch (e) {
+//     console.error('加载题目失败:', e)
+//   }
+// }
 
-const questions = ref([])
-const loadQuestions = async () => {
-  console.log('获取题目')
-  try{
-    questions.value = await questionApi.getSimpleQuestions({ limit: 15})
-  }catch (e){
-    console.log(e)
-  }
-}
-
-const slides = [
-  // {image: 'https://dd.qthy.cc/102/hyserver//image/232411/94b9c7049777f64ee4af0dc1c18b2d8a.jpg', title: '', desc: ''},
-  // {image: 'https://dd.qthy.cc/102/hyserver//image/202411/44523192f6fb63e1a394a046dc34b9b5.jpg', title: '', desc: ''},
-  {image: 'https://dd.qthy.cc/102/hyserver/image/202601/ae51ed22822ec07541d147fedb2b37d9.jpg', title: '', desc: ''},
-  {image: 'https://dd.qthy.cc/102/hyserver/cms/image/072506/64be7567510c464765059f244d2ccaa9.jpg', title: '', desc: ''}
-]
 
 
 onMounted(async () => {
   await Promise.all([
-    loadExamItems(),
-    loadQuestions()
+    // loadExamItems(),
+    // loadQuestions(),
+    // loadDetailData() /* 加载首页考试详情数据 */
   ])
 })
 
@@ -417,14 +346,17 @@ onMounted(async () => {
     </div>
 
     <!-- 考试类型详情卡片 -->
-    <ExamDetailCard
-        :category-name="'建筑工程'"
-        :exams="examsData"
-    />
+    <ClientOnly>
+      <ExamDetailCard
+          v-for="catalog in categories.slice(0,3)" :key="catalog.id"
+          :category-name="catalog.name"
+          :category-url="catalog.url ?? '/'"
+          :exams="catalog.children"
+      />
+    </ClientOnly>
 
     <!-- 题目列表 -->
-    <ClientOnly>
-      <div class="container mx-auto px-4 mt-1.5 bg-(--color-bg-container) p-4">
+    <div class="container mx-auto px-4 mt-1.5 bg-(--color-bg-container) p-4">
         <!-- 顶部标题栏 -->
         <div class="flex justify-between items-center border-b border-(--color-border) pb-2 mb-4">
           <h2 class="text-lg font-semibold text-(--color-text-primary)">最新题目</h2>
@@ -453,7 +385,6 @@ onMounted(async () => {
         </div>
 
       </div>
-    </ClientOnly>
     <!-- 底部 -->
     <Footer/>
   </div>
