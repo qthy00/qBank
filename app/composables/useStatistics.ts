@@ -11,7 +11,7 @@ export const useStatistics = () => {
     const toolStore = useToolStore()
     const {toolInfo} = storeToRefs(toolStore)
 
-    if (!toolId) {
+    if (!toolId && toolInfo.value) {
         toolId = toolInfo.value.id
     }
 
@@ -44,7 +44,7 @@ export const useStatistics = () => {
             if (data.hasAccess) {
                 // 统计使用次数
                 await StatApi.pushToolUsage(toolId)
-            } else {
+            } else if (toolInfo.value) {
                 await redirectToPay(toolInfo.value, `/t/${toolInfo.value.series}`)
             }
             return data.hasAccess

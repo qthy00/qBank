@@ -120,6 +120,18 @@
             @change="handleSettingChange('securityNotify')"
           />
         </SettingRow>
+
+        <SettingRow icon="solar:broom-bold" title="清空缓存" desc="清除本地缓存数据，解决数据异常问题">
+          <el-button
+            class="rounded-2xl"
+            type="danger"
+            plain
+            size="small"
+            @click="handleClearCache"
+          >
+            立即清空
+          </el-button>
+        </SettingRow>
       </div>
     </el-card>
 
@@ -184,6 +196,8 @@ useHead({
 })
 
 const message = useMessage()
+const authStore = useAuthStore()
+const router = useRouter()
 
 const securityData = ref<SecurityDataVO>()
 const levelColor = ref('')
@@ -309,6 +323,31 @@ const loadSocialInfo = async () => {
     console.log(e)
   }
 }
+
+/* 清空缓存 */
+const handleClearCache = () => {
+  ElMessageBox.confirm(
+    '确定要清空所有缓存数据吗？这将清除本地存储的所有数据（除登录账号外），需要重新登录。',
+    '清空缓存',
+    {
+      confirmButtonText: '确定清空',
+      cancelButtonText: '取消',
+      type: 'warning',
+      confirmButtonClass: 'el-button--danger'
+    }
+  ).then(() => {
+    const result = authStore.clearAllCache()
+    if (result) {
+      /* 清空后跳转到登录页 */
+      setTimeout(() => {
+        router.push('/login')
+      }, 1500)
+    }
+  }).catch(() => {
+    /* 用户取消 */
+  })
+}
+
 onMounted(() => {
   loadSecurityScore()
   loadSocialInfo()

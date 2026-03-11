@@ -20,8 +20,8 @@ export interface examsItemVO {
 }
 
 interface Subject {
-    title: string
-    description: string
+    name: string
+    alias: string
 }
 
 interface NewsItem {

@@ -180,3 +180,97 @@ export interface MistakeSummary {
     accuracy: number
 
 }
+
+/* ==================== 题库列表相关 VO ==================== */
+
+/**
+ * 小节视图对象
+ */
+export interface SectionVO {
+  id: number
+  name: string
+  total: number
+  chapterId?: number
+  chapterName?: string
+}
+
+/**
+ * 章节视图对象
+ */
+export interface ChapterVO {
+  id: number
+  name: string
+  total: number
+  completedCount?: number
+  accuracyRate?: number
+  sectionList?: SectionVO[]
+}
+
+/**
+ * 题库基础信息视图对象
+ */
+export interface QbankInfoVO {
+  id: number
+  name: string
+  description?: string
+  categoryId: number
+  categoryName?: string
+  subjectId?: number
+  subjectName?: string
+  coverImage?: string
+  price: number
+  originalPrice?: number
+  questionCount: number
+  difficulty?: number
+  difficultyName?: string
+  status: number
+  sort: number
+  createTime?: string
+  updateTime?: string
+}
+
+/**
+ * 题库详情视图对象
+ */
+export interface QbankDetailVO extends QbankInfoVO {
+  chapters?: ChapterVO[]
+  tags?: string[]
+  salesCount?: number
+  rating?: number
+  isPurchased?: boolean
+  purchaseCount?: number
+}
+
+/**
+ * 题库列表查询请求
+ */
+export interface QbankListReqVO {
+  keyword?: string
+  categoryId?: number
+  subjectId?: number
+  difficulty?: number
+  minPrice?: number
+  maxPrice?: number
+  sort?: 'newest' | 'hot' | 'price_asc' | 'price_desc'
+  page?: number
+  limit?: number
+}
+
+/**
+ * 题库列表响应
+ */
+export interface QbankListRespVO {
+  list: QbankInfoVO[]
+  total: number
+}
+
+/**
+ * 用户题库权限
+ */
+export interface QbankAccessVO {
+  qbankId: number
+  hasAccess: boolean
+  accessType: 'purchased' | 'trial' | 'free'
+  expiredAt?: string
+  remainingUses?: number
+}

@@ -45,11 +45,11 @@ const resultType = computed(() => query.resultType as string === 'success')
 
 const {isLogin} = storeToRefs(authStore)
 const {toolInfo, toolAccess, canUseTool} = storeToRefs(toolStore)
-const visible = computed(() => toolInfo.value.id !== undefined)
+const visible = computed(() => toolInfo.value?.id !== undefined)
 
 
 const loadToolAccess = async () => {
-  if (!toolInfo.value.id || !isLogin.value || !toolInfo.value?.paid) return
+  if (!toolInfo.value?.id || !isLogin.value || !toolInfo.value?.paid) return
   try {
     const data = await getToolAccess(toolInfo.value.id, false)
     if (!data) return

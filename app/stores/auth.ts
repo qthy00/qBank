@@ -82,7 +82,46 @@ export const useAuthStore = defineStore('auth', () => {
         clearTokens()
         openid.value = undefined
         userStore.resetState()
-        // TODO: 清空工具、测试等缓存
+    }
+
+    /**
+     * 清空所有缓存数据
+     * @description 清空 localStorage、sessionStorage 和 Pinia store 状态
+     * @param keepTheme 是否保留主题设置，默认为 true
+     */
+    const clearAllCache = (keepTheme: boolean = true) => {
+        const message = useMessage()
+
+        try {
+            /* 1. 清空 localStorage（保留主题配置） */
+            if (keepTheme) {
+                const theme = localStorage.getItem('vueuse-color-scheme')
+                localStorage.clear()
+                if (theme) {
+                    localStorage.setItem('vueuse-color-scheme', theme)
+                }
+            } else {
+                localStorage.clear()
+            }
+
+            /* 2. 清空 sessionStorage */
+            sessionStorage.clear()
+
+            /* 3. 清空当前 Pinia store 状态（除持久化字段外） */
+            isLogin.value = false
+            openid.value = undefined
+            wxCode.value = undefined
+            /* loginForm 保留，避免用户需要重新输入账号 */
+
+            /* 4. 清空其他 store 状态 */
+            userStore.resetState()
+
+            message.success('缓存已清空')
+            return true
+        } catch (error) {
+            message.error('清空缓存失败：' + error)
+            return false
+        }
     }
 
     // 4. 返回需要暴露的状态和方法（核心：必须返回才能在组件中使用）
@@ -96,7 +135,8 @@ export const useAuthStore = defineStore('auth', () => {
         removeLoginForm,
         login,
         socialLogin,
-        logout
+        logout,
+        clearAllCache
     }
 }, {
     // 持久化配置

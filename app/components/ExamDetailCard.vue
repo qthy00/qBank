@@ -1,6 +1,7 @@
 <script setup lang="ts">
 import type {examsInfoVO, examsItemVO} from "~/types/qBank/examInfo";
 import {questionApi} from "~/api/qbank";
+import image from '~/assets/images/a.jpg'
 
 const props = defineProps<examsInfoVO>()
 
@@ -9,6 +10,7 @@ const activeTab = ref<number>(props.exams[0]?.id ?? 0)
 const activateTab = (tabId: number) => {
   activeTab.value = tabId
 }
+
 
 // const currentExam = computed(() =>
 //   props.exams.find(exam => exam.id === activeTab.value) ?? props.exams[0]
@@ -24,91 +26,68 @@ const defaultExamsData: examsItemVO[] = [
     image: '/images/exam1.jpg',
     daysLeft: 57,
     subjects: [
-      { title: '专业', description: '专业讲师陪伴式备考' },
-      { title: '科学', description: '从入门到进阶多方位覆盖' },
-      { title: '智能', description: '多样化在线智能题库' },
-      { title: '规划', description: '阶段化学习目标' },
-      { title: '辅导', description: '考前冲刺指导' },
-      { title: '社区', description: '备考交流群活跃互动' }
+      { alias: '专业', name: '专业讲师陪伴式备考' },
+      { alias: '科学', name: '从入门到进阶多方位覆盖' },
+      { alias: '智能', name: '多样化在线智能题库' },
+      { alias: '规划', name: '阶段化学习目标' },
+      { alias: '辅导', name: '考前冲刺指导' },
+      { alias: '社区', name: '备考交流群活跃互动' }
     ],
     news: [
       { title: '希赛荣获2024年度项目管理优秀合作培训机构奖' },
       { title: '2024年一级建造师考试大纲解读' }
     ],
     materials: [
-      { title: '一级建造师题库', image: '/images/material1.jpg' },
-      { title: '高频考点精讲', image: '/images/material2.jpg' },
-      { title: '历年真题解析', image: '/images/material3.jpg' }
+      { title: '一级建造师题库', image},
+      { title: '高频考点精讲', image },
+      { title: '历年真题解析', image }
     ],
-    questionBanks: ['章节练习', '历年真题', '高频考点', '模拟试卷'],
-    registrationItems: ['报名时间', '报名条件', '报名流程', '报名费用'],
-    examItems: ['章节练习', '历年真题', '模拟考试', '高频考点'],
-    scoreItems: ['查询成绩', '合格标准']
-  },
-  {
-    id: 2,
-    name: '二级建造师',
-    image: '/images/exam2.jpg',
-    daysLeft: 45,
-    subjects: [
-      { title: '专业', description: '专业讲师陪伴式备考' },
-      { title: '科学', description: '从入门到进阶多方位覆盖' },
-      { title: '智能', description: '多样化在线智能题库' }
-    ],
-    news: [
-      { title: '2024年二级建造师考试时间确定' },
-      { title: '二级建造师考试通过率分析' }
-    ],
-    materials: [
-      { title: '二级建造师题库', image: '/images/material4.jpg' },
-      { title: '高频考点精讲', image: '/images/material5.jpg' },
-      { title: '历年真题解析', image: '/images/material6.jpg' }
-    ],
-    questionBanks: ['章节练习', '历年真题', '高频考点', '模拟试卷'],
-    registrationItems: ['报名时间', '报名条件', '报名流程'],
-    examItems: ['章节练习', '历年真题', '模拟考试'],
-    scoreItems: ['查询成绩', '合格标准']
-  },
-  {
-    id: 3,
-    name: '造价工程师',
-    image: '/images/exam3.jpg',
-    daysLeft: 78,
-    subjects: [
-      { title: '专业', description: '专业讲师陪伴式备考' },
-      { title: '科学', description: '从入门到进阶多方位覆盖' },
-      { title: '智能', description: '多样化在线智能题库' },
-      { title: '规划', description: '阶段化学习目标' }
-    ],
-    news: [
-      { title: '造价工程师考试改革新政策解读' },
-      { title: '2024年造价工程师考试大纲变化' }
-    ],
-    materials: [
-      { title: '造价工程师题库', image: '/images/material7.jpg' },
-      { title: '高频考点精讲', image: '/images/material8.jpg' },
-      { title: '历年真题解析', image: '/images/material9.jpg' }
-    ],
-    questionBanks: ['章节练习', '历年真题', '高频考点', '模拟试卷'],
-    registrationItems: ['报名时间', '报名条件', '报名流程', '报名费用'],
-    examItems: ['章节练习', '历年真题', '模拟考试', '高频考点'],
-    scoreItems: ['查询成绩', '合格标准']
+    questionBanks: ['章节练习', '历年真题', '高频考点', '模拟试卷']
   }
 ]
 if(!currentExam.value) {
   currentExam.value = defaultExamsData[0]
 }
 
+const questionBanks = ['章节练习', '历年真题', '高频考点', '模拟试卷']
+
+const rightMenu = [
+    {
+      title: '报名',
+      items: [
+        {tag: '报名时间', url: '/'},
+        {tag: '报名条件', url: '/'},
+        {tag: '报名流程', url: '/'},
+        {tag: '报名费用', url: '/'}
+      ]
+    },
+    {
+      title: '考试',
+      items: [
+        {tag: '章节练习', url: '/'},
+        {tag: '历年真题', url: '/'},
+        {tag: '模拟考试', url: '/'},
+        {tag: '高频考点', url: '/'}
+      ]
+    },
+    {
+      title: '成绩',
+      items: [
+        {tag: '查询成绩', url: '/'},
+        {tag: '合格标准', url: '/'}
+      ]
+    }
+]
+
 
 
 const loadingDetail = ref(false)
 const loadDetailData = async (categoryId?: number) => {
+  if(!categoryId) return
   try {
     loadingDetail.value = true
-    const result = await questionApi.getHomeExamDetail(categoryId)
-    if (result && result.length > 0) {
-      currentExam.value = result
-    }
+    currentExam.value = await questionApi.getHomeExamDetail(categoryId)
+    console.log('加载考试详情数据成功:', currentExam.value)
   } catch (err) {
     console.error('加载考试详情数据失败:', err)
     useMessage().error('加载考试详情失败，请稍后重试')
@@ -118,6 +97,7 @@ const loadDetailData = async (categoryId?: number) => {
 }
 
 watch(activeTab, () => {
+  console.log(activeTab.value)
   loadDetailData(activeTab.value)
 })
 
@@ -168,8 +148,8 @@ onMounted(()=>{
             <ul class="space-y-3 text-sm text-(--color-text-secondary) font-medium">
               <li v-for="(subject, subIndex) in currentExam.subjects" :key="subIndex">
                 <span class="font-bold">{{ String(subIndex + 1).padStart(2, '0') }}</span>
-                <span class="ml-2">{{ subject.title }}</span>
-                <div class="ml-6">{{ subject.description }}</div>
+                <span class="ml-2">{{ subject.name }}</span>
+<!--                <div class="ml-6">{{ subject.name }}</div>-->
               </li>
             </ul>
           </div>
@@ -225,7 +205,7 @@ onMounted(()=>{
             <div class="text-(--color-text-primary) font-bold mb-2">{{ currentExam.name }}题库</div>
             <div class="grid grid-cols-2 md:grid-cols-4 gap-4">
               <a
-                  v-for="(questionBank, bankIndex) in currentExam.questionBanks"
+                  v-for="(questionBank, bankIndex) in questionBanks"
                   :key="bankIndex"
                   href="#"
                   class="bg-(--color-btn-primary) text-center py-3 text-sm text-(--color-btn-text) hover:bg-(--color-btn-hover) hover:text-(--color-bg-container) transition-all">
@@ -253,45 +233,19 @@ onMounted(()=>{
           </div>
 
           <div class="space-y-4 p-4">
-            <div class="mb-5">
+            <div v-for="(menu,index) in rightMenu" :key="index" class="mb-5">
               <!-- 分类标题 -->
               <div class="mb-1 pb-1 flex items-center">
                 <div class="w-1.5 h-6 bg-(--color-btn-primary) rounded-full mr-3"/>
-                <h3 class="text-lg tracking-tight">报名</h3>
+                <h3 class="text-lg tracking-tight">{{ menu.title }}</h3>
               </div>
               <div class="flex flex-wrap pl-2 gap-3">
                 <a
-                    v-for="(item, idx) in currentExam.registrationItems"
+                    v-for="(item, idx) in menu.items"
                     :key="idx"
-                    href="#"
+                    :href="item.url"
                     class="px-3 py-1 rounded hover:text-(--color-btn-hover) text-(--color-text-secondary) transition-transform duration-200 hover:scale-110 inline-block">
-                  {{ item }}
-                </a>
-              </div>
-            </div>
-
-            <div class="mb-5">
-              <!-- 分类标题 -->
-              <div class="mb-1 pb-1 flex items-center">
-                <div class="w-1.5 h-6 bg-(--color-btn-primary) rounded-full mr-3"/>
-                <h3 class="text-lg tracking-tight">考试</h3>
-              </div>
-              <div class="flex flex-wrap pl-2 gap-3">
-                <a v-for="(item, idx) in currentExam.examItems" :key="idx" href="#" class="px-3 py-1 rounded hover:text-(--color-btn-hover) text-(--color-text-secondary) transition-transform duration-200 hover:scale-110 inline-block">
-                  {{ item }}
-                </a>
-              </div>
-            </div>
-
-            <div class="mb-5">
-              <!-- 分类标题 -->
-              <div class="mb-1 pb-1 flex items-center">
-                <div class="w-1.5 h-6 bg-(--color-btn-primary) rounded-full mr-3"></div>
-                <h3 class="text-lg tracking-tight">成绩</h3>
-              </div>
-              <div class="flex flex-wrap pl-2 gap-3">
-                <a v-for="(item, idx) in currentExam.scoreItems" :key="idx" href="#" class="px-3 py-1 rounded hover:text-(--color-btn-hover) text-(--color-text-secondary) transition-transform duration-200 hover:scale-110 inline-block">
-                  {{ item }}
+                  {{ item.tag }}
                 </a>
               </div>
             </div>

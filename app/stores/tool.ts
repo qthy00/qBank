@@ -50,7 +50,7 @@ export const useToolStore = defineStore('tool', () => {
         canUseTool.value = true
         break
       case 'trial':
-        if (toolAccess.trialUsesLeft && toolAccess.trialUsesLeft > 0) {
+        if (toolAccess.value.trialUsesLeft && toolAccess.value.trialUsesLeft > 0) {
           // usageInfo =  `试用中，剩余试用次数：${toolAccess.trialUsesLeft}`
           usageInfo.value = `试用中`
           canUseTool.value = true
