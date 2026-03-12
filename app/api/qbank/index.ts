@@ -68,8 +68,8 @@ export interface QuestionReqVO {
 
 export const questionApi = {
 
-  getSubjectList: async (id: number) => {
-    return await httpGet('getSubjectList', `/cms/subject/list?id=${id}`)
+  getSubjectList: async (id: number, server: boolean = false) => {
+    return await httpGet('getSubjectList', `/cms/subject/list`, {query: {id}}, server)
   },
 
   getChapterList: async (subjectId: number) => {

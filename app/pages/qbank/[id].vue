@@ -1,375 +1,652 @@
 <script setup lang="ts">
-import {questionApi} from '~/api/qbank'
-import type {ChapterVO} from '~/types/qbank'
+import { questionApi } from '~/api/qbank'
+import type { ChapterVO } from '~/types/qbank'
+import type { examsItemVO, PaperInfo, StudyMaterial, PracticeMode } from '~/types/qBank/examInfo'
+import {CmsCategoryApi} from "~/api/category";
 
 /**
- * 题库详情页
- * 使用 Nuxt 4 规范：
- * 1. definePageMeta 定义页面元数据
- * 2. useFetch/useAsyncData 进行数据获取（SSR 安全）
- * 3. 支持服务端预渲染 + 客户端水合
+ * 题库详情页 - 重构版
+ * 参考设计图中的布局和样式
  */
-
 /* ==================== 页面元数据 ==================== */
-
 const route = useRoute()
 const qbankId = computed(() => Number(route.params.id))
 
-/* 使用 SEO 元数据 */
-definePageMeta({
-  title: '题库详情',
+/* ==================== 模拟数据（根据图片设计） ==================== */
+const examData = ref<examsItemVO>({
+  id: qbankId.value,
+  name: '一级建造师',
+  image: '/images/exam1.jpg',
+  daysLeft: 57,
+  examDate: '2023-11-05',
+  subjects: [
+    { id: 1, name: '建筑工程管理与实务', alias: '建筑实务', totalQuestions: 300, completedQuestions: 0, progress: 0, chapters: [] },
+    { id: 2, name: '建设工程法规及相关知识', alias: '法规', totalQuestions: 300, completedQuestions: 0, progress: 0, chapters: [] },
+    { id: 3, name: '建设工程项目管理', alias: '管理', totalQuestions: 300, completedQuestions: 0, progress: 0, chapters: [] },
+    { id: 4, name: '建设工程经济', alias: '经济', totalQuestions: 300, completedQuestions: 0, progress: 0, chapters: [] },
+  ],
+  news: [
+    { title: '希赛荣获2024年度项目管理优秀合作培训机构奖', publishDate: '2023-07-10', source: '中国人事考试网' },
+    { title: '2024年一级建造师考试大纲解读', publishDate: '2023-07-10', source: '中国人事考试网' },
+    { title: '住建部发布新版《建造师职业资格制度规定》，2023年10...', publishDate: '2023-07-10', source: '中国人事考试网' },
+    { title: '2023年一级建造师考试报名入口今日开通，这些事项需注意', publishDate: '2023-07-10', source: '中国人事考试网' },
+    { title: '2023年一级建造师考试大纲修订', publishDate: '2023-07-10', source: '中国人事考试网' },
+  ],
+  materials: [
+    { title: '一级建造师题库', image: '/images/material1.jpg' },
+    { title: '高频考点精讲', image: '/images/material2.jpg' },
+    { title: '历年真题解析', image: '/images/material3.jpg' },
+  ],
+  questionBanks: ['章节练习', '历年真题', '高频考点', '模拟试卷'],
+  registrationItems: [
+    { tag: '考试介绍', url: '/' },
+    { tag: '报考指南', url: '/' },
+    { tag: '报名指引', url: '/' },
+    { tag: '常见问题', url: '/' },
+  ],
+  examItems: [
+    { tag: '视频课程', url: '/' },
+    { tag: '章节练习', url: '/' },
+    { tag: '模拟考试', url: '/' },
+    { tag: '历年真题', url: '/' },
+  ],
+  scoreItems: [
+    { tag: '查询成绩', url: '/' },
+    { tag: '合格标准', url: '/' },
+  ],
+  recommendedPapers: [
+    { id: 1, title: '2023年一级建造师模拟试卷（一）', duration: 120, questionCount: 100, examCount: 12345, rating: 3 },
+    { id: 2, title: '2022年一级建造师真题试卷', duration: 120, questionCount: 100, examCount: 128000, rating: 3 },
+  ],
+  studyMaterials: [
+    { id: 1, title: '2023年一级建造师考试大纲解析', publishDate: '2023-03-15', fileSize: '2.4MB', fileType: 'word' },
+    { id: 2, title: '2023年一级建造师考试大纲解析', publishDate: '2023-03-15', fileSize: '2.4MB', fileType: 'ppt' },
+    { id: 3, title: '2023年一级建造师考试大纲解析', publishDate: '2023-03-15', fileSize: '2.4MB', fileType: 'excel' },
+    { id: 4, title: '2023年一级建造师考试大纲解析', publishDate: '2023-03-15', fileSize: '2.4MB', fileType: 'pdf' },
+  ],
 })
 
+
 useHead({
-  title: computed(() => qbankDetail.value?.name ? `${qbankDetail.value.name} - 题库详情` : '题库详情'),
+  title: computed(() => examData.value?.name ? `${examData.value.name} - 题库详情` : '题库详情'),
   meta: [
     {
       name: 'description',
-      content: computed(() => qbankDetail.value?.description || '题库详情页面')
+      content: computed(() => examData.value?.name ? `${examData.value.name}在线题库，提供章节练习、历年真题、模拟试卷、每日一练等多种练习模式` : '题库详情页面')
     }
   ]
 })
 
-/* ==================== 数据获取（Nuxt 4 规范） ==================== */
-
-/**
- * 使用 useAsyncData 获取题库详情
- * key: 'qbank-detail-${id}' 确保每个题库有独立缓存
- * server: true 允许服务端获取（SEO 友好）
- * watch: 监听 qbankId 变化自动刷新
- */
-const { data: qbankDetail, pending: loading, error: detailError } = await useAsyncData(
-  () => `qbank-detail-${qbankId.value}`,
-  () => questionApi.getQbankDetail(qbankId.value, true),
-  {
-    server: true, /* 支持服务端获取，SEO 友好 */
-    default: () => null,
-    watch: [qbankId], /* 题库 ID 变化时自动刷新 */
-    transform: (data) => {
-      /* 数据转换：确保字段完整性 */
-      if (!data) return null
-      return {
-        ...data,
-        chapters: data.chapters || [],
-        tags: data.tags || [],
-      }
-    }
-  }
-)
-
-/**
- * 使用 useAsyncData 获取用户权限（客户端获取）
- * 权限信息通常需要登录态，在客户端获取
- */
+/* ==================== 数据获取 ==================== */
+// const { data: qbankDetail, pending: loading, error: detailError } = await useAsyncData(
+//   () => `qbank-detail-${qbankId.value}`,
+//   () => questionApi.getQbankDetail(qbankId.value, true),
+//   {
+//     server: true,
+//     default: () => null,
+//     watch: [qbankId],
+//   }
+// )
+const categories = ref()
+const {data: category} = await CmsCategoryApi.getCategory(qbankId.value, true)
+const {data: subjects} = await questionApi.getSubjectList(qbankId.value, true)
+console.log(category.value)
 const { data: accessData } = await useAsyncData(
   () => `qbank-access-${qbankId.value}`,
   () => questionApi.checkQbankAccess(qbankId.value),
   {
-    server: false, /* 权限检查在客户端进行 */
+    server: false,
     default: () => ({ qbankId: qbankId.value, hasAccess: false, accessType: 'free' }),
     watch: [qbankId],
   }
 )
 
 /* ==================== 状态定义 ==================== */
-
 const router = useRouter()
 const message = useMessage()
+const isOpen = ref(false)
 
-const activeTab = ref('chapters')
+/* 当前选中的科目 */
+const activeSubjectId = ref<number>(0)
+/* 展开的章节 */
+const expandedChapters = ref<number[]>([])
+
+
+/* 练习模式 */
+const practiceModes: PracticeMode[] = [
+  { key: 'chapter', name: '章节练习', icon: 'ep:document', url: '#' },
+  { key: 'past', name: '历年真题', icon: 'ep:timer', url: '#' },
+  { key: 'mock', name: '模拟试卷', icon: 'ep:copy-document', url: '#' },
+  { key: 'daily', name: '每日一练', icon: 'ep:calendar', url: '#' },
+]
+
+/* 章节数据（从题库详情获取） */
+const chaptersData =ref<ChapterVO[]>([])
+const loadingChapter = ref(false)
 
 /* ==================== 计算属性 ==================== */
-
-/**
- * 用户是否有权限访问题库
- */
-const hasAccess = computed(() => {
-  /* 免费题库直接有权限 */
-  if (qbankDetail.value?.price === 0) return true
-  /* 已购买 */
-  if (qbankDetail.value?.isPurchased) return true
-  /* 权限检查返回 */
-  return accessData.value?.hasAccess || false
-})
-
-/**
- * 访问类型
- */
-const accessType = computed(() => {
-  if (qbankDetail.value?.price === 0) return 'free'
-  if (qbankDetail.value?.isPurchased) return 'purchased'
-  return accessData.value?.accessType || 'free'
-})
+// const hasAccess = computed(() => {
+//   if (qbankDetail.value?.price === 0) return true
+//   if (qbankDetail.value?.isPurchased) return true
+//   return accessData.value?.hasAccess || false
+// })
 
 /* ==================== 方法定义 ==================== */
+const toggleOpen = () => {
+  isOpen.value = !isOpen.value;
+}
 
-/**
- * 返回列表
- */
+const handleClickOutside = (e) => {
+  const container = document.getElementById('hy-container');
+  // 只有打开状态 + 点击容器外部才关闭
+  if (isOpen.value && container && !container.contains(e.target)) {
+    isOpen.value = false;
+  }
+};
+
 const goBack = () => {
-  router.push('/qbank')
+  navigateTo('/qbank')
+}
+const loadCategoryData = async (categoryId: number) => {
+  categories.value = await CmsCategoryApi.getCategoryListCustom({
+    level: 'Last',
+    id: categoryId,
+  })
 }
 
-/**
- * 购买题库
- */
-const handleBuy = () => {
-  if (!qbankDetail.value) return
-  router.push(`/order/pay?qbankId=${qbankDetail.value.id}`)
+const handleCategoryChange = (categoryId: number) => {
+  navigateTo(`/qbank/${categoryId}`)
+}
+const handleSubjectChange = (subjectId: number) => {
+  activeSubjectId.value = subjectId
 }
 
-/**
- * 开始练习
- */
-const handlePractice = () => {
-  if (!qbankDetail.value) return
-
-  if (!hasAccess.value && qbankDetail.value.price > 0) {
-    message.warning('请先购买题库')
-    return
+const loadChapters = async () => {
+  if (!activeSubjectId.value) return
+  chaptersData.value = []
+  try {
+    loadingChapter.value = true
+    const data: Chapter[] = await questionApi.getChapterList(activeSubjectId.value)
+    chaptersData.value = data.map((item) => {
+      return {
+        ...item,
+        completedCount: item.completedCount > item.total ? item.total : item.completedCount,
+        isCompleted: item.completedCount >= item.total && item.total > 0,
+        completionRate: item.completedCount
+            ? Math.round((item.completedCount / item.total) * 100)
+            : 0,
+      }
+    })
+  } catch (err) {
+    console.log(err)
+  } finally {
+    loadingChapter.value = false
   }
-
-  router.push(`/practice/${qbankDetail.value.id}`)
 }
 
-/**
- * 章节练习
- */
+const toggleChapter = (chapterId: number) => {
+  const index = expandedChapters.value.indexOf(chapterId)
+  if (index > -1) {
+    expandedChapters.value.splice(index, 1)
+  } else {
+    expandedChapters.value.push(chapterId)
+  }
+}
+
+const handlePractice = (mode: PracticeMode) => {
+  // if (!hasAccess.value && qbankDetail.value?.price > 0) {
+  //   message.warning('请先购买题库')
+  //   return
+  // }
+  // router.push(`/practice/${qbankId.value}?mode=${mode.key}`)
+}
+
 const handleChapterPractice = (chapter: ChapterVO) => {
-  if (!qbankDetail.value) return
+  // if (!hasAccess.value && qbankDetail.value?.price > 0) {
+  //   message.warning('请先购买题库')
+  //   return
+  // }
+  router.push(`/practice/${qbankId.value}?chapterId=${chapter.id}`)
+}
 
-  if (!hasAccess.value && qbankDetail.value.price > 0) {
+const handleStartPaper = (paper: PaperInfo) => {
+  if (!hasAccess.value && qbankDetail.value?.price > 0) {
     message.warning('请先购买题库')
     return
   }
-
-  router.push(`/practice/${qbankDetail.value.id}?chapterId=${chapter.id}`)
+  router.push(`/paper/${paper.id}`)
 }
 
-/**
- * 格式化价格
- */
-const formatPrice = (price: number) => {
-  return (price / 100).toFixed(2)
+const handleDownloadMaterial = (material: StudyMaterial) => {
+  message.info(`开始下载: ${material.title}`)
 }
 
-/**
- * 获取难度标签类型
- */
-const getDifficultyType = (difficulty?: number) => {
-  if (!difficulty) return 'info'
-  if (difficulty === 1) return 'success'
-  if (difficulty === 2) return 'warning'
-  return 'danger'
+const getFileIconClass = (fileType: string) => {
+  const map: Record<string, string> = {
+    'word': 'file-word',
+    'ppt': 'file-powerpoint',
+    'excel': 'file-excel',
+    'pdf': 'file-pdf',
+  }
+  return map[fileType] || 'document'
 }
 
-/* ==================== 错误处理 ==================== */
-
-if (detailError.value) {
-  console.error('加载题库详情失败:', detailError.value)
-  message.error('加载题库详情失败')
+const getFileIconColor = (fileType: string) => {
+  const map: Record<string, string> = {
+    'word': '#2b579a',
+    'ppt': '#d24726',
+    'excel': '#217346',
+    'pdf': '#e74c3c',
+  }
+  return map[fileType] || '#666'
 }
 
-/* ==================== SEO 结构化数据 ==================== */
-
-useHead({
-  script: [
-    {
-      type: 'application/ld+json',
-      innerHTML: computed(() => {
-        if (!qbankDetail.value) return ''
-        return JSON.stringify({
-          '@context': 'https://schema.org',
-          '@type': 'Product',
-          name: qbankDetail.value.name,
-          description: qbankDetail.value.description,
-          image: qbankDetail.value.coverImage,
-          offers: {
-            '@type': 'Offer',
-            price: formatPrice(qbankDetail.value.price),
-            priceCurrency: 'CNY',
-            availability: qbankDetail.value.status === 1 ? 'InStock' : 'OutOfStock',
-          },
-          aggregateRating: qbankDetail.value.rating ? {
-            '@type': 'AggregateRating',
-            ratingValue: qbankDetail.value.rating,
-            reviewCount: qbankDetail.value.salesCount || 0,
-          } : undefined,
-        })
-      }),
-    },
-  ],
+/* ==================== 初始化 ==================== */
+onMounted(async () => {
+  if (subjects.value.length > 0) {
+    activeSubjectId.value = subjects.value[0].id || 0
+    await loadChapters(activeSubjectId.value)
+  }
+  if(category.value){
+    await loadCategoryData(category.value.parentId)
+  }
+  document.addEventListener('click', handleClickOutside);
 })
+onUnmounted(() => {
+  document.removeEventListener('click', handleClickOutside);
+});
+
 </script>
 
 <template>
-  <div class="min-h-screen bg-[var(--color-bg)]">
-    <!-- 顶部导航 -->
-    <Navbar/>
+  <div class="min-h-screen bg-[var(--color-bg-page)]">
+    <!-- 菜单部分 -->
+    <MainMenu/>
+    <!-- 腰线 -->
+    <div class="relative h-32 ">
+      <div id="hy-container" class="container mx-auto relative h-full">
+        <div class="flex gap-5 whitespace-nowrap h-full relative bg-(--color-nav-bg)">
 
-    <!-- 页面内容 -->
-    <div v-loading="loading" class="container mx-auto px-4 py-6">
-      <!-- 返回按钮 -->
-      <div class="mb-4">
-        <el-button link @click="goBack">
-          <Icon name="ep:arrow-left" class="mr-1"/>
-          返回题库列表
-        </el-button>
-      </div>
+          <!-- 题库类型 -->
+          <div
+              class="group flex items-center gap-1 p-3 z-50 cursor-pointer text-(--color-nav-text) "
+              @click="toggleOpen"
+          >
+            <i class="hy-ico-qh ic-20  group-hover:scale-120 transition-transform duration-300 ease-out"></i>
+            <span class="font-bold font-semibold">{{ category?.name }}</span>
+          </div>
 
-      <template v-if="qbankDetail">
-        <!-- 题库信息卡片 -->
-        <div class="bg-white rounded-lg shadow p-6 mb-6">
-          <div class="flex gap-6">
-            <!-- 封面图 -->
-            <div class="w-64 h-48 shrink-0 rounded-lg overflow-hidden bg-gray-200">
-              <img
-                  :src="qbankDetail.coverImage || '/images/default-qbank.jpg'"
-                  :alt="qbankDetail.name"
-                  class="w-full h-full object-cover"
-              >
+          <!-- 分割线 -->
+          <div id="anchor" class="relative flex items-center ">
+            <span class="h-2/3 border-solid border-r border-(--color-border)"></span>
+          </div>
+
+          <!-- 弹出浮层区域，仅替代右侧内容区域 -->
+          <template v-if="isOpen">
+            <div class="relative z-40 flex-1 h-full">
+            <div
+                 class="absolute left-0 top-0 w-full h-full bg-(--color-nav-mask) text-(--color-bg-container) p-2
+                transition-all duration-300 ease-in-out transform
+                overflow-y-auto "
+                 :class="{
+                'opacity-0 scale-95 pointer-events-none': !isOpen,
+                'opacity-100 scale-100 pointer-events-auto': isOpen
+                }"
+
+            >
+              <div class="flex gap-3 flex-wrap">
+                <el-button
+                    v-for="cat in categories" :key="cat.id"
+                    plain
+                    type="primary"
+                    @click="handleCategoryChange(cat.id)"
+                   class="px-3 py-1 bg-(--color-btn-primary) rounded-lg hover:bg-(--color-btn-hover) transition">
+                  {{cat.name}}
+                </el-button>
+              </div>
+            </div>
+          </div>
+          </template>
+          <!-- 剩余原有内容：点击时隐藏 -->
+          <template v-else>
+            <div class="flex flex-1/12 flex-col justify-center items-center p-5 text-(--color-nav-text)">
+              <span class="mb-2">距离考试时间</span>
+              <div class="flex items-center gap-3">
+                <span>剩</span>
+                <span class="py-1 px-5 rounded-4 bg-(--color-btn-primary) text-(--color-disabled) text-xl">{{ examData.daysLeft }}</span>
+                <span class="">天</span>
+              </div>
             </div>
 
-            <!-- 信息区域 -->
-            <div class="flex-1">
-              <div class="flex items-start justify-between mb-4">
-                <div>
-                  <h1 class="text-2xl font-bold text-[var(--color-text-primary)] mb-2">
-                    {{ qbankDetail.name }}
-                  </h1>
-                  <div class="flex items-center gap-3">
-                    <el-tag v-if="qbankDetail.categoryName" size="small">{{ qbankDetail.categoryName }}</el-tag>
-                    <el-tag :type="getDifficultyType(qbankDetail.difficulty)" size="small">
-                      {{ qbankDetail.difficultyName || '未知难度' }}
-                    </el-tag>
-                    <span v-if="qbankDetail.questionCount" class="text-[var(--color-text-secondary)] text-sm">
-                      <Icon name="ep:document" class="mr-1"/>
-                      {{ qbankDetail.questionCount }} 题
-                    </span>
+            <!-- 分割线 -->
+            <div class="relative flex items-center">
+              <span class="h-2/3 border-solid border-r border-(--color-border)"></span>
+            </div>
+
+            <!-- 报考指南 -->
+            <div class="flex flex-5/12 justify-around  gap-4 p-3 pt-6 pb-6 text-(--color-nav-text)">
+              <div class="flex flex-col flex-wrap justify-center items-center md:flex sm:hidden">
+                <i class="hy-ico-bkzn ic-26"></i>
+                <span class="mt-2">报考指南</span>
+              </div>
+
+              <div class="flex flex-wrap content-center justify-around gap-2 max-h-[5rem] overflow-hidden">
+                <a
+                    v-for="item in examData.registrationItems"
+                    :key="item.tag"
+                    :href="item.url"
+                    class="p-2 hover:text-(--color-nav-text-hover) line-clamp-2">
+                  {{ item.tag }}
+                </a>
+              </div>
+            </div>
+
+            <!-- 分割线 -->
+            <div class="relative flex items-center md:flex sm:hidden" >
+              <span class="h-2/3 border-solid border-r border-(--color-border)"></span>
+            </div>
+
+            <!-- 备考学习 -->
+            <div class="flex flex-5/12 justify-around gap-4 p-3 pt-6 pb-6 text-(--color-nav-text)" >
+              <div class="flex flex-col flex-wrap justify-center items-center md:flex sm:hidden">
+                <i class="hy-ico-beikao ic-26"></i>
+                <span class="mt-2">备考学习</span>
+              </div>
+              <div class="flex flex-wrap content-center justify-between gap-2 max-h-[5rem] overflow-hidden">
+                <a
+                    v-for="item in examData.examItems"
+                    :key="item.tag"
+                    :href="item.url"
+                    class="p-2 hover:text-(--color-nav-text-hover) line-clamp-2">
+                  {{ item.tag }}
+                </a>
+              </div>
+            </div>
+          </template>
+
+        </div>
+      </div>
+    </div>
+
+    <!-- 主体内容区 -->
+    <div class="container mx-auto px-4 py-6">
+      <div class="flex gap-6">
+        <!-- 左侧主内容区 -->
+        <div class="flex-1">
+          <!-- 返回按钮 -->
+          <div class="mb-4">
+            <el-button link @click="goBack">
+              <Icon name="ep:arrow-left" class="mr-1" />
+              返回题库列表
+            </el-button>
+          </div>
+
+          <!-- 科目选择区 -->
+          <div class="bg-white rounded-lg shadow-sm p-4 mb-4">
+            <div class="flex items-center gap-3">
+              <span
+                v-for="subject in subjects"
+                :key="subject.id"
+                class="px-4 py-2 rounded-full cursor-pointer transition-all border border-[var(--color-border)]"
+                :class="activeSubjectId === subject.id
+                  ? 'bg-[var(--color-btn-primary)] text-white border-[var(--color-btn-primary)]'
+                  : 'bg-white text-[var(--color-text-secondary)] hover:border-[var(--color-btn-primary)] hover:text-[var(--color-btn-primary)]'"
+                @click="handleSubjectChange(subject.id || 0)"
+              >
+                {{ subject.aliasName }}
+              </span>
+            </div>
+<!--            <div class="mt-3 text-right text-sm">-->
+<!--              <span class="text-[var(&#45;&#45;color-text-secondary)]">找不到想要的题库？</span>-->
+<!--              <a href="#" class="text-[var(&#45;&#45;color-btn-primary)] hover:underline">点击反馈</a>-->
+<!--            </div>-->
+          </div>
+
+          <!-- 练习模式区 -->
+          <div class="bg-white rounded-lg shadow-sm p-5 mb-4">
+            <div class="flex items-center gap-4">
+              <span class="text-[var(--color-text-primary)] font-medium whitespace-nowrap">练习模式：</span>
+              <div class="flex gap-3 flex-1">
+                <div
+                  v-for="mode in practiceModes"
+                  :key="mode.key"
+                  class="flex-1 min-w-[80px] bg-[var(--color-btn-primary)] text-white rounded-lg py-3 px-2 cursor-pointer hover:bg-[var(--color-btn-hover)] transition-all group text-center"
+                  @click="handlePractice(mode)"
+                >
+                  <Icon :name="mode.icon" class="text-2xl opacity-90 mb-1 group-hover:scale-110 transition-transform mx-auto block" />
+                  <span class="text-sm font-medium whitespace-nowrap">{{ mode.name }}</span>
+                </div>
+              </div>
+            </div>
+          </div>
+
+          <!-- 章节列表 -->
+          <ClientOnly>
+            <div class="bg-white rounded-lg shadow-sm p-6">
+            <div v-if="chaptersData.length > 0">
+              <div
+                v-for="chapter in chaptersData"
+                :key="chapter.id"
+                class="border-b border-[var(--color-border)] last:border-b-0"
+              >
+                <!-- 章节标题行 -->
+                <div
+                  class="flex items-center justify-between py-4 cursor-pointer hover:bg-[var(--color-bg-container-hover)] transition-colors px-2 rounded"
+                  @click="toggleChapter(chapter.id)"
+                >
+                  <div class="flex items-center gap-2">
+                    <Icon
+                      name="ep:arrow-right-bold"
+                      class="text-[var(--color-text-secondary)] transition-transform"
+                    />
+<!--                    <Icon-->
+<!--                        name="ep:arrow-right-bold"-->
+<!--                        class="text-[var(&#45;&#45;color-text-secondary)] transition-transform"-->
+<!--                        :class="expandedChapters.includes(chapter.id) ? 'rotate-90' : ''"-->
+<!--                    />-->
+                    <span class="text-[var(--color-text-primary)] font-medium">{{ chapter.name }}</span>
+                  </div>
+                  <div class="flex items-center gap-4">
+                    <!-- 进度条 -->
+                    <div class="flex items-center gap-2">
+                      <div class="w-32 h-2 bg-gray-200 rounded-full overflow-hidden">
+                        <div
+                          class="h-full bg-[var(--color-btn-primary)] rounded-full transition-all"
+                          :style="{ width: `${((chapter.completedCount || 0) / (chapter.total || 1)) * 100}%` }"
+                        />
+                      </div>
+                      <span class="text-sm text-[var(--color-text-secondary)]">
+                        {{ chapter.completedCount || 0 }} / {{ chapter.total || 0 }}道
+                      </span>
+                    </div>
+                    <el-button
+                      type="primary"
+                      size="small"
+                      @click.stop="handleChapterPractice(chapter)"
+                    >
+                      开始做题
+                    </el-button>
                   </div>
                 </div>
 
-                <!-- 价格区域 -->
-                <div class="text-right">
-                  <div v-if="qbankDetail.price > 0" class="mb-2">
-                    <span class="text-3xl font-bold text-[var(--color-danger)]">
-                      ¥{{ formatPrice(qbankDetail.price) }}
-                    </span>
-                    <span v-if="qbankDetail.originalPrice && qbankDetail.originalPrice > qbankDetail.price"
-                          class="text-[var(--color-text-disabled)] line-through ml-2">
-                      ¥{{ formatPrice(qbankDetail.originalPrice) }}
-                    </span>
+                <!-- 子章节列表 -->
+<!--                <div-->
+<!--                  v-if="expandedChapters.includes(chapter.id) && chapter.sectionList && chapter.sectionList.length > 0"-->
+<!--                  class="pl-8 pr-2 pb-2"-->
+<!--                >-->
+<!--                  <div-->
+<!--                    v-for="section in chapter.sectionList"-->
+<!--                    :key="section.id"-->
+<!--                    class="flex items-center justify-between py-3 px-4 hover:bg-[var(&#45;&#45;color-bg-container-hover)] rounded transition-colors"-->
+<!--                  >-->
+<!--                    <div class="flex items-center gap-4">-->
+<!--                      <span class="text-[var(&#45;&#45;color-text-secondary)]">{{ section.name }}</span>-->
+<!--                      <span class="text-sm text-[var(&#45;&#45;color-text-secondary)]">-->
+<!--                        {{ section.total || 0 }} 题-->
+<!--                      </span>-->
+<!--                    </div>-->
+<!--                    <el-button-->
+<!--                      type="primary"-->
+<!--                      link-->
+<!--                      size="small"-->
+<!--                      @click="handleChapterPractice(chapter)"-->
+<!--                    >-->
+<!--                      开始练习-->
+<!--                    </el-button>-->
+<!--                  </div>-->
+<!--                </div>-->
+              </div>
+            </div>
+            <el-empty v-else description="暂无章节数据" />
+          </div>
+          </ClientOnly>
+        </div>
+
+        <!-- 右侧边栏 -->
+        <div class="w-80 space-y-4">
+          <!-- 广告位 -->
+          <div class="bg-white rounded-lg shadow-sm p-4">
+            <div class="text-center text-[var(--color-text-secondary)] py-8">
+              广告位
+            </div>
+          </div>
+
+          <!-- 推荐试卷 -->
+          <div class="bg-white rounded-lg shadow-sm p-4">
+            <div class="flex items-center justify-between mb-4">
+              <div class="flex items-center gap-2">
+                <div class="w-1 h-5 bg-[var(--color-btn-primary)] rounded-full" />
+                <h3 class="font-bold text-[var(--color-text-primary)]">推荐试卷</h3>
+              </div>
+              <a href="#" class="text-sm text-[var(--color-text-secondary)] hover:text-[var(--color-btn-primary)] flex items-center gap-1">
+                更多 <Icon name="ep:arrow-right" class="text-xs" />
+              </a>
+            </div>
+            <div class="space-y-4">
+              <div
+                v-for="paper in examData.recommendedPapers"
+                :key="paper.id"
+                class="border-b border-[var(--color-border)] last:border-b-0 pb-3 last:pb-0"
+              >
+                <h4 class="text-[var(--color-text-primary)] font-medium mb-2 line-clamp-2">{{ paper.title }}</h4>
+                <div class="flex items-center gap-3 text-xs text-[var(--color-text-secondary)] mb-2">
+                  <span class="flex items-center gap-1">
+                    <Icon name="ep:timer" /> {{ paper.duration }}分钟
+                  </span>
+                  <span class="flex items-center gap-1">
+                    <Icon name="ep:document" /> {{ paper.questionCount }}题
+                  </span>
+                  <span class="flex items-center gap-1">
+                    <Icon name="ep:user" /> {{ paper.examCount >= 10000 ? (paper.examCount / 10000).toFixed(1) + '万人' : paper.examCount }}已考
+                  </span>
+                </div>
+                <div class="flex items-center justify-between">
+                  <div class="flex items-center gap-1">
+                    <Icon
+                      v-for="n in 5"
+                      :key="n"
+                      name="ep:star-filled"
+                      class="text-xs"
+                      :class="n <= paper.rating ? 'text-[var(--color-warning)]' : 'text-gray-300'"
+                    />
                   </div>
-                  <div v-else class="text-3xl font-bold text-[var(--color-success)] mb-2">
-                    免费
-                  </div>
-                  <div v-if="qbankDetail.salesCount" class="text-[var(--color-text-secondary)] text-sm">
-                    已有 {{ qbankDetail.salesCount }} 人购买
+                  <el-button
+                    type="primary"
+                    size="small"
+                    plain
+                    @click="handleStartPaper(paper)"
+                  >
+                    开始考试
+                  </el-button>
+                </div>
+              </div>
+            </div>
+          </div>
+
+          <!-- 学习文档 -->
+          <div class="bg-white rounded-lg shadow-sm p-4">
+            <div class="flex items-center justify-between mb-4">
+              <div class="flex items-center gap-2">
+                <div class="w-1 h-5 bg-[var(--color-btn-primary)] rounded-full" />
+                <h3 class="font-bold text-[var(--color-text-primary)]">学习文档</h3>
+              </div>
+              <a href="#" class="text-sm text-[var(--color-text-secondary)] hover:text-[var(--color-btn-primary)] flex items-center gap-1">
+                更多 <Icon name="ep:arrow-right" class="text-xs" />
+              </a>
+            </div>
+            <div class="space-y-3">
+              <div
+                v-for="material in examData.studyMaterials"
+                :key="material.id"
+                class="flex items-start gap-3 p-2 hover:bg-[var(--color-bg-container-hover)] rounded transition-colors cursor-pointer"
+                @click="handleDownloadMaterial(material)"
+              >
+                <div
+                  class="w-10 h-10 rounded flex items-center justify-center text-white text-lg shrink-0"
+                  :style="{ backgroundColor: getFileIconColor(material.fileType) }"
+                >
+                  <Icon :name="`mdi:${getFileIconClass(material.fileType)}`" />
+                </div>
+                <div class="flex-1 min-w-0">
+                  <h4 class="text-[var(--color-text-primary)] text-sm font-medium line-clamp-2 mb-1">{{ material.title }}</h4>
+                  <div class="flex items-center gap-3 text-xs text-[var(--color-text-secondary)]">
+                    <span class="flex items-center gap-1">
+                      <Icon name="ep:calendar" /> {{ material.publishDate }}
+                    </span>
+                    <span class="flex items-center gap-1">
+                      <Icon name="ep:folder" /> {{ material.fileSize }}
+                    </span>
                   </div>
                 </div>
               </div>
+            </div>
+          </div>
 
-              <!-- 描述 -->
-              <p class="text-[var(--color-text-secondary)] mb-6 line-clamp-3">
-                {{ qbankDetail.description || '暂无描述' }}
-              </p>
-
-              <!-- 操作按钮 -->
-              <div class="flex gap-4">
-                <template v-if="hasAccess || qbankDetail.price === 0">
-                  <el-button type="primary" size="large" @click="handlePractice">
-                    <Icon name="ep:edit" class="mr-1"/>
-                    开始练习
-                  </el-button>
-                </template>
-                <template v-else>
-                  <el-button type="primary" size="large" @click="handleBuy">
-                    <Icon name="ep:shopping-cart" class="mr-1"/>
-                    立即购买
-                  </el-button>
-                  <el-button size="large" @click="handlePractice">
-                    <Icon name="ep:view" class="mr-1"/>
-                    试看
-                  </el-button>
-                </template>
+          <!-- 考试资讯 -->
+          <div class="bg-white rounded-lg shadow-sm p-4">
+            <div class="flex items-center justify-between mb-4">
+              <div class="flex items-center gap-2">
+                <div class="w-1 h-5 bg-[var(--color-btn-primary)] rounded-full" />
+                <h3 class="font-bold text-[var(--color-text-primary)]">考试资讯</h3>
+              </div>
+              <a href="#" class="text-sm text-[var(--color-text-secondary)] hover:text-[var(--color-btn-primary)] flex items-center gap-1">
+                更多 <Icon name="ep:arrow-right" class="text-xs" />
+              </a>
+            </div>
+            <div class="space-y-4">
+              <div
+                v-for="(news, index) in examData.news"
+                :key="index"
+                class="border-b border-[var(--color-border)] last:border-b-0 pb-3 last:pb-0"
+              >
+                <a href="#" class="text-[var(--color-text-primary)] hover:text-[var(--color-btn-primary)] transition-colors line-clamp-2 mb-2">
+                  {{ news.title }}
+                </a>
+                <div class="flex items-center gap-3 text-xs text-[var(--color-text-secondary)]">
+                  <span class="flex items-center gap-1">
+                    <Icon name="ep:calendar" /> {{ news.publishDate }}
+                  </span>
+                  <span class="flex items-center gap-1">
+                    <Icon name="ep:office-building" /> {{ news.source }}
+                  </span>
+                </div>
               </div>
             </div>
           </div>
         </div>
-
-        <!-- 标签页内容 -->
-        <el-tabs v-model="activeTab" class="bg-white rounded-lg shadow p-6">
-          <!-- 章节列表 -->
-          <el-tab-pane label="章节列表" name="chapters">
-            <div v-if="qbankDetail.chapters && qbankDetail.chapters.length > 0">
-              <el-collapse>
-                <el-collapse-item
-                    v-for="chapter in qbankDetail.chapters"
-                    :key="chapter.id"
-                    :title="chapter.name"
-                >
-                  <div class="flex items-center justify-between py-2 px-4 hover:bg-gray-50 rounded">
-                    <div class="flex items-center gap-4">
-                      <span class="text-[var(--color-text-primary)]">{{ chapter.name }}</span>
-                      <span class="text-[var(--color-text-secondary)] text-sm">
-                        {{ chapter.total || 0 }} 题
-                      </span>
-                    </div>
-                    <el-button
-                        type="primary"
-                        link
-                        @click="handleChapterPractice(chapter)"
-                    >
-                      开始练习
-                    </el-button>
-                  </div>
-
-                  <!-- 小节列表 -->
-                  <div v-if="chapter.sectionList && chapter.sectionList.length > 0" class="ml-6 mt-2">
-                    <div
-                        v-for="section in chapter.sectionList"
-                        :key="section.id"
-                        class="flex items-center justify-between py-2 px-4 hover:bg-gray-50 rounded"
-                    >
-                      <div class="flex items-center gap-4">
-                        <span class="text-[var(--color-text-secondary)]">{{ section.name }}</span>
-                        <span class="text-[var(--color-text-secondary)] text-sm">
-                          {{ section.total || 0 }} 题
-                        </span>
-                      </div>
-                    </div>
-                  </div>
-                </el-collapse-item>
-              </el-collapse>
-            </div>
-            <el-empty v-else description="暂无章节数据"/>
-          </el-tab-pane>
-
-          <!-- 题库介绍 -->
-          <el-tab-pane label="题库介绍" name="intro">
-            <div class="prose max-w-none">
-              <p class="text-[var(--color-text-primary)] leading-relaxed">
-                {{ qbankDetail.description || '暂无介绍' }}
-              </p>
-            </div>
-          </el-tab-pane>
-
-          <!-- 评价 -->
-          <el-tab-pane label="用户评价" name="reviews">
-            <el-empty description="暂无评价"/>
-          </el-tab-pane>
-        </el-tabs>
-      </template>
-
-      <!-- 错误状态 -->
-      <el-empty v-else-if="!loading" description="题库不存在或已下架">
-        <el-button type="primary" @click="goBack">返回列表</el-button>
-      </el-empty>
+      </div>
     </div>
   </div>
 </template>
 
 <style scoped>
+.line-clamp-2 {
+  display: -webkit-box;
+  -webkit-line-clamp: 2;
+  -webkit-box-orient: vertical;
+  overflow: hidden;
+}
+
 .line-clamp-3 {
   display: -webkit-box;
   -webkit-line-clamp: 3;

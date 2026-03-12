@@ -17,8 +17,8 @@ useHead({
 })
 
 /* ==================== 状态定义 ==================== */
-
-const router = useRouter()
+const authStore = useAuthStore()
+const {openModal} = useModal()
 const message = useMessage()
 const {query} = useRoute()
 /* 当前选中的一级分类 */
@@ -40,7 +40,7 @@ console.log('类型', typeof activeCategoryId.value)
 //     }
 // )
 const iconList = ["jz", "ck", "jr", "yl", "kg", "zige", "zc", "sh", "xl", "wy"]
-
+const {isLogin} = storeToRefs(authStore)
 const {data: categories, pending: loading, error} = await CmsCategoryApi.getCategoryList({
   isLast: true
 })
@@ -76,6 +76,11 @@ const handleCategoryChange = (categoryId: number | null) => {
 }
 
 const goToSubCategory = (categoryId: number) => {
+  if (!isLogin.value) {
+    openModal('login')
+    return
+  }
+
   navigateTo({
     path: `/qbank/${categoryId}`,
   })
