@@ -1,4 +1,5 @@
 export interface examsInfoVO {
+    categoryId: number
     categoryName: string
     categoryUrl: string
     exams: examsItemVO[]

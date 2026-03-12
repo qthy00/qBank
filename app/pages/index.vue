@@ -351,6 +351,7 @@ onMounted(async () => {
           v-for="catalog in categories.slice(0,3)" :key="catalog.id"
           :category-name="catalog.name"
           :category-url="catalog.url ?? '/'"
+          :category-id="catalog.id"
           :exams="catalog.children"
       />
     </ClientOnly>

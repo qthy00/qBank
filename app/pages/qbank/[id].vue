@@ -1,6 +1,6 @@
 <script setup lang="ts">
 import {questionApi} from '~/api/qbank'
-import type {QbankDetailVO, ChapterVO} from '~/types/qbank'
+import type {ChapterVO} from '~/types/qbank'
 
 /**
  * 题库详情页
@@ -366,9 +366,6 @@ useHead({
         <el-button type="primary" @click="goBack">返回列表</el-button>
       </el-empty>
     </div>
-
-    <!-- 底部 -->
-    <Footer/>
   </div>
 </template>
 

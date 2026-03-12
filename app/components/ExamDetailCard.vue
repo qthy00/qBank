@@ -4,7 +4,8 @@ import {questionApi} from "~/api/qbank";
 import image from '~/assets/images/a.jpg'
 
 const props = defineProps<examsInfoVO>()
-
+console.log(props)
+const categoryId = ref<number>(props.categoryId)
 const activeTab = ref<number>(props.exams[0]?.id ?? 0)
 
 const activateTab = (tabId: number) => {
@@ -129,11 +130,11 @@ onMounted(()=>{
       </div>
       <!-- 右侧更多 -->
       <div class="flex justify-end">
-        <a
-          :href="categoryUrl ?? '/'"
+        <NuxtLink
+            :to="{ path: '/qbank', query: { categoryId } }"
            class="text-(--color-text-secondary) px-3 py-2 rounded-full flex items-center border border-solid border-(--color-border) hover:bg-(--color-disabled)">
           <span class="mr-1 ">更多</span> <i class="hy-ico-djt ic-12"></i>
-        </a>
+        </NuxtLink>
       </div>
     </div>
 

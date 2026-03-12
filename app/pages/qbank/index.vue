@@ -1,6 +1,4 @@
 <script setup lang="ts">
-import {questionApi} from '~/api/qbank'
-import type {CategoryWithChildren} from '~/api/qbank/mock'
 import {CmsCategoryApi} from "~/api/category";
 
 /**
@@ -22,9 +20,11 @@ useHead({
 
 const router = useRouter()
 const message = useMessage()
-
+const {query} = useRoute()
 /* 当前选中的一级分类 */
-const activeCategoryId = ref<number | null>(null)
+const activeCategoryId = ref<number | null>(Number(query.categoryId) || null)
+
+console.log('类型', typeof activeCategoryId.value)
 
 /* ==================== 数据获取 ==================== */
 
@@ -41,7 +41,9 @@ const activeCategoryId = ref<number | null>(null)
 // )
 const iconList = ["jz", "ck", "jr", "yl", "kg", "zige", "zc", "sh", "xl", "wy"]
 
-const {data: categories, pending: loading, error} = await CmsCategoryApi.getCategoryList()
+const {data: categories, pending: loading, error} = await CmsCategoryApi.getCategoryList({
+  isLast: true
+})
 
 /* ==================== 计算属性 ==================== */
 
@@ -60,57 +62,58 @@ const displaySubCategories = computed(() => {
   if (!categories.value) return []
 
   if (activeCategory.value) {
-    return activeCategory.value.children || []
+    return findAllLastNodes(activeCategory.value.children, categories.value)
   }
-
   /* 未选择时展示所有子分类 */
-  return categories.value.flatMap(c =>
-      (c.children || []).map(child => ({
-        ...child,
-        parentName: c.name,
-        parentIcon: c.icon ?? 'ep:menu',
-        parentId: c.id
-      }))
-  )
-})
-
-/**
- * 获取总题库数量
- */
-const totalQbanks = computed(() => {
-  return categories.value?.reduce((sum, cat) => {
-    const childrenCount = cat.children?.reduce((s, child) => s + (child.count || 0), 0) || 0
-    return sum + childrenCount
-  }, 0) || 0
+  return findAllLastNodes(categories.value || [])
 })
 
 /* ==================== 方法定义 ==================== */
 
 const handleCategoryChange = (categoryId: number | null) => {
+  console.log('handleCategoryChange', categoryId)
   activeCategoryId.value = categoryId
 }
 
-const goToSubCategory = (parentId: number, subCategoryId: number, subCategoryName: string) => {
-  router.push({
-    path: '/qbank',
-    query: {
-      categoryId: parentId.toString(),
-      subjectId: subCategoryId.toString(),
-      subjectName: subCategoryName
-    }
+const goToSubCategory = (categoryId: number) => {
+  navigateTo({
+    path: `/qbank/${categoryId}`,
   })
 }
 
-const goToQbankList = () => {
-  if (activeCategory.value) {
-    router.push({
-      path: '/qbank',
-      query: { categoryId: activeCategory.value.id.toString() }
-    })
-  } else {
-    router.push('/qbank')
-  }
-}
+// 递归遍历树形结构，找到所有 isLast 为 true 的叶子节点
+const findAllLastNodes = (nodes, parentInfo = {}) => {
+  // 存储最终找到的所有叶子节点
+  let result = [];
+
+  // 遍历当前层级的节点
+  nodes.forEach((node, index) => {
+    // 构建当前节点的父级信息（继承上层 + 补充当前层）
+    const currentParentInfo = {
+      // 继承祖辈的父级信息
+      ...parentInfo,
+      // 当前节点作为子节点的父级信息
+      parentName: node.name,
+      parentIcon: `hy-ico-${iconList[index]}`,
+      parentId: node.id
+  };
+
+    // 判断当前节点是否是最底层节点（isLast 为 true）
+    if (node.isLast === true) {
+      // 如果是叶子节点，添加到结果中，并带上父级信息
+      result.push({
+        ...node,
+        ...currentParentInfo
+      });
+    } else if (node.children && node.children.length > 0) {
+      // 如果不是叶子节点但有子节点，递归遍历子节点
+      // 将子节点遍历结果合并到总结果中
+      result = result.concat(findAllLastNodes(node.children, currentParentInfo));
+    }
+  });
+
+  return result;
+};
 
 /* ==================== 错误处理 ==================== */
 
@@ -135,7 +138,7 @@ if (error.value) {
       <div class="relative container mx-auto px-4 py-12">
         <div class="text-center max-w-3xl mx-auto">
           <!-- 标题 -->
-          <div class="inline-flex items-center gap-2 px-4 py-1.5 rounded-full bg-[var(--color-primary)]/10 text-[var(--color-primary)] text-sm font-medium mb-4">
+          <div class="inline-flex items-center gap-2 px-4 py-1.5 rounded-full bg-[var(--color-primary)]/10 text-white text-sm font-medium mb-4">
             <Icon name="ep:collection" class="text-base"/>
             <span>专业题库平台</span>
           </div>
@@ -145,7 +148,7 @@ if (error.value) {
           </h1>
           <p class="text-lg text-gray-600 mb-8">
             海量题库资源，覆盖 <span class="font-semibold text-[var(--color-primary)]">{{ categories?.length || 0 }}</span> 大分类，
-            <span class="font-semibold text-[var(--color-primary)]">{{ totalQbanks }}</span>+ 套精选题库，助力高效备考
+            精选题库，助力高效备考
           </p>
         </div>
       </div>
@@ -177,22 +180,16 @@ if (error.value) {
               >
                 <div
                     class="w-10 h-10 rounded-lg flex items-center justify-center transition-colors"
-                    :class="activeCategoryId === null ? 'bg-white/20' : 'bg-[var(--color-primary)]/10'"
+                    :class="activeCategoryId === null ? 'bg-white/20' : 'bg-gray-100 group-hover:bg-[var(--color-primary)]/10'"
                 >
                   <Icon
                       name="ep:grid"
                       class="text-lg"
-                      :class="activeCategoryId === null ? 'text-white' : 'text-[var(--color-primary)]'"
+                      :class="activeCategoryId === null ? 'text-white' : 'text-black'"
                   />
                 </div>
                 <div class="flex-1">
                   <div class="font-medium">全部题库</div>
-                  <div
-                      class="text-xs"
-                      :class="activeCategoryId === null ? 'text-white/70' : 'text-gray-400'"
-                  >
-                    {{ totalQbanks }} 套题库
-                  </div>
                 </div>
                 <Icon
                     name="ep:arrow-right-bold"
@@ -233,14 +230,6 @@ if (error.value) {
                 />
               </div>
             </div>
-
-            <!-- 底部统计 -->
-            <div class="px-5 py-4 bg-gray-50/80 border-t border-gray-100">
-              <div class="flex items-center justify-between text-sm">
-                <span class="text-gray-500">题库总数</span>
-                <span class="font-bold text-[var(--color-primary)]">{{ totalQbanks }}+</span>
-              </div>
-            </div>
           </div>
         </div>
 
@@ -253,7 +242,7 @@ if (error.value) {
                 <div>
                   <h2 class="text-2xl font-bold text-gray-900 flex items-center gap-2">
                     <template v-if="activeCategory">
-                      <Icon :name="activeCategory.icon" class="text-[var(--color-primary)]"/>
+                      <Icon name="ep:moon-night" class="text-[var(--color-primary)]"/>
                       {{ activeCategory.name }}
                     </template>
                     <template v-else>
@@ -266,56 +255,35 @@ if (error.value) {
                   </p>
                 </div>
 
-                <!-- 快捷操作 -->
-                <div class="flex items-center gap-3">
-                  <el-button
-                      type="primary"
-                      plain
-                      round
-                      @click="goToQbankList"
-                  >
-                    <Icon name="ep:list" class="mr-1"/>
-                    查看列表
-                  </el-button>
-                </div>
               </div>
 
               <!-- 二级分类卡片网格 -->
               <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-4">
                 <div
-                    v-for="(sub, index) in displaySubCategories"
+                    v-for="sub in displaySubCategories"
                     :key="sub.id"
                     class="group relative bg-white rounded-2xl p-5 border border-gray-100 hover:border-[var(--color-primary)]/30 transition-all duration-300 hover:shadow-xl hover:shadow-[var(--color-primary)]/5 cursor-pointer overflow-hidden"
                     :class="{ 'opacity-0': false }"
-                    @click="goToSubCategory(sub.parentId || activeCategory?.id || 0, sub.id, sub.name)"
+                    @click="goToSubCategory(sub.id)"
                 >
                   <!-- 背景装饰 -->
                   <div class="absolute top-0 right-0 w-24 h-24 bg-gradient-to-br from-[var(--color-primary)]/5 to-transparent rounded-bl-full opacity-0 group-hover:opacity-100 transition-opacity duration-500"/>
 
-                  <!-- 图标 -->
-                  <div class="relative mb-4">
-                    <div class="w-14 h-14 rounded-xl bg-gradient-to-br from-[var(--color-primary)]/10 to-[var(--color-primary)]/5 flex items-center justify-center group-hover:scale-110 group-hover:from-[var(--color-primary)]/20 group-hover:to-[var(--color-primary)]/10 transition-all duration-300">
-                      <Icon
-                          :name="sub.parentIcon || activeCategory?.icon || 'ep:folder'"
-                          class="text-2xl text-[var(--color-primary)]"
-                      />
-                    </div>
-                    <!-- 数量徽章 -->
-                    <div class="absolute -top-1 -right-1 px-2 py-0.5 bg-gradient-to-r from-orange-400 to-orange-500 text-white text-xs font-bold rounded-full shadow-sm">
-                      {{ sub.count || 0 }}
-                    </div>
-                  </div>
+<!--                  &lt;!&ndash; 图标 &ndash;&gt;-->
+<!--                  <div class="relative mb-4">-->
+<!--                    &lt;!&ndash; 数量徽章 &ndash;&gt;-->
+<!--                    <div class="absolute -top-1 -right-1 px-2 py-0.5 bg-gradient-to-r from-orange-400 to-orange-500 text-white text-xs font-bold rounded-full shadow-sm">-->
+<!--                      {{ sub.count || 0 }}-->
+<!--                    </div>-->
+<!--                  </div>-->
 
                   <!-- 内容 -->
                   <h3 class="font-bold text-gray-900 mb-1 group-hover:text-[var(--color-primary)] transition-colors line-clamp-1">
                     {{ sub.name }}
                   </h3>
-                  <p class="text-sm text-gray-500 mb-4">
-                    {{ sub.count || 0 }} 套精选题库
-                  </p>
 
                   <!-- 操作按钮 -->
-                  <div class="flex items-center justify-between">
+                  <div class="mt-3 flex items-center justify-between">
                     <span class="text-xs text-gray-400 flex items-center gap-1">
                       <Icon name="ep:folder-opened" class="text-xs"/>
                       {{ sub.parentName || activeCategory?.name || '全部' }}
@@ -331,32 +299,6 @@ if (error.value) {
                 </div>
               </div>
 
-              <!-- 快速入口 - 仅在选中分类时显示 -->
-              <div v-if="activeCategory" class="mt-10">
-                <div class="bg-gradient-to-r from-[var(--color-primary)]/5 to-purple-500/5 rounded-2xl p-6 border border-[var(--color-primary)]/10">
-                  <div class="flex items-center justify-between">
-                    <div class="flex items-center gap-4">
-                      <div class="w-14 h-14 rounded-xl bg-white flex items-center justify-center shadow-sm">
-                        <Icon :name="activeCategory.icon" class="text-2xl text-[var(--color-primary)]"/>
-                      </div>
-                      <div>
-                        <h3 class="font-bold text-gray-900">探索更多 {{ activeCategory.name }} 题库</h3>
-                        <p class="text-gray-500 text-sm">查看该分类下的所有题库资源</p>
-                      </div>
-                    </div>
-                    <el-button
-                        type="primary"
-                        size="large"
-                        round
-                        class="shadow-lg shadow-[var(--color-primary)]/30"
-                        @click="goToQbankList"
-                    >
-                      查看全部
-                      <Icon name="ep:arrow-right" class="ml-1"/>
-                    </el-button>
-                  </div>
-                </div>
-              </div>
             </template>
 
             <!-- 空状态 -->
