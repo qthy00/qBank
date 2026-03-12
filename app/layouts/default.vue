@@ -12,7 +12,7 @@
             <!-- 侧边栏 -->
             <ToolSidebar :visible="visible"/>
             <!-- 核心功能区 - 子路由视图 -->
-            <main class="lg:col-span-3">
+            <main :class="visible ? 'lg:col-span-3' : 'lg:col-span-4'" >
               <slot/>
             </main>
           </div>

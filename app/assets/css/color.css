@@ -51,6 +51,9 @@
   /* 导航文字悬停 */
   /* --color-nav-text-hover: #3b82f6;  */
 
+  --color-primary: #3498db;
+  --color-secondary: #1abc9c;
+
   --color-bg-page: #f6f6f6;
   --color-bg-container: #ffffff;
   --color-bg-container-hover: #f4f7fa;

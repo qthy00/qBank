@@ -210,7 +210,7 @@ onMounted(async () => {
                 @mouseleave="handleMouseLeave"
             >
               <div class="flex items-center gap-1 shrink-0 mr-2">
-                <i :class="`hy-icon-${iconList[index]}`"/>
+                <i :class="`hy-ico-${iconList[index]}`"/>
                 <a
                     :href="catalog?.url" target="_blank"
                     class="font-bold hover:text-(--color-text-hover) truncate max-w-[6rem]">{{ catalog.name }}</a>

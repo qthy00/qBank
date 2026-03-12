@@ -12,16 +12,100 @@ import type {
  * 用于开发和演示环境
  */
 
-/* ==================== 分类模拟数据 ==================== */
+/* ==================== 分类模拟数据（支持二级分类） ==================== */
 
-export const mockCategories = [
-  { id: 1, name: '建筑工程', icon: 'ep:office-building', sort: 1 },
-  { id: 2, name: '财务会计', icon: 'ep:money', sort: 2 },
-  { id: 3, name: '医药卫生', icon: 'ep:first-aid-kit', sort: 3 },
-  { id: 4, name: '教师资格', icon: 'ep:user', sort: 4 },
-  { id: 5, name: 'IT认证', icon: 'ep:monitor', sort: 5 },
-  { id: 6, name: '公务员考试', icon: 'ep:document-checked', sort: 6 },
+export interface CategoryWithChildren {
+  id: number
+  name: string
+  icon: string
+  sort: number
+  children?: { id: number; name: string; count?: number }[]
+}
+
+export const mockCategoriesWithChildren: CategoryWithChildren[] = [
+  {
+    id: 1,
+    name: '建筑工程',
+    icon: 'ep:office-building',
+    sort: 1,
+    children: [
+      { id: 101, name: '一级建造师', count: 12 },
+      { id: 102, name: '二级建造师', count: 8 },
+      { id: 103, name: '造价工程师', count: 6 },
+      { id: 104, name: '监理工程师', count: 5 },
+      { id: 105, name: '安全工程师', count: 4 },
+      { id: 106, name: '消防工程师', count: 3 },
+    ]
+  },
+  {
+    id: 2,
+    name: '财务会计',
+    icon: 'ep:money',
+    sort: 2,
+    children: [
+      { id: 201, name: '注册会计师', count: 15 },
+      { id: 202, name: '初级会计职称', count: 10 },
+      { id: 203, name: '中级会计职称', count: 8 },
+      { id: 204, name: '高级会计职称', count: 5 },
+      { id: 205, name: '税务师', count: 6 },
+      { id: 206, name: '经济师', count: 4 },
+    ]
+  },
+  {
+    id: 3,
+    name: '医药卫生',
+    icon: 'ep:first-aid-kit',
+    sort: 3,
+    children: [
+      { id: 301, name: '执业医师', count: 20 },
+      { id: 302, name: '执业药师', count: 12 },
+      { id: 303, name: '护士资格', count: 8 },
+      { id: 304, name: '健康管理师', count: 6 },
+    ]
+  },
+  {
+    id: 4,
+    name: '教师资格',
+    icon: 'ep:user',
+    sort: 4,
+    children: [
+      { id: 401, name: '幼儿教师资格', count: 8 },
+      { id: 402, name: '小学教师资格', count: 10 },
+      { id: 403, name: '中学教师资格', count: 12 },
+      { id: 404, name: '教师资格面试', count: 6 },
+    ]
+  },
+  {
+    id: 5,
+    name: 'IT认证',
+    icon: 'ep:monitor',
+    sort: 5,
+    children: [
+      { id: 501, name: 'PMP项目管理', count: 5 },
+      { id: 502, name: '软考中级', count: 8 },
+      { id: 503, name: '软考高级', count: 6 },
+      { id: 504, name: 'AWS认证', count: 4 },
+      { id: 505, name: '华为认证', count: 5 },
+    ]
+  },
+  {
+    id: 6,
+    name: '公务员考试',
+    icon: 'ep:document-checked',
+    sort: 6,
+    children: [
+      { id: 601, name: '国考公务员', count: 15 },
+      { id: 602, name: '省考公务员', count: 20 },
+      { id: 603, name: '事业单位', count: 18 },
+      { id: 604, name: '三支一扶', count: 8 },
+    ]
+  },
 ]
+
+/* 兼容旧版本的分类数据 */
+export const mockCategories = mockCategoriesWithChildren.map(({ id, name, icon, sort }) => ({
+  id, name, icon, sort
+}))
 
 /* ==================== 题库列表模拟数据 ==================== */
 
