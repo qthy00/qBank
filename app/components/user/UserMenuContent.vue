@@ -3,6 +3,10 @@
     <Icon name="ep:user" class="mr-1" />
     <span>个人信息</span>
   </el-menu-item>
+  <el-menu-item index="/mistakes">
+    <Icon name="arcticons:androits-gps-test" class="mr-1" />
+    <span>我的错题</span>
+  </el-menu-item>
   <el-menu-item index="/account/favorites">
     <Icon name="ep:star" class="mr-1" />
     <span>个人收藏</span>
@@ -10,14 +14,6 @@
   <el-menu-item index="/account/orders">
     <Icon name="ep:shopping-bag" class="mr-1" />
     <span>订单管理</span>
-  </el-menu-item>
-  <el-menu-item index="/account/test">
-    <Icon name="arcticons:androits-gps-test" class="mr-1" />
-    <span>我的测试</span>
-  </el-menu-item>
-  <el-menu-item index="/account/affiliate">
-    <Icon name="ep:share" class="mr-1" />
-    <span>分销中心</span>
   </el-menu-item>
   <el-menu-item index="/account/activation">
     <Icon name="mdi:code-tags-check" class="mr-1"/>

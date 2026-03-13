@@ -1,10 +1,10 @@
-#!usr/bin/env node
+#!/usr/bin/env node
 /**
  * UserPromptSubmit Hook: 强制技能评估
  * 功能：在提交提示词后被触发，强制评估指定的技能。
  */
 
-const fs = require('fs');
+import fs from 'fs';
 // 从stdin读取用户输入
 let inputData = '';
 try {

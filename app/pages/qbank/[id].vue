@@ -1,5 +1,5 @@
 <script setup lang="ts">
-import { questionApi } from '~/api/qbank'
+import {type Chapter, questionApi} from '~/api/qbank'
 import type { ChapterVO } from '~/types/qbank'
 import type { examsItemVO, PaperInfo, StudyMaterial, PracticeMode } from '~/types/qBank/examInfo'
 import {CmsCategoryApi} from "~/api/category";
@@ -157,8 +157,9 @@ const loadCategoryData = async (categoryId: number) => {
 const handleCategoryChange = (categoryId: number) => {
   navigateTo(`/qbank/${categoryId}`)
 }
-const handleSubjectChange = (subjectId: number) => {
+const handleSubjectChange = async (subjectId: number) => {
   activeSubjectId.value = subjectId
+  await loadChapters()
 }
 
 const loadChapters = async () => {
@@ -206,14 +207,14 @@ const handleChapterPractice = (chapter: ChapterVO) => {
   //   message.warning('请先购买题库')
   //   return
   // }
-  router.push(`/practice/${qbankId.value}?chapterId=${chapter.id}`)
+  navigateTo(`/practice/chapter?chapterId=${chapter.id}`)
 }
 
 const handleStartPaper = (paper: PaperInfo) => {
-  if (!hasAccess.value && qbankDetail.value?.price > 0) {
-    message.warning('请先购买题库')
-    return
-  }
+  // if (!hasAccess.value && qbankDetail.value?.price > 0) {
+  //   message.warning('请先购买题库')
+  //   return
+  // }
   router.push(`/paper/${paper.id}`)
 }
 
@@ -243,9 +244,9 @@ const getFileIconColor = (fileType: string) => {
 
 /* ==================== 初始化 ==================== */
 onMounted(async () => {
-  if (subjects.value.length > 0) {
+  if (subjects.value?.length > 0) {
     activeSubjectId.value = subjects.value[0].id || 0
-    await loadChapters(activeSubjectId.value)
+    await loadChapters()
   }
   if(category.value){
     await loadCategoryData(category.value.parentId)
@@ -391,7 +392,7 @@ onUnmounted(() => {
                 :class="activeSubjectId === subject.id
                   ? 'bg-[var(--color-btn-primary)] text-white border-[var(--color-btn-primary)]'
                   : 'bg-white text-[var(--color-text-secondary)] hover:border-[var(--color-btn-primary)] hover:text-[var(--color-btn-primary)]'"
-                @click="handleSubjectChange(subject.id || 0)"
+                @click="handleSubjectChange(subject.id)"
               >
                 {{ subject.aliasName }}
               </span>
@@ -423,7 +424,7 @@ onUnmounted(() => {
           <!-- 章节列表 -->
           <ClientOnly>
             <div class="bg-white rounded-lg shadow-sm p-6">
-            <div v-if="chaptersData.length > 0">
+            <div v-loading="loadingChapter">
               <div
                 v-for="chapter in chaptersData"
                 :key="chapter.id"
@@ -497,7 +498,7 @@ onUnmounted(() => {
 <!--                </div>-->
               </div>
             </div>
-            <el-empty v-else description="暂无章节数据" />
+            <el-empty v-if="chaptersData.length === 0" description="暂无章节数据" />
           </div>
           </ClientOnly>
         </div>

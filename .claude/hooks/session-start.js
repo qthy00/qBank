@@ -4,10 +4,13 @@
  * 功能：检查并加载项目进度、Git状态、待办事项
  */
 
-const fs = require('fs');
-const path = require('path');
-const {execSync} = require('child_process');
+import fs from 'fs';
+import path from 'path';
+import {execSync} from 'child_process';
+import {fileURLToPath} from 'url';
 
+const __filename = fileURLToPath(import.meta.url);
+const __dirname = path.dirname(__filename);
 const projectRoot = process.cwd();
 
 // 辅助函数，安全执行命令
@@ -133,4 +136,6 @@ function main() {
     }
 }
 
+console.log('============== session-start 钩子开始执行 =================')
 main();
+process.exit(0);

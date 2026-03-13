@@ -7,7 +7,7 @@
  * 3. 自动修正常见错误
  */
 
-const fs = require('fs');
+import fs from 'fs';
 
 // 从stdin读取用户输入
 let inputData = '';

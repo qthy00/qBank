@@ -12,7 +12,7 @@
         "hooks": [
           {
             "type": "command",
-            "command": "node ./claude/hooks/skill-forced-eval.js"
+            "command": "node ./.claude/hooks/skill-forced-eval.js"
           }
         ]
       }
@@ -23,7 +23,7 @@
         "hooks": [
           {
             "type": "command",
-            "command": "node ./claude/hooks/pre-tool-use.js",
+            "command": "node ./.claude/hooks/pre-tool-use.js",
             "timeout": 5000
           }
         ]
@@ -35,7 +35,7 @@
         "hooks": [
           {
             "type": "command",
-            "command": "node ./claude/hooks/stop.js",
+            "command": "node ./.claude/hooks/stop.js",
             "timeout": 10000
           }
         ]
@@ -47,7 +47,7 @@
         "hooks": [
           {
             "type": "command",
-            "command": "node ./claude/hooks/session-start.js",
+            "command": "node ./.claude/hooks/session-start.js",
             "timeout": 10000
           }
         ]
