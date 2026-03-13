@@ -23,7 +23,7 @@ const message = useMessage()
 const {query} = useRoute()
 /* 当前选中的一级分类 */
 const activeCategoryId = ref<number | null>(Number(query.categoryId) || null)
-
+const {isLogin} = storeToRefs(authStore)
 console.log('类型', typeof activeCategoryId.value)
 
 /* ==================== 数据获取 ==================== */
@@ -40,7 +40,7 @@ console.log('类型', typeof activeCategoryId.value)
 //     }
 // )
 const iconList = ["jz", "ck", "jr", "yl", "kg", "zige", "zc", "sh", "xl", "wy"]
-const {isLogin} = storeToRefs(authStore)
+
 const {data: categories, pending: loading, error} = await CmsCategoryApi.getCategoryList({
   isLast: true
 })

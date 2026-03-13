@@ -130,6 +130,22 @@ const generateMockQbanks = (): QbankInfoVO[] => {
       updateTime: '2025-03-01T15:30:00',
     },
     {
+      id: 716031691776069,
+      name: '一级建造师（公路）',
+      description: '一级建造师公路工程专业题库，包含工程经济、工程法规、项目管理、公路实务等科目。',
+      categoryId: 1,
+      categoryName: '建筑工程',
+      coverImage: 'https://picsum.photos/400/300?random=100',
+      price: 0,
+      questionCount: 3500,
+      difficulty: 2,
+      difficultyName: '中等',
+      status: 1,
+      sort: 100,
+      createTime: '2025-03-01T10:00:00',
+      updateTime: '2025-03-10T15:30:00',
+    },
+    {
       id: 2,
       name: '2025年一级建造师《建设工程项目管理》精题库',
       description: '精选高频考点，配套详细解析。覆盖项目组织与管理、项目成本管理、项目进度管理等重点章节。',
@@ -501,13 +517,17 @@ export const getMockQbankDetail = (id: number): QbankDetailVO | null => {
   const qbank = mockQbankList.find(q => q.id === id)
   if (!qbank) return null
 
+  /* 免费题库默认已购买 */
+  const isFree = (qbank.price || 0) === 0
+
   return {
     ...qbank,
     chapters: generateMockChapters(id),
     tags: ['历年真题', '章节练习', '模拟测试', '错题回顾'],
     salesCount: Math.floor(Math.random() * 5000) + 500,
     rating: Number((4.0 + Math.random() * 0.9).toFixed(1)),
-    isPurchased: Math.random() > 0.7,
+    /* ID 为 1 的题库固定显示为未购买，方便测试；免费题库默认已购买 */
+    isPurchased: id === 1 ? false : isFree ? true : Math.random() > 0.7,
     purchaseCount: Math.floor(Math.random() * 1000) + 100,
   }
 }
@@ -576,6 +596,24 @@ export const getMockQbankList = (
 
 export const getMockQbankAccess = (qbankId: number): QbankAccessVO => {
   const qbank = mockQbankList.find(q => q.id === qbankId)
+
+  /* ID 为 716031691776069 的题库是免费题库，有权限 */
+  if (qbankId === 716031691776069) {
+    return {
+      qbankId,
+      hasAccess: true,
+      accessType: 'free',
+    }
+  }
+
+  /* ID 为 1 的题库固定显示为未购买，方便测试 */
+  if (qbankId === 1) {
+    return {
+      qbankId,
+      hasAccess: false,
+      accessType: 'free',
+    }
+  }
 
   /* 免费题库直接返回有权限 */
   if (qbank?.price === 0) {
