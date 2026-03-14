@@ -604,7 +604,7 @@ import {questionApi, type QuestionReqVO, typeNames} from '@/api/qbank'
 import {judgeOptions, getSubQuestionTypeClass, goBackIndex} from './func.ts'
 import type {AnswerCache, AnswerDetail, QuestionVO} from '~/types/qBank'
 import {createImageViewer} from '@/components/ImageViewer'
-import {usePayWithPopup} from '@/utils/usePayRedirect.ts'
+import {usePayWithPopup} from '~/composables/usePayRedirect.ts'
 import {isArrayValueEqual} from '@/utils/is.ts'
 import {stripHtmlTags} from '@/utils'
 

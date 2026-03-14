@@ -143,10 +143,10 @@ const expandedChapters = ref<number[]>([])
 
 /* 练习模式 */
 const practiceModes: PracticeMode[] = [
-  {key: 'chapter', name: '章节练习', icon: 'ep:document', url: '#'},
-  {key: 'past', name: '历年真题', icon: 'ep:timer', url: '#'},
-  {key: 'mock', name: '模拟试卷', icon: 'ep:copy-document', url: '#'},
-  {key: 'daily', name: '每日一练', icon: 'ep:calendar', url: '#'},
+  {key: 'chapter', name: '章节练习', icon: 'ep:document', url: '#', disabled: false},
+  {key: 'past', name: '历年真题', icon: 'ep:timer', url: '#', disabled: true},
+  {key: 'mock', name: '模拟试卷', icon: 'ep:copy-document', url: '#', disabled: false},
+  {key: 'daily', name: '每日一练', icon: 'ep:calendar', url: '#', disabled: false},
 ]
 
 /* 章节数据（从题库详情获取） */
@@ -248,7 +248,22 @@ const handlePractice = (mode: PracticeMode) => {
     message.warning('请先购买题库')
     return
   }
-  // navigateTo(`/practice/${qbankId.value}?mode=${mode.key}`)
+
+  switch (mode.key) {
+    case 'chapter':
+      /* 章节练习 - 展开章节列表 */
+      break
+    case 'mock':
+      /* 模拟考试 */
+      navigateTo(`/exam?qbankId=${qbankId.value}`)
+      break
+    case 'daily':
+      /* 每日一练 */
+      navigateTo('/practice/daily')
+      break
+    default:
+      message.info('功能开发中')
+  }
 }
 
 const handleChapterPractice = (chapter: ChapterVO) => {
@@ -501,13 +516,14 @@ onUnmounted(() => {
                     :key="mode.key"
                     class="flex-1 min-w-[80px] rounded-lg py-3 px-2 cursor-pointer transition-all group text-center"
                     :class="[
-                    hasAccess
-                      ? 'bg-[var(--color-btn-primary)] text-white hover:bg-[var(--color-btn-hover)]'
-                      : 'bg-gray-200 text-gray-400 cursor-not-allowed'
+                       mode.disabled
+                      ? 'bg-gray-200 text-gray-400 cursor-not-allowed'
+                      : 'bg-[var(--color-btn-primary)] text-white hover:bg-[var(--color-btn-hover)]'
                   ]"
-                    @click="hasAccess ? handlePractice(mode) : handlePurchasePrompt()"
+                    @click="handlePractice(mode)"
                 >
-                  <Icon :name="mode.icon"
+                  <Icon
+                        :name="mode.icon"
                         class="text-2xl opacity-90 mb-1 group-hover:scale-110 transition-transform mx-auto block"/>
                   <span class="text-sm font-medium whitespace-nowrap">{{ mode.name }}</span>
                   <Icon
@@ -609,25 +625,7 @@ onUnmounted(() => {
                 <template #default>
                   <div class="text-center">
                     <Icon name="ep:lock" class="text-4xl text-[var(--color-text-secondary)] mb-2"/>
-                    <p class="text-[var(--color-text-secondary)] mb-4">{{
-                        hasAccess ? '暂无章节数据' : '购买后可查看全部章节'
-                      }}</p>
-                    <el-button
-                        v-if="!hasAccess && (qbankDetail?.price || 0) > 0"
-                        type="primary"
-                        @click="handlePurchase"
-                    >
-                      <Icon name="ep:shopping-cart" class="mr-1"/>
-                      立即购买
-                    </el-button>
-                    <el-button
-                        v-else-if="!hasAccess && (qbankDetail?.price || 0) === 0"
-                        type="success"
-                        @click="handleFreeAccess"
-                    >
-                      <Icon name="ep:unlock" class="mr-1"/>
-                      免费解锁
-                    </el-button>
+                    <p class="text-[var(--color-text-secondary)] mb-4">暂无章节数据</p>
                   </div>
                 </template>
               </el-empty>

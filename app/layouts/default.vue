@@ -34,7 +34,7 @@
 
 <script setup lang="ts">
 import {getToolAccess} from '@/api/user'
-import {usePayWithPopup} from '@/utils/usePayRedirect.ts'
+import {usePayWithPopup} from '~/composables/usePayRedirect.ts'
 
 const modalStore = useModalStore()
 const authStore = useAuthStore()

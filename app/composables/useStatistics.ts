@@ -1,6 +1,6 @@
 import {StatApi} from '@/api/stat'
 import {updateToolAccess} from '@/api/user'
-import {usePayWithPopup} from '~/utils/usePayRedirect.ts'
+import {usePayWithPopup} from '~/composables/usePayRedirect.ts'
 import {useToolStore} from '~/stores/tool.ts'
 
 

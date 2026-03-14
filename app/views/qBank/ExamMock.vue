@@ -464,7 +464,7 @@ import { questionApi, typeNames } from '~/api/qbank'
 import { getCurrentDate } from '@/utils/formatTime'
 import { isNumber } from '@/utils/is.ts'
 import { stripHtmlTags } from '@/utils'
-import { usePayWithPopup } from '@/utils/usePayRedirect.ts'
+import { usePayWithPopup } from '~/composables/usePayRedirect.ts'
 
 const { params } = useRoute()
 const message = useMessage()

@@ -1,10 +1,9 @@
-import { useRouter, useRoute } from 'vue-router'
+import { useRoute } from 'vue-router'
 import { shallowRef } from 'vue'
 
 const cartRef = shallowRef<any>(null) // 单例，全局弹窗引用
 
 export function usePayWithPopup() {
-  const router = useRouter()
   const route = useRoute()
 
   const redirectToPay = async (tool: {
