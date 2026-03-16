@@ -1,8 +1,8 @@
 import {defineStore} from 'pinia'
 import {addShareLog} from '~/api/login'
 import avatar from '~/assets/images/avatar.jpg'
-import type {UserShareVO, UserVO} from "~/types/user/user"
-import {getUser, getInfo, getFavoriteToolsIds} from "~/api/user";
+import type {PackageAccessVO, UserShareVO, UserVO} from "~/types/user"
+import {getUser, getInfo, getFavoriteToolsIds, getPackageAccessList} from "~/api/user";
 
 
 export const useUserStore = defineStore('user', () => {
@@ -13,6 +13,8 @@ export const useUserStore = defineStore('user', () => {
         avatar: avatar,
         nickname: '新用户'
     })
+    const userPackages = ref<PackageAccessVO[]>([])
+
     const shareLog = ref<UserShareVO>()
     const favoriteTools = ref<number[]>([])
 
@@ -26,6 +28,13 @@ export const useUserStore = defineStore('user', () => {
         }
         Object.assign(user, data)
         isSetUser.value = true
+        // 获取用户题库权限
+        try{
+            userPackages.value = await getPackageAccessList()
+        }
+        catch (e) {
+            console.log(e)
+        }
         // 处理分享记录
         if (shareLog.value) {
             await addShareLog(shareLog.value)
@@ -86,6 +95,7 @@ export const useUserStore = defineStore('user', () => {
         user,
         shareLog,
         favoriteTools,
+        userPackages,
         // Actions
         fetchUserInfo,
         fetchUserDetailInfo,
@@ -97,6 +107,6 @@ export const useUserStore = defineStore('user', () => {
     }
 }, {
     persist: {
-        paths: ['user', 'shareLog', 'favoriteTools']
+        paths: ['user', 'shareLog', 'favoriteTools','userPackages']
     }
 })

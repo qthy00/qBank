@@ -74,7 +74,8 @@ export interface SecurityItem {
     enabled: boolean
 }
 
-export interface ToolAccessVO {
+export interface PackageAccessVO {
+    toolId: number
     hasAccess: boolean // 是否有使用权限
     type: 'subscription' | 'count' | 'lifetime' | 'trial' | 'free'// 权限类型
     remainingUses?: number // 剩余次数（按次）

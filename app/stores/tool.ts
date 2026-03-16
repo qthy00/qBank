@@ -1,7 +1,7 @@
 import { defineStore } from 'pinia'
 
 import type { ToolDetailVO } from '~/types/tools'
-import type { ToolAccessVO } from '~/api/user'
+import type { PackageAccessVO } from '~/api/user'
 import {formatDate} from '~/utils/formatTime'
 
 
@@ -10,7 +10,7 @@ export const useToolStore = defineStore('tool', () => {
   const toolState = useToolState() // 跨环境状态
   const toolInfo = ref<ToolDetailVO>()
 
-  const toolAccess = ref<ToolAccessVO>()
+  const toolAccess = ref<PackageAccessVO>()
   const canUseTool = ref(false)
   const usageInfo = ref('')
 
@@ -30,7 +30,7 @@ export const useToolStore = defineStore('tool', () => {
 
 
 
-  const setToolAccess = (toolAccess: ToolAccessVO) =>{
+  const setToolAccess = (toolAccess: PackageAccessVO) =>{
     toolAccess.value = toolAccess
     switch (toolAccess.value.type) {
       case 'free':

@@ -12,6 +12,8 @@ import type {QbankDetailVO} from "~/types/qBank"
 /* ==================== 页面元数据 ==================== */
 const route = useRoute()
 const qbankId = computed(() => Number(route.params.id))
+const userStore = useUserStore()
+const {userPackages} = storeToRefs(userStore)
 
 /* ==================== 模拟数据（根据图片设计） ==================== */
 const examData = ref<examsItemVO>({
@@ -155,12 +157,8 @@ const loadingChapter = ref(false)
 
 /* ==================== 计算属性 ==================== */
 const hasAccess = computed(() => {
-  /* 免费题库直接有权限 */
-  if (qbankDetail.value?.price === 0) return true
-  /* 已购买的题库有权限 */
-  if (qbankDetail.value?.isPurchased) return true
-  /* 否则使用 accessData 的判断 */
-  return accessData.value?.hasAccess || false
+  const hasPackage = userPackages.value.filter(item => item.id === qbankId.value)
+  return hasPackage.hasAccess || false
 })
 
 /* ==================== 方法定义 ==================== */
@@ -244,7 +242,7 @@ const toggleChapter = (chapterId: number) => {
 }
 
 const handlePractice = (mode: PracticeMode) => {
-  if (!hasAccess.value && (qbankDetail.value?.price || 0) > 0) {
+  if (!hasAccess.value) {
     message.warning('请先购买题库')
     return
   }
@@ -267,7 +265,7 @@ const handlePractice = (mode: PracticeMode) => {
 }
 
 const handleChapterPractice = (chapter: ChapterVO) => {
-  if (!hasAccess.value && (qbankDetail.value?.price || 0) > 0) {
+  if (!hasAccess.value) {
     message.warning('请先购买题库')
     return
   }
@@ -275,7 +273,7 @@ const handleChapterPractice = (chapter: ChapterVO) => {
 }
 
 const handleStartPaper = (paper: PaperInfo) => {
-  if (!hasAccess.value && (qbankDetail.value?.price || 0) > 0) {
+  if (!hasAccess.value) {
     message.warning('请先购买题库')
     return
   }
@@ -295,28 +293,6 @@ const handlePurchase = () => {
   message.info('正在跳转到支付页面...')
   /* 示例：导航到支付页面 */
   // navigateTo(`/payment?qbankId=${qbankId.value}`)
-}
-
-const handlePurchasePrompt = () => {
-  if (!isLogin.value) {
-    openModal('login')
-    return
-  }
-  if ((qbankDetail.value?.price || 0) === 0) {
-    message.info('登录后即可免费使用')
-  } else {
-    message.warning('请先购买题库以解锁练习功能')
-  }
-}
-
-const handleFreeAccess = () => {
-  if (!isLogin.value) {
-    openModal('login')
-    return
-  }
-  message.success('免费题库已解锁！')
-  /* 刷新页面以更新权限状态 */
-  window.location.reload()
 }
 
 const getFileIconClass = (fileType: string) => {
@@ -621,14 +597,7 @@ onUnmounted(() => {
                   <!--                </div>-->
                 </div>
               </div>
-              <el-empty v-if="chaptersData.length === 0" description="暂无章节数据">
-                <template #default>
-                  <div class="text-center">
-                    <Icon name="ep:lock" class="text-4xl text-[var(--color-text-secondary)] mb-2"/>
-                    <p class="text-[var(--color-text-secondary)] mb-4">暂无章节数据</p>
-                  </div>
-                </template>
-              </el-empty>
+              <el-empty v-if="chaptersData.length === 0" description="暂无章节数据" />
             </div>
           </ClientOnly>
         </div>

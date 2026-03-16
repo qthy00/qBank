@@ -33,7 +33,7 @@
 </template>
 
 <script setup lang="ts">
-import {getToolAccess} from '@/api/user'
+import {getPackageAccess} from '@/api/user'
 import {usePayWithPopup} from '~/composables/usePayRedirect.ts'
 
 const modalStore = useModalStore()
@@ -51,7 +51,7 @@ const visible = computed(() => toolInfo.value?.id !== undefined)
 const loadToolAccess = async () => {
   if (!toolInfo.value?.id || !isLogin.value || !toolInfo.value?.paid) return
   try {
-    const data = await getToolAccess(toolInfo.value.id, false)
+    const data = await getPackageAccess(toolInfo.value.id, false)
     if (!data) return
     toolAccess.value = data
     toolStore.setToolAccess(data)

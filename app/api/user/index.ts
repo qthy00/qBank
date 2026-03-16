@@ -1,6 +1,7 @@
 import type {FavoriteVO, FeedbackQuestionVO, UserProfileUpdateReqVO } from '~/types/user/user'
 import { httpGet, httpUpload, httpPost, httpPut } from "~/composables/useHttp";
 import request from "~/config";
+import type {PackageAccessVO} from "~/types/user";
 
 
 // 获取用户权限信息
@@ -101,8 +102,13 @@ export const fetchDevicePage = async (query: any) => {
 }
 
 // 获取工具访问权限
-export const getToolAccess = async (toolId: number, server: boolean = true) => {
-  return await httpGet('getToolAccess', `/member/tools/access/${toolId}`, {}, server)
+export const getPackageAccess = async (toolId: number, server: boolean = true) => {
+  return await httpGet('getPackageAccess', `/member/tools/access/${toolId}`, {}, server)
+}
+
+// 获取用户访问权限的题库列表
+export const getPackageAccessList = async (toolId: number, server: boolean = true): Promise<PackageAccessVO[]> => {
+  return await httpGet('getPackageAccessList', `/member/tools/access/list`, {}, server)
 }
 
 // 更新用户访问使用次数
