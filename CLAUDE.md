@@ -83,7 +83,7 @@ app/
 - **组件封装参考**：`app/components/ButtonCard.vue`、`app/components/Card/`
 - **API定义参考**：`app/api/user/index.ts`
 - **类型定义参考**：`app/types/user/index.d.ts`
-- **页面参考**：`app/pages/index.vue`
+- **页面参考**：`app/pages/index.vue`、`app/pages/account/profile/index.vue`
 
 ### 强制使用封装组件
 

@@ -1,9 +1,9 @@
 <script setup lang="ts">
 import {type Chapter, questionApi} from '~/api/qbank'
-import type {ChapterVO} from '~/types/qbank'
+import type {ChapterVO, PackageVO} from '~/types/qbank'
 import type {examsItemVO, PaperInfo, StudyMaterial, PracticeMode} from '~/types/qBank/examInfo'
 import {CmsCategoryApi} from "~/api/category"
-import type {QbankDetailVO} from "~/types/qBank"
+
 
 /**
  * 题库详情页 - 重构版
@@ -12,8 +12,18 @@ import type {QbankDetailVO} from "~/types/qBank"
 /* ==================== 页面元数据 ==================== */
 const route = useRoute()
 const qbankId = computed(() => Number(route.params.id))
+const authStore = useAuthStore()
 const userStore = useUserStore()
+const questionStore = useQBankStore()
+const {isLogin} = storeToRefs(authStore)
 const {userPackages} = storeToRefs(userStore)
+const {title, subjectId: activeSubjectId} = storeToRefs(questionStore)
+const {openModal} = useModal()
+const message = useMessage()
+const isOpen = ref(false)
+questionStore.categoryId = qbankId.value
+/* 展开的章节 */
+const expandedChapters = ref<number[]>([])
 
 /* ==================== 模拟数据（根据图片设计） ==================== */
 const examData = ref<examsItemVO>({
@@ -106,12 +116,15 @@ useHead({
 
 /* ==================== 数据获取 ==================== */
 const categories = ref()
-const qbankDetail = ref<QbankDetailVO | null>(null)
+const qbankDetail = ref<PackageVO>()
 
 /* 获取题库详情 */
 const loadQbankDetail = async () => {
   try {
-    qbankDetail.value = await questionApi.getQbankDetail(qbankId.value)
+    const data = await questionApi.getQbankPackages(qbankId.value)
+    if(data.length > 0) {
+      qbankDetail.value = data[0]
+    }
   } catch (err) {
     console.log('获取题库详情失败', err)
   }
@@ -119,29 +132,8 @@ const loadQbankDetail = async () => {
 
 const {data: category} = await CmsCategoryApi.getCategory(qbankId.value, true)
 const {data: subjects} = await questionApi.getSubjectList(qbankId.value, true)
-console.log('subjects===', subjects.value)
-const {data: accessData} = await useAsyncData(
-    () => `qbank-access-${qbankId.value}`,
-    () => questionApi.checkQbankAccess(qbankId.value),
-    {
-      server: false,
-      default: () => ({qbankId: qbankId.value, hasAccess: false, accessType: 'free'}),
-      watch: [qbankId],
-    }
-)
 
 /* ==================== 状态定义 ==================== */
-const authStore = useAuthStore()
-const {openModal} = useModal()
-const message = useMessage()
-const isOpen = ref(false)
-const {isLogin} = storeToRefs(authStore)
-
-/* 当前选中的科目 */
-const activeSubjectId = ref<number>(0)
-/* 展开的章节 */
-const expandedChapters = ref<number[]>([])
-
 
 /* 练习模式 */
 const practiceModes: PracticeMode[] = [
@@ -154,11 +146,12 @@ const practiceModes: PracticeMode[] = [
 /* 章节数据（从题库详情获取） */
 const chaptersData = ref<ChapterVO[]>([])
 const loadingChapter = ref(false)
-
 /* ==================== 计算属性 ==================== */
 const hasAccess = computed(() => {
-  const hasPackage = userPackages.value.filter(item => item.id === qbankId.value)
-  return hasPackage.hasAccess || false
+  if(!isLogin.value) return false
+  if(!userPackages.value) return false
+  // const hasPackage = userPackages.value?.filter(item => item.id === qbankId.value)
+  return hasPackage?.hasAccess || false
 })
 
 /* ==================== 方法定义 ==================== */
@@ -192,6 +185,7 @@ const loadSubjects = async () => {
   // console.log('loadSubjects', categoryId)
   try {
     subjects.value = await questionApi.getSubjectList(qbankId.value)
+    title.value = subjects.value[0]?.aliasName || subjects.value[0]?.name || ''
     activeSubjectId.value = subjects.value[0].id || 0
     await loadChapters()
   } catch (err) {
@@ -205,7 +199,6 @@ const handleSubjectChange = async (subjectId: number) => {
 }
 
 const loadChapters = async () => {
-  // console.log('loadChapters', activeSubjectId.value)
   if (!activeSubjectId.value) return
   if (!isLogin.value) {
     openModal('login')
@@ -242,14 +235,15 @@ const toggleChapter = (chapterId: number) => {
 }
 
 const handlePractice = (mode: PracticeMode) => {
-  if (!hasAccess.value) {
-    message.warning('请先购买题库')
-    return
-  }
+  // if (!hasAccess.value) {
+  //   message.warning('请先购买题库')
+  //   return
+  // }
 
   switch (mode.key) {
     case 'chapter':
-      /* 章节练习 - 展开章节列表 */
+
+      navigateTo('/study/practice/chapter')
       break
     case 'mock':
       /* 模拟考试 */
@@ -257,7 +251,7 @@ const handlePractice = (mode: PracticeMode) => {
       break
     case 'daily':
       /* 每日一练 */
-      navigateTo('/practice/daily')
+      navigateTo('/study/practice/daily')
       break
     default:
       message.info('功能开发中')
@@ -265,11 +259,15 @@ const handlePractice = (mode: PracticeMode) => {
 }
 
 const handleChapterPractice = (chapter: ChapterVO) => {
-  if (!hasAccess.value) {
-    message.warning('请先购买题库')
-    return
+  // if (!hasAccess.value) {
+  //   message.warning('请先购买题库')
+  //   return
+  // }
+  questionStore.setChapter(qbankDetail.value?.id, activeSubjectId.value, chapter.id, chapter.name)
+  if (chapter.isCompleted) {
+    route.query = {restart: 'Y'}
   }
-  navigateTo(`/practice/chapter?chapterId=${chapter.id}`)
+  navigateTo(`/study/practice`)
 }
 
 const handleStartPaper = (paper: PaperInfo) => {
@@ -453,7 +451,7 @@ onUnmounted(() => {
       <div class="flex gap-6">
         <!-- 左侧主内容区 -->
         <div class="flex-1">
-          <!-- 返回按钮 -->
+          <!-- 返回按钮 -->、
           <div class="mb-4">
             <el-button link @click="goBack">
               <Icon name="ep:arrow-left" class="mr-1"/>

@@ -235,10 +235,10 @@
 </template>
 
 <script setup lang="ts">
-import type { ExamSetting, ExamHistoryVO, SubjectVO } from '~/types/exam/index'
+import type { ExamSetting, ExamHistoryVO, SubjectVO } from '~/types/exam'
 import { generateMockPaper, getExamHistoryList, getSubjectList, getSubjectPaperInfo } from '~/api/exam'
 import { getMockQbankList } from '~/api/qbank/mock'
-import type { QbankInfoVO } from '~/types/qbank'
+import type { QbankInfoVO } from '~/types/qBank'
 
 const route = useRoute()
 const router = useRouter()

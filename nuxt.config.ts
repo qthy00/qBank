@@ -180,6 +180,7 @@ export default defineNuxtConfig({
     routeRules: {
         '/account/**': { ssr: false },
         '/qb/**': { ssr: false },
+        '/study/**': { ssr: false },
         '/order/**': { ssr: false },
     }
 })

@@ -1,6 +1,6 @@
 <script setup lang="ts">
 import { questionApi } from '~/api/qbank'
-import type { QuestionVO } from '~/types/qbank'
+import type { QuestionVO } from '~/types/qBank'
 
 /**
  * 错题重做页面

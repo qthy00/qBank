@@ -4,6 +4,7 @@ import {defineStore} from "pinia";
 export const useQBankStore = defineStore('qBank', () => {
     // 1. 定义响应式状态
     const path = ref<string>()
+    const packageId = ref<number>()
     const categoryId = ref<number>()
     const subjectId = ref<number>()
     const chapterId = ref<number>()
@@ -33,7 +34,8 @@ export const useQBankStore = defineStore('qBank', () => {
         }
     }
 
-    const setChapter = (subject: number, chapter: number, chapterName: string) => {
+    const setChapter = (packageId: number, subject: number, chapter: number, chapterName: string) => {
+        packageId.value = packageId
         chapterId.value = chapter
         subjectId.value = subject
         subtitle.value = chapterName
@@ -49,6 +51,7 @@ export const useQBankStore = defineStore('qBank', () => {
     return {
         // 状态
         path,
+        packageId,
         categoryId,
         subjectId,
         chapterId,

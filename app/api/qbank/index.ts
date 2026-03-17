@@ -1,6 +1,6 @@
 import {httpGet, httpPost } from "~/composables/useHttp";
 import type {examsInfoVO, examsItemVO} from "~/types/qBank/examInfo";
-import type {QbankListReqVO, QbankListRespVO, QbankDetailVO, QbankAccessVO} from "~/types/qBank/index";
+import type {QbankListReqVO, QbankListRespVO, QbankDetailVO, QbankAccessVO, PackageVO} from "~/types/qBank/index";
 import {
   mockCategories,
   getMockQbankList,
@@ -174,19 +174,12 @@ export const questionApi = {
   },
 
   /**
-   * 获取题库详情
-   * @param id 题库ID
+   * 根据栏目获取题库套餐列表
+   * @param columnId 题库栏目ID
    * @param server 是否在服务端执行
    */
-  getQbankDetail: async (id: number, server: boolean = false): Promise<QbankDetailVO> => {
-    if (USE_MOCK) {
-      const detail = getMockQbankDetail(id)
-      if (!detail) {
-        throw new Error('题库不存在')
-      }
-      return detail
-    }
-    return await httpGet('getQbankDetail', '/member/qbank/get', {query: {id}}, server)
+  getQbankPackages: async (columnId: number, server: boolean = false): Promise<PackageVO[]> => {
+    return await httpGet('getQbankPackages', '/member/question-package/list', {query: {columnId}}, server)
   },
 
   /**

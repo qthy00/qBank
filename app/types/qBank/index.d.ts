@@ -241,6 +241,17 @@ export interface QbankDetailVO extends QbankInfoVO {
   purchaseCount?: number
 }
 
+export interface PackageVO{
+    id: number
+    name: string
+    columnId: number
+    price: number
+    originalPrice: number
+    validDays: number
+    description: string
+}
+
+
 /**
  * 题库列表查询请求
  */
