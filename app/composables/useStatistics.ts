@@ -1,18 +1,18 @@
 import {StatApi} from '@/api/stat'
 import {updateToolAccess} from '@/api/user'
 import {usePayWithPopup} from '~/composables/usePayRedirect.ts'
-import {useToolStore} from '~/stores/tool.ts'
+import {usePackageStore} from '~/stores/qPackage.ts'
 
 
 export const useStatistics = () => {
     const {meta} = useRoute()
     let toolId: number = meta?.id as unknown as number
     const {redirectToPay} = usePayWithPopup()
-    const toolStore = useToolStore()
-    const {toolInfo} = storeToRefs(toolStore)
+    const packageStore = usePackageStore()
+    const {qPackage} = storeToRefs(packageStore)
 
-    if (!toolId && toolInfo.value) {
-        toolId = toolInfo.value.id
+    if (!toolId && qPackage.value) {
+        toolId = qPackage.value.id
     }
 
     const visitStat = async () => {
@@ -33,6 +33,7 @@ export const useStatistics = () => {
         try {
             await StatApi.pushToolUsage(toolId)
         } catch (e) {
+            console.log('统计工具使用次数失败', e)
         }
     }
 
@@ -44,8 +45,8 @@ export const useStatistics = () => {
             if (data.hasAccess) {
                 // 统计使用次数
                 await StatApi.pushToolUsage(toolId)
-            } else if (toolInfo.value) {
-                await redirectToPay(toolInfo.value, `/t/${toolInfo.value.series}`)
+            } else if (qPackage.value) {
+                await redirectToPay(qPackage.value, `/t/${qPackage.value.series}`)
             }
             return data.hasAccess
         } catch (e) {

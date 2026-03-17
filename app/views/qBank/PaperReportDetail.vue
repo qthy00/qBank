@@ -143,7 +143,7 @@
         type="primary"
         plain
         size="default"
-        @click="navigateTo(`/t/${toolInfo.series}`)"
+        @click="navigateTo(`/t/${qPackage.series}`)"
         class="px-2 sm:px-6 py-1 sm:py-3 text-sm sm:text-base h-auto whitespace-nowrap"
       >
         返回首页
@@ -198,8 +198,8 @@ const { push } = useRouter()
 const { params, query } = useRoute()
 const message = useMessage()
 
-const toolStore = useToolStore()
-const {toolInfo} = storeToRefs(toolStore)
+const packageStore = usePackageStore()
+const {qPackage} = storeToRefs(packageStore)
 
 const paperId = query.p as unknown as number
 const memberPaperId = query.up as unknown as number
@@ -284,7 +284,7 @@ const loadReportDetail = async () => {
 }
 
 useHead({
-  title: `试卷报告-${toolInfo.value.title}`,
+  title: `试卷报告-${qPackage.value.title}`,
 })
 // 初始化图表
 onMounted(async () => {

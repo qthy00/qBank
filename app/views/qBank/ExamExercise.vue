@@ -14,7 +14,7 @@
             </button>
             <button
                 class="flex items-center bg-blue-400 hover:bg-blue-500 text-white px-3 py-1 rounded-lg transition-colors text-sm font-medium shadow-sm hover:shadow"
-                @click="navigateTo(`/t/${toolInfo.series}`)"
+                @click="navigateTo(`/t/${qPackage.series}`)"
             >
               <Icon name="icon-park-outline:return" class="mr-1.5"/>
               返回
@@ -298,17 +298,17 @@ import {type Chapter, questionApi, type SubjectVO} from '@/api/qbank'
 import {formatPast2} from '@/utils/formatTime.ts'
 
 const questionStore = useQBankStore()
-const toolStore = useToolStore()
-const {toolInfo} = storeToRefs(toolStore)
+const packageStore = usePackageStore()
+const {qPackage} = storeToRefs(packageStore)
 const {title, subjectId: storeSubjectId} = storeToRefs(questionStore)
 const stat = useStatistics()
 
 const subjects = ref<SubjectVO[]>([])
 const loadSubjects = async () => {
-  console.log('工具信息', toolInfo.value)
-  if (!toolInfo.value.relationCategoryId) return
+  console.log('工具信息', qPackage.value)
+  if (!qPackage.value.relationCategoryId) return
   try {
-    subjects.value = await questionApi.getSubjectList(toolInfo.value.relationCategoryId as number)
+    subjects.value = await questionApi.getSubjectList(qPackage.value.relationCategoryId as number)
     title.value = subjects.value[0]?.aliasName || subjects.value[0]?.name || ''
     storeSubjectId.value = subjects.value[0]?.id
   } catch (err) {
@@ -398,7 +398,7 @@ const startPractice = async (chapter: Chapter) => {
   questionStore.setChapter(subjectId.value, chapter.id, chapter.name)
   const route = {
     name: 'ExamPractice',
-    params: {toolId: toolInfo.value.id, examMode: 'practice'},
+    params: {toolId: qPackage.value.id, examMode: 'practice'},
     query: {}
   }
   if (chapter.isCompleted) {
@@ -414,7 +414,7 @@ const handleSetting = () => {
 }
 
 useHead({
-  title: `章节练习-${toolInfo.value.title}`,
+  title: `章节练习-${qPackage.value.title}`,
 })
 
 onMounted(async () => {

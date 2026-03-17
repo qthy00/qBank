@@ -9,8 +9,8 @@ const router = useRouter()
 const authStore = useAuthStore()
 const {isLogin} = storeToRefs(authStore)
 
-const toolStore = useToolStore()
-const {toolInfo} = storeToRefs(toolStore)
+const packageStore = usePackageStore()
+const {qPackage} = storeToRefs(packageStore)
 
 const questionStore = useQBankStore()
 const {mockSetting} = storeToRefs(questionStore)
@@ -40,7 +40,7 @@ let originalSettings = {
 }
 const state = ref(cloneDeep(originalSettings) )
 const loadSubjects = async () => {
-  const categoryId = toolInfo.value?.relationCategoryId as number
+  const categoryId = qPackage.value?.relationCategoryId as number
   if(!categoryId) return
   try {
     subjects.value = await questionApi.getSubjectList(categoryId)

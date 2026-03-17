@@ -474,8 +474,8 @@ const userStore = useUserStore()
 const timerStore = useTimerStore()
 const questionStore = useQBankStore()
 
-const toolStore = useToolStore()
-const {toolInfo} = storeToRefs(toolStore)
+const packageStore = usePackageStore()
+const {qPackage} = storeToRefs(packageStore)
 
 const authStore = useAuthStore()
 const {isLogin} = storeToRefs(authStore)
@@ -910,7 +910,7 @@ const loadPaperData = async (paperId?: number) => {
     const data = {
       ...setting,
       paperId,
-      toolId: toolInfo.value.id,
+      toolId: qPackage.value.id,
     }
     paper.value = await questionApi.generatePaper(data)
     currentTime.value = getCurrentDate('YYYY-MM-DD HH:mm')
@@ -922,7 +922,7 @@ const loadPaperData = async (paperId?: number) => {
     console.log('错误==',e)
     if(e?.includes('购买')){
       setTimeout(()=> {
-        redirectToPay(toolInfo.value, `/t/${toolInfo.value.series}`)
+        redirectToPay(qPackage.value, `/t/${qPackage.value.series}`)
       }, 500)
     }
   }
@@ -949,7 +949,7 @@ watch(currentQuestionIndex, () => {
 })
 
 useHead({
-  title: `模拟考试-${toolInfo.value.title}`,
+  title: `模拟考试-${qPackage.value.title}`,
 })
 
 

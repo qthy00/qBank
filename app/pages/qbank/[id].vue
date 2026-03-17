@@ -150,8 +150,9 @@ const loadingChapter = ref(false)
 const hasAccess = computed(() => {
   if(!isLogin.value) return false
   if(!userPackages.value) return false
-  // const hasPackage = userPackages.value?.filter(item => item.id === qbankId.value)
-  return hasPackage?.hasAccess || false
+  const packagesList = Array.isArray(userPackages.value) ? userPackages.value : [];
+  const matchedPackage = packagesList.find(item => item.id === qbankId.value);
+  return matchedPackage?.hasAccess || false
 })
 
 /* ==================== 方法定义 ==================== */
@@ -336,8 +337,6 @@ onUnmounted(() => {
 
 <template>
   <div class="min-h-screen bg-[var(--color-bg-page)]">
-    <!-- 菜单部分 -->
-    <MainMenu/>
     <!-- 腰线 -->
     <div class="relative h-32 ">
       <div id="hy-container" class="container mx-auto relative h-full">

@@ -6,7 +6,7 @@ const cartRef = shallowRef<any>(null) // 单例，全局弹窗引用
 export function usePayWithPopup() {
   const route = useRoute()
 
-  const redirectToPay = async (tool: {
+  const redirectToPay = async (QPackage: {
     id: number
     paid: boolean
     paymentType: number
@@ -15,14 +15,14 @@ export function usePayWithPopup() {
       returnUrl = route.fullPath
     }
 
-    if (tool.paid && tool.paymentType !== 1) {
-      cartRef.value?.open(tool, returnUrl)
+    if (QPackage.paid && QPackage.paymentType !== 1) {
+      cartRef.value?.open(QPackage, returnUrl)
       return
     }
     await navigateTo({
       path: '/order/pay',
       query: {
-        id: tool.id,
+        id: QPackage.id,
         returnUrl: encodeURIComponent(returnUrl),
       },
     })

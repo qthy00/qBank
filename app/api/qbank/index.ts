@@ -179,7 +179,7 @@ export const questionApi = {
    * @param server 是否在服务端执行
    */
   getQbankPackages: async (columnId: number, server: boolean = false): Promise<PackageVO[]> => {
-    return await httpGet('getQbankPackages', '/member/question-package/list', {query: {columnId}}, server)
+    return await httpGet('getQbankPackages', '/cms/question-package/list', {query: {columnId}}, server)
   },
 
   /**

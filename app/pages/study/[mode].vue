@@ -519,7 +519,7 @@ const submitAnswer = async () => {
     }
     if (errorMsg.includes('试用次数已用完')) {
       setTimeout(() => {
-        // redirectToPay(toolInfo.value, `/t/${toolInfo.value.series}`)
+        // redirectToPay(qPackage.value, `/t/${qPackage.value.series}`)
       }, 500)
     }
     return

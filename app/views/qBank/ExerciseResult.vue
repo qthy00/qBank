@@ -14,7 +14,7 @@
             <div class="h-16">
               <button
                 class="flex items-center bg-blue-500 hover:bg-blue-600 text-white px-3 py-1.5 rounded-lg transition-colors text-sm font-medium shadow-sm"
-                @click="goBackIndex(toolInfo.id)"
+                @click="goBackIndex(qPackage.id)"
               >
                 <Icon name="icon-park-outline:return" class="mr-1.5" />
                 返回
@@ -112,7 +112,7 @@
           <!-- 操作按钮 -->
           <div class="flex justify-center">
             <button
-              @click="goBackIndex(toolInfo.id)"
+              @click="goBackIndex(qPackage.id)"
               class="py-3 px-8 bg-blue-600 hover:bg-blue-700 text-white rounded-xl font-medium transition-colors flex items-center justify-center w-full sm:w-auto"
             >
               <Icon name="heroicons:arrow-left-20-solid" class="mr-2" />
@@ -129,8 +129,8 @@
 import { useTransition } from '@vueuse/core'
 import { goBackIndex, questionTypes } from './func'
 
-const toolStore = useToolStore()
-const {toolInfo} = storeToRefs(toolStore)
+const packageStore = usePackageStore()
+const {qPackage} = storeToRefs(packageStore)
 
 const questionStore = useQBankStore()
 const {
@@ -278,7 +278,7 @@ const pieOptions = reactive({
 })
 
 useHead({
-  title: `练习结果-${toolInfo.value.title}`,
+  title: `练习结果-${qPackage.value.title}`,
 })
 
 

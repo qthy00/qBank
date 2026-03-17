@@ -11,7 +11,7 @@
             </div>
             <el-button
                 class="flex items-center bg-blue-400  text-white px-3 py-1 rounded-lg transition-colors text-sm font-medium shadow-sm hover:shadow"
-                @click="navigateTo(`/t/${toolInfo.series}`)"
+                @click="navigateTo(`/t/${qPackage.series}`)"
             >
               <Icon name="icon-park-outline:return" class="mr-1.5" />
               返回
@@ -51,7 +51,7 @@
         <el-empty description="暂无大纲信息" />
         <el-button
             class="flex items-center bg-blue-400  text-white px-3 py-1 rounded-lg transition-colors text-sm font-medium shadow-sm hover:shadow"
-            @click="navigateTo(`/t/${toolInfo.series}`)"
+            @click="navigateTo(`/t/${qPackage.series}`)"
         >
           <Icon name="icon-park-outline:return" class="mr-1.5" />
           返回
@@ -68,13 +68,13 @@ import { ArticleApi } from '~/api/article'
 import type { SyllabusVO } from '~/types/qBank'
 
 const message = useMessage()
-const toolStore = useToolStore()
-const {toolInfo} = storeToRefs(toolStore)
+const packageStore = usePackageStore()
+const {qPackage} = storeToRefs(packageStore)
 
 
 const param = {
   tags: 'ksdg',
-  catalogId: toolInfo.value?.relationCategoryId,
+  catalogId: qPackage.value?.relationCategoryId,
   sort: 'Recent',
   contentType: 'article',
 }
@@ -84,17 +84,17 @@ const {data: syllabus} = await ArticleApi.getContentInfo(param, true)
 const syllabusList = ref<SyllabusVO[]>([])
 
 useHead({
-  title: `考试大纲-${toolInfo.value.title}`,
+  title: `考试大纲-${qPackage.value.title}`,
   meta: [
-    { name: 'keywords', content: syllabus.value?.seoKeywords || toolInfo.value?.title },
-    { name: 'description', content: syllabus.value?.seoDescription || toolInfo.value?.description },
+    { name: 'keywords', content: syllabus.value?.seoKeywords || qPackage.value?.title },
+    { name: 'description', content: syllabus.value?.seoDescription || qPackage.value?.description },
     { name: 'author', content: '好游科技' }
   ],
 })
 
 
 // const getSyllabusInfo = async () => {
-//   if(!toolInfo.value.relationCategoryId || syllabus.value) return
+//   if(!qPackage.value.relationCategoryId || syllabus.value) return
 //   try {
 //     loading.value = true
 //     syllabus.value = await ArticleApi.getContentInfo(param)
@@ -106,7 +106,7 @@ useHead({
 // }
 
 const getSyllabusList = async () => {
-  if(!toolInfo.value.relationCategoryId || !param.catalogId) return
+  if(!qPackage.value.relationCategoryId || !param.catalogId) return
   try {
     syllabusList.value = await ArticleApi.getContentList(param)
   } catch (err) {

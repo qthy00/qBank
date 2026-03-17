@@ -615,8 +615,8 @@ const {params, query} = useRoute()
 const appStore = useAppStore()
 const {isMobile} = storeToRefs(appStore)
 
-const toolStore = useToolStore()
-const {toolInfo} = storeToRefs(toolStore)
+const packageStore = usePackageStore()
+const {qPackage} = storeToRefs(packageStore)
 
 const questionStore = useQBankStore()
 const {
@@ -1035,8 +1035,8 @@ const submitAnswer = async () => {
     isRepeat: isRepeat || 0,
     answerTime: new Date().getTime(),
     isMistake: mode == 'mistake',
-    toolId: toolInfo.value.id,
-    categoryId: toolInfo.value.relationCategoryId
+    toolId: qPackage.value.id,
+    categoryId: qPackage.value.relationCategoryId
   }
 
   try {
@@ -1082,7 +1082,7 @@ const submitAnswer = async () => {
     }
     if (errorMsg.includes('试用次数已用完')) {
       setTimeout(() => {
-        redirectToPay(toolInfo.value, `/t/${toolInfo.value.series}`)
+        redirectToPay(qPackage.value, `/t/${qPackage.value.series}`)
       }, 500)
     }
     return
@@ -1212,7 +1212,7 @@ const handleFinish = () => {
     const duration = (endTime - startTime.value) / (1000 * 60)
     const rate = calculateCorrectRate()
     questionStore.saveTimeRate(Math.ceil(duration), rate)
-    navigateTo({name: 'ExerciseResult', params: {toolId: toolInfo.value.id}});
+    navigateTo({name: 'ExerciseResult', params: {toolId: qPackage.value.id}});
   } catch (err) {
     console.error('提交或跳转失败:', err); // 捕获错误
   }
@@ -1296,10 +1296,10 @@ const goBack = async () => {
   if (mode == 'mistake') {
     await navigateTo({
       name: 'ExamMistakes',
-      params: {toolId: toolInfo.value.id}
+      params: {toolId: qPackage.value.id}
     })
   } else {
-    await goBackIndex(toolInfo.value.id)
+    await goBackIndex(qPackage.value.id)
   }
 }
 
@@ -1324,7 +1324,7 @@ const loadQuestionList = async () => {
     random: random.value,
   }
   if (mode == 'mistake') {
-    params.categoryId = toolInfo.value.relationCategoryId
+    params.categoryId = qPackage.value.relationCategoryId
     params.status = 13
     params.mastery = false
   } else {
@@ -1350,7 +1350,7 @@ const loadQuestionList = async () => {
 }
 
 useHead({
-  title: `${mode == 'mistake' ? '错题' : '章节'}练习-${toolInfo.value.title}`,
+  title: `${mode == 'mistake' ? '错题' : '章节'}练习-${qPackage.value.title}`,
 })
 
 

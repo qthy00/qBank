@@ -11,7 +11,7 @@
           </div>
           <el-button
               class="flex items-center bg-blue-400  text-white px-3 py-1 rounded-lg transition-colors text-sm font-medium shadow-sm hover:shadow"
-              @click="navigateTo(`/t/${toolInfo.series}`)"
+              @click="navigateTo(`/t/${qPackage.series}`)"
           >
             <Icon name="icon-park-outline:return" class="mr-1.5"/>
             返回
@@ -171,16 +171,16 @@
 import {formatDate} from '@/utils/formatTime.ts'
 import {questionApi} from '@/api/qbank'
 
-const toolStore = useToolStore()
-const {toolInfo} = storeToRefs(toolStore)
+const packageStore = usePackageStore()
+const {qPackage} = storeToRefs(packageStore)
 
 
 
 useHead({
-  title: `报考指南-${toolInfo.value.title}`,
+  title: `报考指南-${qPackage.value.title}`,
   meta: [
-    { name: 'keywords', content:  toolInfo.value?.title },
-    { name: 'description', content: toolInfo.value?.description },
+    { name: 'keywords', content:  qPackage.value?.title },
+    { name: 'description', content: qPackage.value?.description },
     { name: 'author', content: '好游科技' }
   ],
 })
@@ -189,7 +189,7 @@ useHead({
 const currentYear = new Date().getFullYear();
 // 考试基本信息 - 可根据不同考试类型修改
 const examInfo = reactive({
-  name: `${currentYear}年度 ${toolInfo.value?.title.replace('刷题', '')}报考指南`,
+  name: `${currentYear}年度 ${qPackage.value?.title.replace('刷题', '')}报考指南`,
   lastUpdated: `${currentYear}年1月1日`
 })
 
@@ -318,9 +318,9 @@ const toggleFAQ = (index) => {
 }
 
 const getSchedule = async () => {
-  if (!toolInfo.value?.relationCategoryId) return
+  if (!qPackage.value?.relationCategoryId) return
   try {
-    const data = await questionApi.getExamInfo(toolInfo.value.relationCategoryId)
+    const data = await questionApi.getExamInfo(qPackage.value.relationCategoryId)
     scheduleItems[0].time = formatDate(data.registerTimes[0], 'YYYY年MM月DD日 HH:mm')
     scheduleItems[1].time = formatDate(data.registerTimes[1], 'YYYY年MM月DD日 HH:mm')
     scheduleItems[2].time = formatDate(data.examTimes, 'YYYY年MM月DD日')

@@ -17,7 +17,7 @@
         </div>
         <button
           class="float-end flex items-center bg-blue-400 hover:bg-blue-500 text-white px-3 py-1 rounded-lg transition-colors text-sm font-medium shadow-sm hover:shadow"
-          @click="navigateTo(`/t/${toolInfo.series}`)"
+          @click="navigateTo(`/t/${qPackage.series}`)"
         >
           <Icon name="icon-park-outline:return" class="mr-1.5" />
           返回
@@ -239,8 +239,8 @@ import { formatDate } from '@/utils/formatTime.ts'
 
 const stat = useStatistics()
 
-const toolStore = useToolStore()
-const {toolInfo} = storeToRefs(toolStore)
+const packageStore = usePackageStore()
+const {qPackage} = storeToRefs(packageStore)
 
 const questionStore = useQBankStore()
 
@@ -287,7 +287,7 @@ const distribution = ref([])
 const queryParams = reactive({
   pageSize: 24,
   pageNo: 1,
-  categoryId: toolInfo.value.relationCategoryId,
+  categoryId: qPackage.value.relationCategoryId,
   subjectId: undefined,
   type: undefined,
   random: false,
@@ -363,7 +363,7 @@ const handlePractice = async (id?: number) => {
   questionStore.setChapter( undefined, undefined, '')
   const route:any = {
     name: 'ExamPractice',
-    params: { toolId: toolInfo.value.id, examMode: 'mistake' },
+    params: { toolId: qPackage.value.id, examMode: 'mistake' },
   }
   if(id) {
     route.query = { qid: id }
@@ -374,7 +374,7 @@ const handlePractice = async (id?: number) => {
 
 
 useHead({
-  title: `错题训练-${toolInfo.value.title}`,
+  title: `错题训练-${qPackage.value.title}`,
 })
 
 onMounted(async () => {

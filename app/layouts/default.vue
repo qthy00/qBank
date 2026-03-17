@@ -4,8 +4,8 @@
       <div class="min-h-screen bg-gray-50 flex flex-col">
         <!-- 导航栏 -->
         <Navbar/>
-        <!-- 工具头部 -->
-        <ToolHeader :visible="visible"/>
+        <!-- 头部 -->
+        <MainMenu />
         <!-- 主内容区 -->
         <div class="container mx-auto py-5 flex-1">
           <div class="grid grid-cols-1 lg:grid-cols-4 gap-6">
@@ -38,29 +38,29 @@ import {usePayWithPopup} from '~/composables/usePayRedirect.ts'
 
 const modalStore = useModalStore()
 const authStore = useAuthStore()
-const toolStore = useToolStore()
+const packageStore = usePackageStore()
 
-const {query, path} = useRoute()
+const {query} = useRoute()
 const resultType = computed(() => query.resultType as string === 'success')
 
 const {isLogin} = storeToRefs(authStore)
-const {toolInfo, toolAccess, canUseTool} = storeToRefs(toolStore)
-const visible = computed(() => toolInfo.value?.id !== undefined)
+const {qPackage, accessInfo, canUseQbank} = storeToRefs(packageStore)
+const visible = computed(() => qPackage.value?.id !== undefined)
 
 
 const loadToolAccess = async () => {
-  if (!toolInfo.value?.id || !isLogin.value || !toolInfo.value?.paid) return
+  if (!qPackage.value?.id || !isLogin.value || !qPackage.value?.paid) return
   try {
-    const data = await getPackageAccess(toolInfo.value.id, false)
+    const data = await getPackageAccess(qPackage.value.id, false)
     if (!data) return
-    toolAccess.value = data
-    toolStore.setToolAccess(data)
+    accessInfo.value = data
+    packageStore.setPackageAccess(data)
   } catch (err) {
     console.error('获取工具访问权限失败', err)
   }
 }
 
-watch(toolAccess, async (val) => {
+watch(accessInfo, async (val) => {
   if (resultType.value && val.type === 'trial') {
     await loadToolAccess()
   }
@@ -75,16 +75,15 @@ watch(isLogin, async (val) => {
 
 
 const canUse = computed(() => {
-  if (!toolInfo.value?.paid) return true // 免费工具，直接可用
+  if (!qPackage.value?.paid) return true // 免费工具，直接可用
   if (!isLogin.value) return false // 未登录不可用
-  return toolAccess.value?.hasAccess === true
+  return accessInfo.value?.hasAccess === true
 })
 
 watch(canUse, (val) => {
-  canUseTool.value = val
+  canUseQbank.value = val
 })
 
-const stat = useStatistics()
 const cartRef = ref()
 const {registerCartRef} = usePayWithPopup()
 
@@ -100,10 +99,6 @@ watch(feedback, (val) => {
 
 onMounted(async () => {
   registerCartRef(cartRef.value)
-  toolStore.syncToolStateToPinia()
-  if(path.includes('/t/')){
-    await stat.visitStat()
-  }
 })
 
 
