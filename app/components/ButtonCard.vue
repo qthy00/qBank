@@ -63,49 +63,29 @@
 </template>
 
 <script setup lang="ts">
-// 接收父组件传递的参数
-const props = defineProps({
-  // 主色调前缀（indigo/emerald/amber等）
-  color: {
-    type: String,
-    required: true
-  },
-  // 图标名称（material-symbols:xxx）
-  icon: {
-    type: String,
-    required: true
-  },
-  // 主标题
-  title: {
-    type: String,
-    required: true
-  },
-  // 副标题
-  subtitle: {
-    type: String,
-    required: true
-  },
-  // 描述文本
-  description: {
-    type: String,
-    required: true
-  },
-  // 操作按钮文本
-  actionText: {
-    type: String,
-    required: false,
-    default: '查看详情'
-  },
-  // 标签文本（有值则显示标签）
-  badgeText: {
-    type: String,
-    default: ''
-  },
-  // 标签颜色（默认使用主色调）
-  badgeColor: {
-    type: String,
-    default: ''
-  }
+interface Props {
+  /* 主色调前缀（indigo/emerald/amber等） */
+  color: string
+  /* 图标名称（material-symbols:xxx） */
+  icon: string
+  /* 主标题 */
+  title: string
+  /* 副标题 */
+  subtitle: string
+  /* 描述文本 */
+  description: string
+  /* 操作按钮文本 */
+  actionText?: string
+  /* 标签文本（有值则显示标签） */
+  badgeText?: string
+  /* 标签颜色（默认使用主色调） */
+  badgeColor?: string
+}
+
+const props = withDefaults(defineProps<Props>(), {
+  actionText: '查看详情',
+  badgeText: '',
+  badgeColor: ''
 })
 
 // 点击事件回调

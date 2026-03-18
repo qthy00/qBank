@@ -1,6 +1,6 @@
 <script setup lang="ts">
-import {type Chapter, questionApi} from '~/api/qbank'
-import type {ChapterVO, PackageVO} from '~/types/qbank'
+import {questionApi} from '~/api/qbank'
+import type {ChapterVO, PackageVO} from '~/types/qBank/index'
 import type {examsItemVO, PaperInfo, StudyMaterial, PracticeMode} from '~/types/qBank/examInfo'
 import {CmsCategoryApi} from "~/api/category"
 
@@ -118,7 +118,9 @@ useHead({
 const categories = ref()
 const qbankDetail = ref<PackageVO>()
 
-/* 获取题库详情 */
+/**
+ * 获取题库详情
+ */
 const loadQbankDetail = async () => {
   try {
     const data = await questionApi.getQbankPackages(qbankId.value)
@@ -160,17 +162,19 @@ const toggleOpen = () => {
   isOpen.value = !isOpen.value;
 }
 
-const handleClickOutside = (e) => {
-  const container = document.getElementById('hy-container');
-  // 只有打开状态 + 点击容器外部才关闭
-  if (isOpen.value && container && !container.contains(e.target)) {
-    isOpen.value = false;
+const handleClickOutside = (e: MouseEvent) => {
+  if (import.meta.server) return
+  const container = document.getElementById('hy-container')
+  /* 只有打开状态 + 点击容器外部才关闭 */
+  if (isOpen.value && container && !container.contains(e.target as Node)) {
+    isOpen.value = false
   }
-};
+}
 
 const goBack = () => {
   navigateTo('/qbank')
 }
+
 const loadCategoryData = async (categoryId: number) => {
   categories.value = await CmsCategoryApi.getCategoryListCustom({
     level: 'Last',
@@ -183,7 +187,6 @@ const handleCategoryChange = (categoryId: number) => {
 }
 
 const loadSubjects = async () => {
-  // console.log('loadSubjects', categoryId)
   try {
     subjects.value = await questionApi.getSubjectList(qbankId.value)
     title.value = subjects.value[0]?.aliasName || subjects.value[0]?.name || ''
@@ -208,7 +211,7 @@ const loadChapters = async () => {
   chaptersData.value = []
   try {
     loadingChapter.value = true
-    const data: Chapter[] = await questionApi.getChapterList(activeSubjectId.value)
+    const data = await questionApi.getChapterList(activeSubjectId.value)
     chaptersData.value = data.map((item) => {
       return {
         ...item,
@@ -236,14 +239,8 @@ const toggleChapter = (chapterId: number) => {
 }
 
 const handlePractice = (mode: PracticeMode) => {
-  // if (!hasAccess.value) {
-  //   message.warning('请先购买题库')
-  //   return
-  // }
-
   switch (mode.key) {
     case 'chapter':
-
       navigateTo('/study/practice/chapter')
       break
     case 'mock':
@@ -260,10 +257,6 @@ const handlePractice = (mode: PracticeMode) => {
 }
 
 const handleChapterPractice = (chapter: ChapterVO) => {
-  // if (!hasAccess.value) {
-  //   message.warning('请先购买题库')
-  //   return
-  // }
   questionStore.setChapter(qbankDetail.value?.id, activeSubjectId.value, chapter.id, chapter.name)
   if (chapter.isCompleted) {
     route.query = {restart: 'Y'}
@@ -290,8 +283,6 @@ const handlePurchase = () => {
   }
   /* TODO: 跳转到支付页面 */
   message.info('正在跳转到支付页面...')
-  /* 示例：导航到支付页面 */
-  // navigateTo(`/payment?qbankId=${qbankId.value}`)
 }
 
 const getFileIconClass = (fileType: string) => {
@@ -326,11 +317,15 @@ onMounted(async () => {
   } else {
     await loadSubjects()
   }
-
-  document.addEventListener('click', handleClickOutside);
+  if (import.meta.client) {
+    document.addEventListener('click', handleClickOutside)
+  }
 })
 onUnmounted(() => {
-  document.removeEventListener('click', handleClickOutside);
+  if (import.meta.client) {
+    document.removeEventListener('click', handleClickOutside);
+  }
+
 });
 
 </script>
@@ -450,7 +445,7 @@ onUnmounted(() => {
       <div class="flex gap-6">
         <!-- 左侧主内容区 -->
         <div class="flex-1">
-          <!-- 返回按钮 -->、
+          <!-- 返回按钮 -->
           <div class="mb-4">
             <el-button link @click="goBack">
               <Icon name="ep:arrow-left" class="mr-1"/>
@@ -473,10 +468,6 @@ onUnmounted(() => {
                 {{ subject.aliasName }}
               </span>
             </div>
-            <!--            <div class="mt-3 text-right text-sm">-->
-            <!--              <span class="text-[var(&#45;&#45;color-text-secondary)]">找不到想要的题库？</span>-->
-            <!--              <a href="#" class="text-[var(&#45;&#45;color-btn-primary)] hover:underline">点击反馈</a>-->
-            <!--            </div>-->
           </div>
 
           <!-- 练习模式区 -->
@@ -536,11 +527,6 @@ onUnmounted(() => {
                           name="ep:arrow-right-bold"
                           class="text-[var(--color-text-secondary)] transition-transform"
                       />
-                      <!--                    <Icon-->
-                      <!--                        name="ep:arrow-right-bold"-->
-                      <!--                        class="text-[var(&#45;&#45;color-text-secondary)] transition-transform"-->
-                      <!--                        :class="expandedChapters.includes(chapter.id) ? 'rotate-90' : ''"-->
-                      <!--                    />-->
                       <span class="text-[var(--color-text-primary)] font-medium">{{ chapter.name }}</span>
                     </div>
                     <div class="flex items-center gap-4">
@@ -565,33 +551,6 @@ onUnmounted(() => {
                       </el-button>
                     </div>
                   </div>
-
-                  <!-- 子章节列表 -->
-                  <!--                <div-->
-                  <!--                  v-if="expandedChapters.includes(chapter.id) && chapter.sectionList && chapter.sectionList.length > 0"-->
-                  <!--                  class="pl-8 pr-2 pb-2"-->
-                  <!--                >-->
-                  <!--                  <div-->
-                  <!--                    v-for="section in chapter.sectionList"-->
-                  <!--                    :key="section.id"-->
-                  <!--                    class="flex items-center justify-between py-3 px-4 hover:bg-[var(&#45;&#45;color-bg-container-hover)] rounded transition-colors"-->
-                  <!--                  >-->
-                  <!--                    <div class="flex items-center gap-4">-->
-                  <!--                      <span class="text-[var(&#45;&#45;color-text-secondary)]">{{ section.name }}</span>-->
-                  <!--                      <span class="text-sm text-[var(&#45;&#45;color-text-secondary)]">-->
-                  <!--                        {{ section.total || 0 }} 题-->
-                  <!--                      </span>-->
-                  <!--                    </div>-->
-                  <!--                    <el-button-->
-                  <!--                      type="primary"-->
-                  <!--                      link-->
-                  <!--                      size="small"-->
-                  <!--                      @click="handleChapterPractice(chapter)"-->
-                  <!--                    >-->
-                  <!--                      开始练习-->
-                  <!--                    </el-button>-->
-                  <!--                  </div>-->
-                  <!--                </div>-->
                 </div>
               </div>
               <el-empty v-if="chaptersData.length === 0" description="暂无章节数据" />
@@ -802,6 +761,7 @@ onUnmounted(() => {
 </template>
 
 <style scoped>
+/* 文本截断样式 - 两行 */
 .line-clamp-2 {
   display: -webkit-box;
   -webkit-line-clamp: 2;
@@ -809,6 +769,7 @@ onUnmounted(() => {
   overflow: hidden;
 }
 
+/* 文本截断样式 - 三行 */
 .line-clamp-3 {
   display: -webkit-box;
   -webkit-line-clamp: 3;

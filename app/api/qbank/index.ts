@@ -1,6 +1,6 @@
 import {httpGet, httpPost } from "~/composables/useHttp";
 import type {examsInfoVO, examsItemVO} from "~/types/qBank/examInfo";
-import type {QbankListReqVO, QbankListRespVO, QbankDetailVO, QbankAccessVO, PackageVO} from "~/types/qBank/index";
+import type {QbankListReqVO, QbankListRespVO, QbankDetailVO, QbankAccessVO, PackageVO, QuestionReqVO} from "~/types/qBank/index";
 import {
   mockCategories,
   getMockQbankList,
@@ -8,8 +8,8 @@ import {
   getMockQbankAccess,
 } from './mock'
 
-/* 是否使用模拟数据 */
-const USE_MOCK = true
+/* 是否使用模拟数据 - 通过环境变量控制 */
+const USE_MOCK = import.meta.env.DEV && import.meta.env.VITE_USE_MOCK === 'true'
 
 export const typeNames: Record<number, string> = {
   0: '单选题',
@@ -22,49 +22,6 @@ export const typeNames: Record<number, string> = {
   7: '论述题',
   8: '复合题',
 }
-
-export interface SubjectVO {
-  id: number
-  name: string
-  aliasName: string
-}
-
-export interface ChapterVO {
-  id: number
-  name: string
-  sectionList?: SectionVO[]
-  total: number
-  completedCount: number
-  accuracyRate: number
-}
-
-export interface Chapter extends ChapterVO {
-  isCompleted: boolean
-  completionRate: number
-  sectionCount: number
-}
-
-export interface SectionVO {
-  id: number
-  name: string
-  total: number
-  chapterId: number
-  chapterName: string
-}
-
-export interface QuestionReqVO {
-  status?: number
-  pageSize: number
-  type: number
-  random: boolean
-  categoryId?: number
-  subjectId?: number
-  chapterId?: number
-  sectionId?: number
-  mastery?: boolean
-}
-
-
 
 export const questionApi = {
 

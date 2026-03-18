@@ -21,6 +21,8 @@ export interface QuestionReqVO {
     status?: number
     amount?: number
     random?: boolean
+    pageSize?: number
+    mastery?: boolean
 }
 
 export interface QuestionVO {
@@ -47,15 +49,15 @@ export interface UserAnswer{
 
 export interface AnswerDetail {
     contentId?: number
-    userAnswer: Record<number, string> // 答案内容
-    spendTime?: number // 耗时（秒）
-    hesitationCount?: number // 犹豫次数
-    answerTime?: number // 提交时间
-    isRepeat?: number // 重复答题次数
-    isSubmitted?: boolean // 是否已答题
-    isCorrect?: boolean // 是否正确
-    isSkipped?: boolean // 是否跳过
-    score?: number // 得分
+    userAnswer: Record<number, string> /* 答案内容 */
+    spendTime?: number /* 耗时（秒） */
+    hesitationCount?: number /* 犹豫次数 */
+    answerTime?: number /* 提交时间 */
+    isRepeat?: number /* 重复答题次数 */
+    isSubmitted?: boolean /* 是否已答题 */
+    isCorrect?: boolean /* 是否正确 */
+    isSkipped?: boolean /* 是否跳过 */
+    score?: number /* 得分 */
     typeName?: string
 }
 
@@ -207,6 +209,24 @@ export interface ChapterVO {
 }
 
 /**
+ * 扩展章节视图对象（带完成状态）
+ */
+export interface Chapter extends ChapterVO {
+  isCompleted: boolean
+  completionRate: number
+  sectionCount: number
+}
+
+/**
+ * 科目视图对象
+ */
+export interface SubjectVO {
+  id: number
+  name: string
+  aliasName: string
+}
+
+/**
  * 题库基础信息视图对象
  */
 export interface QbankInfoVO {
@@ -284,4 +304,41 @@ export interface QbankAccessVO {
   accessType: 'purchased' | 'trial' | 'free'
   expiredAt?: string
   remainingUses?: number
+}
+
+/**
+ * 用户刷题设置类型
+ */
+export interface UserSetting {
+  type: number
+  status: number
+  amount: number
+}
+
+/**
+ * 题型统计
+ */
+export interface TypeCount {
+  [key: number]: number
+}
+
+/**
+ * 知识点统计
+ */
+export interface PointStatistic {
+  pointId: number
+  pointName: string
+  total: number
+  correct: number
+  accuracy: number
+}
+
+/**
+ * 模拟考试设置
+ */
+export interface MockSetting {
+  duration?: number
+  questionCount?: number
+  types?: number[]
+  difficulty?: number
 }

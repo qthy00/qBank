@@ -22,23 +22,23 @@ const {openModal} = useModal()
 const message = useMessage()
 const {query} = useRoute()
 /* 当前选中的一级分类 */
-const activeCategoryId = ref<number | null>(Number(query.categoryId) || null)
+const activeCategoryId = ref<number | undefined>(Number(query.categoryId) || undefined)
 const {isLogin} = storeToRefs(authStore)
 console.log('类型', typeof activeCategoryId.value)
 
 /* ==================== 数据获取 ==================== */
 
-// const { data: categories, pending: loading, error } = await useAsyncData(
-//     'qbank-cover-categories',
-//     async () => {
-//       const {mockCategoriesWithChildren} = await import('~/api/qbank/mock')
-//       return mockCategoriesWithChildren as CategoryWithChildren[]
-//     },
-//     {
-//       server: false,
-//       default: () => [],
-//     }
-// )
+/* const { data: categories, pending: loading, error } = await useAsyncData(
+    'qbank-cover-categories',
+    async () => {
+      const {mockCategoriesWithChildren} = await import('~/api/qbank/mock')
+      return mockCategoriesWithChildren as CategoryWithChildren[]
+    },
+    {
+      server: false,
+      default: () => [],
+    }
+) */
 const iconList = ["jz", "ck", "jr", "yl", "kg", "zige", "zc", "sh", "xl", "wy"]
 
 const {data: categories, pending: loading, error} = await CmsCategoryApi.getCategoryList({
@@ -86,33 +86,35 @@ const goToSubCategory = (categoryId: number) => {
   })
 }
 
-// 递归遍历树形结构，找到所有 isLast 为 true 的叶子节点
+/**
+ * 递归遍历树形结构，找到所有 isLast 为 true 的叶子节点
+ */
 const findAllLastNodes = (nodes, parentInfo = {}) => {
-  // 存储最终找到的所有叶子节点
+  /* 存储最终找到的所有叶子节点 */
   let result = [];
 
-  // 遍历当前层级的节点
+  /* 遍历当前层级的节点 */
   nodes.forEach((node, index) => {
-    // 构建当前节点的父级信息（继承上层 + 补充当前层）
+    /* 构建当前节点的父级信息（继承上层 + 补充当前层） */
     const currentParentInfo = {
-      // 继承祖辈的父级信息
+      /* 继承祖辈的父级信息 */
       ...parentInfo,
-      // 当前节点作为子节点的父级信息
+      /* 当前节点作为子节点的父级信息 */
       parentName: node.name,
       parentIcon: `hy-ico-${iconList[index]}`,
       parentId: node.id
   };
 
-    // 判断当前节点是否是最底层节点（isLast 为 true）
+    /* 判断当前节点是否是最底层节点（isLast 为 true） */
     if (node.isLast === true) {
-      // 如果是叶子节点，添加到结果中，并带上父级信息
+      /* 如果是叶子节点，添加到结果中，并带上父级信息 */
       result.push({
         ...node,
         ...currentParentInfo
       });
     } else if (node.children && node.children.length > 0) {
-      // 如果不是叶子节点但有子节点，递归遍历子节点
-      // 将子节点遍历结果合并到总结果中
+      /* 如果不是叶子节点但有子节点，递归遍历子节点 */
+      /* 将子节点遍历结果合并到总结果中 */
       result = result.concat(findAllLastNodes(node.children, currentParentInfo));
     }
   });
@@ -272,14 +274,6 @@ if (error.value) {
                   <!-- 背景装饰 -->
                   <div class="absolute top-0 right-0 w-24 h-24 bg-gradient-to-br from-[var(--color-primary)]/5 to-transparent rounded-bl-full opacity-0 group-hover:opacity-100 transition-opacity duration-500"/>
 
-<!--                  &lt;!&ndash; 图标 &ndash;&gt;-->
-<!--                  <div class="relative mb-4">-->
-<!--                    &lt;!&ndash; 数量徽章 &ndash;&gt;-->
-<!--                    <div class="absolute -top-1 -right-1 px-2 py-0.5 bg-gradient-to-r from-orange-400 to-orange-500 text-white text-xs font-bold rounded-full shadow-sm">-->
-<!--                      {{ sub.count || 0 }}-->
-<!--                    </div>-->
-<!--                  </div>-->
-
                   <!-- 内容 -->
                   <h3 class="font-bold text-gray-900 mb-1 group-hover:text-[var(--color-primary)] transition-colors line-clamp-1">
                     {{ sub.name }}
@@ -322,6 +316,7 @@ if (error.value) {
 </template>
 
 <style scoped>
+/* 文本截断样式 - 单行 */
 .line-clamp-1 {
   display: -webkit-box;
   -webkit-line-clamp: 1;
