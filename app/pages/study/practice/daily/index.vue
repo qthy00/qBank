@@ -1,5 +1,5 @@
 <script setup lang="ts">
-import {getDailyQuestions, savePracticeRecord} from '~/api/qbank/practiceMock'
+import {savePracticeRecord} from '~/api/qbank/practiceMock'
 import type {QuestionVO} from '~/types/qBank'
 
 definePageMeta({
@@ -13,50 +13,124 @@ useHead({
 const router = useRouter()
 const message = useMessage()
 
-/* 练习状态 */
+/* ==========================================
+ * 日期处理相关
+ * ========================================== */
+
+/**
+ * 获取今日及前6天的日期数据
+ */
+const getWeekDates = () => {
+  const dates = []
+  const today = new Date()
+  const weekDays = ['日', '一', '二', '三', '四', '五', '六']
+
+  for (let i = 6; i >= 0; i--) {
+    const date = new Date(today)
+    date.setDate(today.getDate() - i)
+
+    const year = date.getFullYear()
+    const month = String(date.getMonth() + 1).padStart(2, '0')
+    const day = String(date.getDate()).padStart(2, '0')
+    const weekDay = weekDays[date.getDay()]
+
+    dates.push({
+      date: `${year}-${month}-${day}`,
+      displayDate: `${month}-${day}`,
+      weekDay: `周${weekDay}`,
+      isToday: i === 0,
+      timestamp: date.getTime()
+    })
+  }
+
+  return dates
+}
+
+const weekDates = ref(getWeekDates())
+
+/* ==========================================
+ * 练习状态
+ * ========================================== */
 const isStarted = ref(false)
 const isFinished = ref(false)
 
-/* 练习设置 */
+/* ==========================================
+ * 练习设置
+ * ========================================== */
 const practiceSettings = reactive({
   questionCount: 10,
   dailyStreak: 5, /* 连续打卡天数 */
   todayCompleted: false,
 })
 
-/* 练习中数据 */
+/* 选中的日期（默认为今天） */
+const selectedDate = ref(weekDates.value[6].date)
+const selectedDateInfo = computed(() => {
+  return weekDates.value.find(d => d.date === selectedDate.value) || weekDates.value[6]
+})
+
+/* 历史打卡记录（模拟数据） */
+const checkedInDates = ref<string[]>([
+  weekDates.value[5].date,
+  weekDates.value[4].date,
+  weekDates.value[3].date,
+  weekDates.value[2].date,
+  weekDates.value[1].date,
+])
+
+/* 是否已选中日期 */
+const isDateCheckedIn = (date: string) => checkedInDates.value.includes(date)
+
+/* 选择日期 */
+const handleSelectDate = (date: string) => {
+  const dateInfo = weekDates.value.find(d => d.date === date)
+  if (!dateInfo) return
+
+  /* 只能选择今天或之前的日期 */
+  const today = weekDates.value[6].timestamp
+  if (dateInfo.timestamp > today) {
+    message.info('不能选择未来的日期哦~')
+    return
+  }
+
+  selectedDate.value = date
+}
+
+/* ==========================================
+ * 练习中数据
+ * ========================================== */
 const questions = ref<QuestionVO[]>([])
 const currentIndex = ref(0)
 const userAnswers = ref<Record<number, string>>({})
 const startTime = ref<number>(0)
 const spendTime = ref(0)
 
-/* 结果统计 */
+const questionStore = useQBankStore()
+const {dailyAmount} = storeToRefs(questionStore)
+
+const handleSetDailyAmount = (amount: number) => {
+  dailyAmount.value =  amount
+}
+/* ==========================================
+ * 结果统计
+ * ========================================== */
 const resultStats = reactive({
   correctCount: 0,
   wrongCount: 0,
   accuracy: 0,
 })
 
-/* 开始练习 */
+/* ==========================================
+ * 开始练习
+ * ========================================== */
 const handleStartPractice = () => {
-  questions.value = getDailyQuestions(practiceSettings.questionCount)
-
-  if (questions.value.length === 0) {
-    message.warning('获取题目失败，请重试')
-    return
-  }
-
-  isStarted.value = true
-  isFinished.value = false
-  currentIndex.value = 0
-  userAnswers.value = {}
-  startTime.value = Date.now()
-
-  startTimer()
+  /* 跳转到刷题页面，使用 mode=practice，type=4 表示每日练习 */
+  navigateTo(`/study/practice?type=4&date=${selectedDate.value}`)
 }
 
-/* 计时器 */
+/* ==========================================
+ * 计时器
+ * ========================================== */
 let timerInterval: number | null = null
 const startTimer = () => {
   timerInterval = setInterval(() => {
@@ -71,14 +145,18 @@ const stopTimer = () => {
   }
 }
 
-/* 格式化时间 */
+/* ==========================================
+ * 格式化时间
+ * ========================================== */
 const formatTime = (seconds: number): string => {
   const mins = Math.floor(seconds / 60)
   const secs = seconds % 60
   return `${mins.toString().padStart(2, '0')}:${secs.toString().padStart(2, '0')}`
 }
 
-/* 选择答案 */
+/* ==========================================
+ * 选择答案
+ * ========================================== */
 const handleSelectAnswer = (questionId: number, answer: string) => {
   const question = questions.value[currentIndex.value]
 
@@ -101,26 +179,31 @@ const handleSelectAnswer = (questionId: number, answer: string) => {
   }
 }
 
-/* 上一题 */
+/* ==========================================
+ * 上一题/下一题
+ * ========================================== */
 const handlePrev = () => {
   if (currentIndex.value > 0) {
     currentIndex.value--
   }
 }
 
-/* 下一题 */
 const handleNext = () => {
   if (currentIndex.value < questions.value.length - 1) {
     currentIndex.value++
   }
 }
 
-/* 跳转到指定题目 */
+/* ==========================================
+ * 跳转到指定题目
+ * ========================================== */
 const handleJumpTo = (index: number) => {
   currentIndex.value = index
 }
 
-/* 提交练习 */
+/* ==========================================
+ * 提交练习
+ * ========================================== */
 const handleSubmit = () => {
   const unanswered = questions.value.filter(q => !userAnswers.value[q.id])
   if (unanswered.length > 0) {
@@ -135,7 +218,9 @@ const handleSubmit = () => {
   }
 }
 
-/* 提交练习结果 */
+/* ==========================================
+ * 提交练习结果
+ * ========================================== */
 const submitPractice = () => {
   stopTimer()
 
@@ -161,7 +246,9 @@ const submitPractice = () => {
   isFinished.value = true
 }
 
-/* 重新开始 */
+/* ==========================================
+ * 重新开始
+ * ========================================== */
 const handleRestart = () => {
   isStarted.value = false
   isFinished.value = false
@@ -174,19 +261,24 @@ const handleRestart = () => {
   resultStats.accuracy = 0
 }
 
-/* 查看解析 */
+/* ==========================================
+ * 查看解析
+ * ========================================== */
 const showAnalysis = ref(false)
 
-/* 获取当前题目 */
+/* ==========================================
+ * 计算属性
+ * ========================================== */
 const currentQuestion = computed(() => questions.value[currentIndex.value])
 
-/* 获取答题进度 */
 const progress = computed(() => {
   const answered = Object.keys(userAnswers.value).length
   return Math.round((answered / questions.value.length) * 100)
 })
 
-/* 获取选项样式 */
+/* ==========================================
+ * 选项样式
+ * ========================================== */
 const getOptionClass = (question: QuestionVO, option: string, isResult: boolean = false): string => {
   const userAnswer = userAnswers.value[question.id]
 
@@ -215,7 +307,9 @@ const getOptionClass = (question: QuestionVO, option: string, isResult: boolean 
   return 'border-gray-200 hover:border-gray-300 hover:bg-gray-50'
 }
 
-/* 获取选项状态图标 */
+/* ==========================================
+ * 选项状态图标
+ * ========================================== */
 const getOptionIcon = (question: QuestionVO, option: string): string => {
   const userAnswer = userAnswers.value[question.id]
 
@@ -234,19 +328,24 @@ onUnmounted(() => {
 </script>
 
 <template>
-  <div class="min-h-screen bg-gray-50">
+  <div class="min-h-screen bg-gradient-to-br from-blue-50 via-white to-indigo-50">
     <!-- 页面标题区 -->
-    <div class="bg-white border-b border-gray-200">
-      <div class="max-w-6xl mx-auto px-4 py-6">
+    <div class="bg-white/80 backdrop-blur-sm border-b border-blue-100 sticky top-0 z-10">
+      <div class="max-w-6xl mx-auto px-4 py-5">
         <div class="flex items-center justify-between">
-          <div>
-            <h1 class="text-2xl font-bold text-gray-800">每日练习</h1>
-            <p class="text-sm text-gray-500 mt-2">每日一练，保持学习状态，积少成多</p>
+          <div class="flex items-center gap-3">
+            <div class="w-10 h-10 rounded-xl bg-gradient-to-br from-blue-500 to-indigo-600 flex items-center justify-center shadow-lg shadow-blue-200">
+              <Icon name="ep:calendar-check" class="text-xl text-white" />
+            </div>
+            <div>
+              <h1 class="text-xl font-bold text-gray-800">每日练习</h1>
+              <p class="text-xs text-gray-500">每日一练，保持学习状态</p>
+            </div>
           </div>
           <div v-if="isStarted && !isFinished" class="flex items-center gap-4">
-            <span class="text-sm text-gray-500">用时：{{ formatTime(spendTime) }}</span>
+            <span class="text-sm text-gray-500 font-medium">用时：{{ formatTime(spendTime) }}</span>
             <button
-              class="px-4 py-2 text-sm text-gray-600 border border-gray-300 rounded-lg hover:bg-gray-50"
+              class="px-4 py-2 text-sm text-gray-600 border border-gray-200 rounded-lg hover:bg-gray-50 transition-all"
               @click="handleRestart"
             >
               退出
@@ -256,94 +355,302 @@ onUnmounted(() => {
       </div>
     </div>
 
-    <div class="max-w-6xl mx-auto px-4 py-6">
+    <div class="max-w-6xl mx-auto px-4 py-8">
       <!-- 欢迎界面 -->
-      <div v-if="!isStarted && !isFinished" class="grid grid-cols-1 lg:grid-cols-2 gap-6">
-        <!-- 左侧打卡卡片 -->
-        <div class="bg-white rounded-xl shadow-sm p-6">
-          <div class="text-center mb-6">
-            <div class="inline-flex items-center justify-center w-20 h-20 bg-orange-100 rounded-full mb-4">
-              <Icon name="ep:sunrise" class="text-4xl text-orange-500" />
-            </div>
-            <h2 class="text-xl font-bold text-gray-800">每日打卡</h2>
-            <p class="text-sm text-gray-500 mt-2">已连续打卡 <span class="text-orange-500 font-bold text-lg">{{ practiceSettings.dailyStreak }}</span> 天</p>
-          </div>
-
-          <!-- 打卡日历 -->
-          <div class="grid grid-cols-7 gap-2 mb-6">
-            <div v-for="day in 7" :key="day" class="text-center">
-              <div
-                class="w-10 h-10 mx-auto rounded-full flex items-center justify-center text-sm"
-                :class="day <= practiceSettings.dailyStreak ? 'bg-orange-500 text-white' : 'bg-gray-100 text-gray-400'"
-              >
-                <Icon v-if="day <= practiceSettings.dailyStreak" name="ep:check" />
-                <span v-else>{{ day }}</span>
+      <div v-if="!isStarted && !isFinished" class="space-y-6">
+        <!-- 打卡日历卡片 -->
+        <div class="bg-white rounded-2xl shadow-sm border border-blue-100 p-6 md:p-8">
+          <div class="flex items-center justify-between mb-6">
+            <div class="flex items-center gap-3">
+              <div class="w-12 h-12 rounded-2xl bg-gradient-to-br from-amber-400 to-orange-500 flex items-center justify-center shadow-lg shadow-orange-200">
+                <Icon name="ep:sunrise" class="text-2xl text-white" />
               </div>
-              <div class="text-xs text-gray-400 mt-1">{{ ['一', '二', '三', '四', '五', '六', '日'][day - 1] }}</div>
+              <div>
+                <h2 class="text-lg font-bold text-gray-800">打卡日历</h2>
+                <p class="text-sm text-gray-500">
+                  已连续打卡 <span class="text-orange-500 font-bold text-lg">{{ practiceSettings.dailyStreak }}</span> 天
+                </p>
+              </div>
+            </div>
+            <div v-if="practiceSettings.todayCompleted" class="flex items-center gap-2 px-4 py-2 bg-green-50 rounded-full border border-green-200">
+              <Icon name="ep:check" class="text-green-500" />
+              <span class="text-sm text-green-700 font-medium">今日已完成</span>
             </div>
           </div>
 
-          <!-- 今日状态 -->
-          <div v-if="practiceSettings.todayCompleted" class="text-center p-4 bg-green-50 rounded-lg">
-            <Icon name="ep:success-filled" class="text-3xl text-green-500 mb-2" />
-            <p class="text-green-700 font-medium">今日已完成练习</p>
-            <p class="text-sm text-green-600 mt-1">明天再来继续打卡吧！</p>
+          <!-- 7天打卡日历 -->
+          <div class="grid grid-cols-7 gap-2 md:gap-4">
+            <div
+              v-for="(day, index) in weekDates"
+              :key="day.date"
+              class="relative cursor-pointer group"
+              @click="handleSelectDate(day.date)"
+            >
+              <div
+                class="relative flex flex-col items-center p-3 md:p-4 rounded-2xl transition-all duration-300 border-2"
+                :class="[
+                  day.isToday
+                    ? 'bg-gradient-to-br from-blue-500 to-indigo-600 border-blue-500 shadow-lg shadow-blue-200'
+                    : selectedDate === day.date
+                      ? 'bg-blue-50 border-blue-400 shadow-md'
+                      : isDateCheckedIn(day.date)
+                        ? 'bg-green-50 border-green-300'
+                        : 'bg-gray-50 border-transparent hover:border-gray-200 hover:bg-white hover:shadow-md'
+                ]"
+              >
+                <!-- 星期 -->
+                <span
+                  class="text-xs font-medium mb-1"
+                  :class="[
+                    day.isToday
+                      ? 'text-blue-100'
+                      : selectedDate === day.date
+                        ? 'text-blue-600'
+                        : 'text-gray-500'
+                  ]"
+                >
+                  {{ day.weekDay }}
+                </span>
+
+                <!-- 日期数字 -->
+                <span
+                  class="text-base md:text-lg font-bold"
+                  :class="[
+                    day.isToday
+                      ? 'text-white'
+                      : selectedDate === day.date
+                        ? 'text-blue-700'
+                        : isDateCheckedIn(day.date)
+                          ? 'text-green-700'
+                          : 'text-gray-700'
+                  ]"
+                >
+                  {{ day.displayDate.split('-')[1] }}
+                </span>
+
+                <!-- 打卡标记 -->
+                <div
+                  v-if="isDateCheckedIn(day.date)"
+                  class="absolute -top-1 -right-1 w-5 h-5 rounded-full bg-green-500 flex items-center justify-center shadow-sm"
+                >
+                  <Icon name="ep:check" class="text-xs text-white" />
+                </div>
+
+                <!-- 今天标记 -->
+                <div
+                  v-if="day.isToday"
+                  class="absolute -bottom-2 left-1/2 transform -translate-x-1/2 px-2 py-0.5 rounded-full bg-amber-400 text-white text-xs font-bold shadow-sm"
+                >
+                  今天
+                </div>
+
+                <!-- 选中标记 -->
+                <div
+                  v-if="selectedDate === day.date && !day.isToday"
+                  class="absolute -bottom-1 w-2 h-2 rounded-full bg-blue-500"
+                />
+              </div>
+            </div>
+          </div>
+
+          <!-- 选中日期提示 -->
+          <div class="mt-6 p-4 rounded-xl bg-blue-50/50 border border-blue-100">
+            <div class="flex items-center justify-between">
+              <div class="flex items-center gap-2">
+                <Icon name="ep:info-filled" class="text-blue-500" />
+                <span class="text-sm text-gray-700">
+                  已选择 <span class="font-bold text-blue-600">{{ selectedDateInfo.weekDay }} {{ selectedDateInfo.displayDate }}</span> 的练习
+                </span>
+              </div>
+              <span v-if="isDateCheckedIn(selectedDate)" class="text-xs text-green-600 font-medium">
+                该日已完成打卡
+              </span>
+              <span v-else-if="selectedDateInfo.isToday" class="text-xs text-amber-600 font-medium">
+                今日待打卡
+              </span>
+              <span v-else class="text-xs text-gray-500 font-medium">
+                补打卡练习
+              </span>
+            </div>
           </div>
         </div>
 
-        <!-- 右侧设置 -->
-        <div class="bg-white rounded-xl shadow-sm p-6">
-          <h2 class="text-lg font-semibold text-gray-800 mb-6">练习设置</h2>
+        <!-- 下方两栏布局 -->
+        <div class="grid grid-cols-1 lg:grid-cols-3 gap-6">
+          <!-- 左侧：练习设置 -->
+          <div class="lg:col-span-2 space-y-6">
+            <!-- 练习设置卡片 -->
+            <div class="bg-white rounded-2xl shadow-sm border border-blue-100 p-6 md:p-8">
+              <h2 class="text-lg font-bold text-gray-800 mb-6 flex items-center gap-2">
+                <Icon name="ep:setting" class="text-blue-500" />
+                练习设置
+              </h2>
 
-          <!-- 题目数量 -->
-          <div class="mb-6">
-            <label class="text-sm font-medium text-gray-700 mb-3 block">题目数量</label>
-            <div class="grid grid-cols-4 gap-3">
+              <!-- 题目数量选择 -->
+              <div class="mb-8">
+                <label class="text-sm font-medium text-gray-700 mb-4 block">题目数量</label>
+                <div class="grid grid-cols-4 gap-3">
+                  <button
+                    v-for="count in [5, 10, 15, 20]"
+                    :key="count"
+                    class="py-4 rounded-xl border-2 text-center transition-all duration-200"
+                    :class="dailyAmount === count
+                      ? 'border-blue-500 bg-blue-50 text-blue-600 shadow-md shadow-blue-100'
+                      : 'border-gray-200 hover:border-blue-300 hover:bg-blue-50/50'"
+                    @click="dailyAmount = count"
+                  >
+                    <span class="text-lg font-bold">{{ count }}</span>
+                    <span class="text-xs block text-gray-500 mt-1">题</span>
+                  </button>
+                </div>
+              </div>
+
+              <!-- 功能说明 -->
+              <div class="grid grid-cols-1 md:grid-cols-3 gap-4 mb-6">
+                <div class="flex items-start gap-3 p-4 bg-gradient-to-br from-blue-50 to-indigo-50 rounded-xl border border-blue-100">
+                  <div class="w-10 h-10 rounded-lg bg-blue-500 flex items-center justify-center flex-shrink-0">
+                    <Icon name="ep:random" class="text-white" />
+                  </div>
+                  <div>
+                    <h4 class="text-sm font-bold text-gray-800">随机抽题</h4>
+                    <p class="text-xs text-gray-500 mt-1">系统随机抽取题目，覆盖各知识点</p>
+                  </div>
+                </div>
+                <div class="flex items-start gap-3 p-4 bg-gradient-to-br from-purple-50 to-pink-50 rounded-xl border border-purple-100">
+                  <div class="w-10 h-10 rounded-lg bg-purple-500 flex items-center justify-center flex-shrink-0">
+                    <Icon name="ep:timer" class="text-white" />
+                  </div>
+                  <div>
+                    <h4 class="text-sm font-bold text-gray-800">计时练习</h4>
+                    <p class="text-xs text-gray-500 mt-1">记录答题用时，提高答题速度</p>
+                  </div>
+                </div>
+                <div class="flex items-start gap-3 p-4 bg-gradient-to-br from-green-50 to-teal-50 rounded-xl border border-green-100">
+                  <div class="w-10 h-10 rounded-lg bg-green-500 flex items-center justify-center flex-shrink-0">
+                    <Icon name="ep:data-analysis" class="text-white" />
+                  </div>
+                  <div>
+                    <h4 class="text-sm font-bold text-gray-800">智能分析</h4>
+                    <p class="text-xs text-gray-500 mt-1">查看正确率和详细解析</p>
+                  </div>
+                </div>
+              </div>
+
+              <!-- 开始按钮 -->
               <button
-                v-for="count in [5, 10, 15, 20]"
-                :key="count"
-                class="py-3 rounded-lg border-2 text-center transition-colors"
-                :class="practiceSettings.questionCount === count ? 'border-blue-500 bg-blue-50 text-blue-600' : 'border-gray-200 hover:border-gray-300'"
-                @click="practiceSettings.questionCount = count"
+                class="w-full py-4 bg-gradient-to-r from-blue-500 to-indigo-600 text-white rounded-xl font-bold text-lg hover:from-blue-600 hover:to-indigo-700 transition-all duration-200 shadow-lg shadow-blue-200 hover:shadow-xl hover:shadow-blue-300 flex items-center justify-center gap-2 group"
+                @click="handleStartPractice"
               >
-                {{ count }}题
+                <Icon name="ep:edit-pen" class="text-xl group-hover:scale-110 transition-transform" />
+                <span>开始每日练习</span>
+                <Icon name="ep:arrow-right" class="text-lg group-hover:translate-x-1 transition-transform" />
               </button>
             </div>
           </div>
 
-          <!-- 功能说明 -->
-          <div class="space-y-3 mb-6">
-            <div class="flex items-start gap-3 p-3 bg-gray-50 rounded-lg">
-              <Icon name="ep:random" class="text-blue-500 mt-0.5" />
-              <div>
-                <h4 class="text-sm font-medium text-gray-700">随机抽题</h4>
-                <p class="text-xs text-gray-500">系统从题库中随机抽取题目，覆盖各章节知识点</p>
+          <!-- 右侧：数据统计 -->
+          <div class="space-y-6">
+            <!-- 统计卡片 -->
+            <div class="bg-white rounded-2xl shadow-sm border border-blue-100 p-6">
+              <h2 class="text-lg font-bold text-gray-800 mb-4 flex items-center gap-2">
+                <Icon name="ep:trophy" class="text-amber-500" />
+                学习统计
+              </h2>
+
+              <div class="space-y-4">
+                <div class="p-4 rounded-xl bg-gradient-to-r from-blue-50 to-indigo-50 border border-blue-100">
+                  <div class="flex items-center justify-between">
+                    <div class="flex items-center gap-3">
+                      <div class="w-10 h-10 rounded-lg bg-blue-500 flex items-center justify-center">
+                        <Icon name="ep:calendar" class="text-white" />
+                      </div>
+                      <div>
+                        <p class="text-xs text-gray-500">累计练习</p>
+                        <p class="text-xl font-bold text-gray-800">{{ practiceSettings.dailyStreak }} 天</p>
+                      </div>
+                    </div>
+                  </div>
+                </div>
+
+                <div class="p-4 rounded-xl bg-gradient-to-r from-purple-50 to-pink-50 border border-purple-100">
+                  <div class="flex items-center justify-between">
+                    <div class="flex items-center gap-3">
+                      <div class="w-10 h-10 rounded-lg bg-purple-500 flex items-center justify-center">
+                        <Icon name="ep:document-checked" class="text-white" />
+                      </div>
+                      <div>
+                        <p class="text-xs text-gray-500">总答题数</p>
+                        <p class="text-xl font-bold text-gray-800">128 道</p>
+                      </div>
+                    </div>
+                  </div>
+                </div>
+
+                <div class="p-4 rounded-xl bg-gradient-to-r from-green-50 to-teal-50 border border-green-100">
+                  <div class="flex items-center justify-between">
+                    <div class="flex items-center gap-3">
+                      <div class="w-10 h-10 rounded-lg bg-green-500 flex items-center justify-center">
+                        <Icon name="ep:check" class="text-white" />
+                      </div>
+                      <div>
+                        <p class="text-xs text-gray-500">平均正确率</p>
+                        <p class="text-xl font-bold text-gray-800">78%</p>
+                      </div>
+                    </div>
+                  </div>
+                </div>
               </div>
             </div>
-            <div class="flex items-start gap-3 p-3 bg-gray-50 rounded-lg">
-              <Icon name="ep:timer" class="text-blue-500 mt-0.5" />
-              <div>
-                <h4 class="text-sm font-medium text-gray-700">计时练习</h4>
-                <p class="text-xs text-gray-500">记录答题用时，帮助你提高答题速度</p>
+
+            <!-- 打卡成就卡片 -->
+            <div class="bg-gradient-to-br from-amber-50 to-orange-50 rounded-2xl shadow-sm border border-amber-200 p-6">
+              <div class="flex items-center gap-3 mb-4">
+                <div class="w-12 h-12 rounded-xl bg-gradient-to-br from-amber-400 to-orange-500 flex items-center justify-center">
+                  <Icon name="ep:medal" class="text-2xl text-white" />
+                </div>
+                <div>
+                  <h3 class="font-bold text-gray-800">打卡成就</h3>
+                  <p class="text-xs text-gray-500">坚持就是胜利</p>
+                </div>
               </div>
-            </div>
-            <div class="flex items-start gap-3 p-3 bg-gray-50 rounded-lg">
-              <Icon name="ep:data-analysis" class="text-blue-500 mt-0.5" />
-              <div>
-                <h4 class="text-sm font-medium text-gray-700">智能分析</h4>
-                <p class="text-xs text-gray-500">练习结束后查看正确率和详细解析</p>
+
+              <div class="space-y-3">
+                <div class="flex items-center gap-3">
+                  <div class="w-8 h-8 rounded-lg bg-green-500 flex items-center justify-center">
+                    <Icon name="ep:check" class="text-white text-sm" />
+                  </div>
+                  <div class="flex-1">
+                    <div class="flex items-center justify-between">
+                      <span class="text-sm font-medium text-gray-700">连续打卡3天</span>
+                      <span class="text-xs text-green-600">已完成</span>
+                    </div>
+                  </div>
+                </div>
+                <div class="flex items-center gap-3">
+                  <div class="w-8 h-8 rounded-lg bg-green-500 flex items-center justify-center">
+                    <Icon name="ep:check" class="text-white text-sm" />
+                  </div>
+                  <div class="flex-1">
+                    <div class="flex items-center justify-between">
+                      <span class="text-sm font-medium text-gray-700">连续打卡7天</span>
+                      <span class="text-xs text-green-600">已完成</span>
+                    </div>
+                  </div>
+                </div>
+                <div class="flex items-center gap-3">
+                  <div class="w-8 h-8 rounded-lg bg-gray-200 flex items-center justify-center">
+                    <Icon name="ep:lock" class="text-gray-400 text-sm" />
+                  </div>
+                  <div class="flex-1">
+                    <div class="flex items-center justify-between">
+                      <span class="text-sm font-medium text-gray-500">连续打卡30天</span>
+                      <span class="text-xs text-gray-400">还差25天</span>
+                    </div>
+                  </div>
+                </div>
               </div>
             </div>
           </div>
-
-          <!-- 开始按钮 -->
-          <button
-            class="w-full py-3 bg-blue-600 text-white rounded-lg font-medium hover:bg-blue-700 transition-colors flex items-center justify-center gap-2"
-            @click="handleStartPractice"
-          >
-            <Icon name="ep:edit-pen" />
-            <span>开始每日练习</span>
-          </button>
         </div>
       </div>
 
@@ -351,7 +658,7 @@ onUnmounted(() => {
       <div v-else-if="isStarted && !isFinished" class="grid grid-cols-1 lg:grid-cols-3 gap-6">
         <!-- 左侧答题卡 -->
         <div class="lg:col-span-1">
-          <div class="bg-white rounded-xl shadow-sm p-4">
+          <div class="bg-white rounded-xl shadow-sm p-4 border border-blue-100">
             <h2 class="text-lg font-semibold text-gray-800 mb-4">答题卡</h2>
 
             <!-- 进度条 -->
@@ -391,7 +698,7 @@ onUnmounted(() => {
 
         <!-- 右侧题目区域 -->
         <div class="lg:col-span-2">
-          <div v-if="currentQuestion" class="bg-white rounded-xl shadow-sm p-6">
+          <div v-if="currentQuestion" class="bg-white rounded-xl shadow-sm p-6 border border-blue-100">
             <!-- 题号与类型 -->
             <div class="flex items-center justify-between mb-4">
               <div class="flex items-center gap-3">
@@ -454,7 +761,7 @@ onUnmounted(() => {
 
       <!-- 结果界面 -->
       <div v-else-if="isFinished" class="max-w-2xl mx-auto">
-        <div class="bg-white rounded-xl shadow-sm p-8">
+        <div class="bg-white rounded-xl shadow-sm p-8 border border-blue-100">
           <!-- 结果概览 -->
           <div class="text-center mb-8">
             <div class="inline-flex items-center justify-center w-24 h-24 rounded-full mb-4"
@@ -474,15 +781,15 @@ onUnmounted(() => {
 
           <!-- 统计数据 -->
           <div class="grid grid-cols-3 gap-4 mb-8">
-            <div class="text-center p-4 bg-green-50 rounded-lg">
+            <div class="text-center p-4 bg-green-50 rounded-lg border border-green-100">
               <div class="text-2xl font-bold text-green-600">{{ resultStats.correctCount }}</div>
               <div class="text-sm text-green-700">正确</div>
             </div>
-            <div class="text-center p-4 bg-red-50 rounded-lg">
+            <div class="text-center p-4 bg-red-50 rounded-lg border border-red-100">
               <div class="text-2xl font-bold text-red-600">{{ resultStats.wrongCount }}</div>
               <div class="text-sm text-red-700">错误</div>
             </div>
-            <div class="text-center p-4 bg-blue-50 rounded-lg">
+            <div class="text-center p-4 bg-blue-50 rounded-lg border border-blue-100">
               <div class="text-2xl font-bold text-blue-600">{{ formatTime(spendTime) }}</div>
               <div class="text-sm text-blue-700">用时</div>
             </div>
@@ -510,7 +817,7 @@ onUnmounted(() => {
           <div
             v-for="(q, index) in questions"
             :key="q.id"
-            class="bg-white rounded-xl shadow-sm p-6"
+            class="bg-white rounded-xl shadow-sm p-6 border border-blue-100"
           >
             <div class="flex items-start gap-3 mb-4">
               <span class="flex-shrink-0 w-8 h-8 flex items-center justify-center rounded-full text-sm font-medium"

@@ -1,7 +1,7 @@
 <template>
   <ClientOnly>
     <div class="mx-auto">
-      <el-card class="rounded-2xl" v-loading="infoLoading">
+      <el-card v-loading="infoLoading" class="rounded-2xl">
         <!-- 标题 -->
         <h2 class="text-2xl font-semibold text-[#409EFF] mb-8">
           {{ newOrder ? '订单确认' : '待支付订单' }}
@@ -28,13 +28,13 @@
               >¥{{ fen2yuan(orderInfo?.totalPrice) }}</span
               >
             </div>
-            <div class="text-sm" v-if="orderInfo?.discountPrice">
+            <div v-if="orderInfo?.discountPrice" class="text-sm">
               <span>优惠：</span>
               <span class="text-red-600 font-semibold text-xl"
               >¥{{ fen2yuan(orderInfo?.discountPrice) }}</span
               >
             </div>
-            <div class="text-xs" v-if="quantity">
+            <div v-if="quantity" class="text-xs">
               <span>数量：</span>
               <span class="text-[#409EFF] font-semibold text-base">x {{ quantity }}</span>
             </div>
@@ -83,8 +83,8 @@
 
         <el-form-item label="订单备注" class="my-4">
           <el-input
-              type="textarea"
               v-model="orderNote"
+              type="textarea"
               placeholder="例如：开票信息、使用场景说明等"
               :rows="3"
           />
@@ -98,7 +98,7 @@
 
         <!-- 操作按钮 -->
         <div class="flex justify-end space-x-3 my-8">
-          <el-button type="info" plain size="large" @click="goBack">返回工具市场</el-button>
+          <el-button type="info" plain size="large" @click="goBack">返回</el-button>
           <el-button
               :loading="loading"
               :disabled="loading"
@@ -221,6 +221,8 @@ const clearQueryInterval = () => {
 function goBack() {
   if (returnUrl.value && returnUrl.value.indexOf('http') === 0) {
     location.href = returnUrl.value
+  } else if (returnUrl.value ){
+   navigateTo(returnUrl.value)
   } else {
     location.href = '/'
   }
@@ -235,6 +237,7 @@ const loadOrderInfo = async () => {
         pointStatus: false,
         itemId,
         quantity,
+        type: 3
       }
       orderInfo.value = await getSwapOrderInfo(orderForm)
     } else {

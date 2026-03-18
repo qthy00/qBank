@@ -56,7 +56,7 @@ export const useQBankStore = defineStore('qBank', () => {
   const typeCounts = ref<TypeCount>({})
   const pointStatistics = ref<PointStatistic[]>([])
   const mockSetting = ref<MockSetting>({})
-
+  const dailyAmount = ref<number>(10)
 
   const setUserSetting = (selectedValues: number[]) => {
     userSetting.value = {
@@ -101,6 +101,7 @@ export const useQBankStore = defineStore('qBank', () => {
     typeCounts,
     pointStatistics,
     mockSetting,
+    dailyAmount,
     /* Actions */
     setUserSetting,
     saveTimeRate,

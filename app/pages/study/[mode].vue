@@ -2,8 +2,9 @@
  * @description: 刷题页面
  * @param {string} mode - 学习模式，如：'practice'、'daily'、'exam'
  * @query {number} qid - 指定某一题目ID
- * @query {number} type - 练习类型：1 - 章节练习 2 - 错题集 3 - 收藏题 4 - 考试题
+ * @query {number} type - 练习类型：1 - 章节练习 2 - 错题集 3 - 收藏题 4 - 每日练习
  * @query {number} pattern - 练习类型：1 - 练习 2 - 考试 3 - 重做
+ * @query {string} date - 每日练习日期（YYYY-MM-DD）
  * @query {boolean} restart - 是否重新开始
  */
 
@@ -32,7 +33,8 @@ const {
   random,
   showAnswerSetting,
   title,
-  subtitle
+  subtitle,
+  dailyAmount
 } = storeToRefs(questionStore)
 const {redirectToPay} = usePayWithPopup()
 
@@ -709,12 +711,17 @@ const getOptionStyles = (key: string, questionId?: number) => {
   }
 }
 
+const dailyDate = computed(() => String(query.date || ''))
+
 const goBack = async () => {
   if (modeType.value == 2) {
     await navigateTo({
       name: 'ExamMistakes',
       params: {toolId: packageId.value}
     })
+  } else if (modeType.value == 4) {
+    /* 每日练习返回每日练习首页 */
+    await navigateTo('/study/practice/daily')
   } else {
     await goBackIndex(packageId.value)
   }
@@ -734,6 +741,25 @@ const loadQuestion = async () => {
 }
 
 const loadQuestionList = async () => {
+  /* 每日练习模式 */
+  if (modeType.value == 4) {
+    loading.value = true
+    try {
+      const data = await questionApi.getDailyQuestionList({
+        date: dailyDate.value,
+        amount: dailyAmount.value || 10,
+        subjectId:  subjectId.value
+      })
+      total.value = data.total || 0
+      questions.value = data.list || []
+      initAnswerCache()
+    } catch (e) {
+      console.error('获取每日练习题目失败:', e)
+    } finally {
+      loading.value = false
+    }
+    return
+  }
 
   const params: QuestionReqVO = {
     type: userSetting.value.type,
@@ -768,7 +794,11 @@ const loadQuestionList = async () => {
 }
 
 useHead({
-  title: `${modeType.value == 2 ? '错题' : '章节'}练习`,
+  title: computed(() => {
+    if (modeType.value == 2) return '错题练习'
+    if (modeType.value == 4) return '每日练习'
+    return '章节练习'
+  }),
 })
 
 

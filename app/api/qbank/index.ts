@@ -37,6 +37,10 @@ export const questionApi = {
     return await httpPost('getQuestionList', '/cms/question/list', data )
   },
 
+  getDailyQuestionList: async (query: QuestionReqVO) => {
+    return await httpGet('getDailyQuestionList', '/cms/question/day-list', {query} )
+  },
+
   getWrongQuestionList: async (data: any) => {
     return await httpPost('getWrongQuestionList', '/cms/question/wrong-list', data )
   },

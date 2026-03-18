@@ -1,6 +1,6 @@
 <script setup lang="ts">
 import {questionApi} from '~/api/qbank'
-import type {ChapterVO, PackageVO} from '~/types/qBank/index'
+import type {ChapterVO, PackageVO} from '~/types/qBank'
 import type {examsItemVO, PaperInfo, StudyMaterial, PracticeMode} from '~/types/qBank/examInfo'
 import {CmsCategoryApi} from "~/api/category"
 
@@ -17,14 +17,14 @@ const userStore = useUserStore()
 const questionStore = useQBankStore()
 const {isLogin} = storeToRefs(authStore)
 const {userPackages} = storeToRefs(userStore)
-const {title, subjectId: activeSubjectId} = storeToRefs(questionStore)
+const {title} = storeToRefs(questionStore)
 const {openModal} = useModal()
 const message = useMessage()
 const isOpen = ref(false)
 questionStore.categoryId = qbankId.value
 /* 展开的章节 */
 const expandedChapters = ref<number[]>([])
-
+const activeSubjectId = ref<number>()
 /* ==================== 模拟数据（根据图片设计） ==================== */
 const examData = ref<examsItemVO>({
   id: qbankId.value,
@@ -137,13 +137,7 @@ const {data: subjects} = await questionApi.getSubjectList(qbankId.value, true)
 
 /* ==================== 状态定义 ==================== */
 
-/* 练习模式 */
-const practiceModes: PracticeMode[] = [
-  {key: 'chapter', name: '章节练习', icon: 'ep:document', url: '#', disabled: false},
-  {key: 'past', name: '历年真题', icon: 'ep:timer', url: '#', disabled: true},
-  {key: 'mock', name: '模拟试卷', icon: 'ep:copy-document', url: '#', disabled: false},
-  {key: 'daily', name: '每日一练', icon: 'ep:calendar', url: '#', disabled: false},
-]
+
 
 /* 章节数据（从题库详情获取） */
 const chaptersData = ref<ChapterVO[]>([])
@@ -156,6 +150,14 @@ const hasAccess = computed(() => {
   const matchedPackage = packagesList.find(item => item.id === qbankId.value);
   return matchedPackage?.hasAccess || false
 })
+
+/* 练习模式 */
+const practiceModes: PracticeMode[] = [
+  {key: 'chapter', name: '章节练习', icon: 'ep:document', url: '#', disabled: hasAccess.value},
+  {key: 'past', name: '历年真题', icon: 'ep:timer', url: '#', disabled: true},
+  {key: 'mock', name: '模拟试卷', icon: 'ep:copy-document', url: '#', disabled: true},
+  {key: 'daily', name: '每日一练', icon: 'ep:calendar', url: '#', disabled: hasAccess.value},
+]
 
 /* ==================== 方法定义 ==================== */
 const toggleOpen = () => {
@@ -276,13 +278,13 @@ const handleDownloadMaterial = (material: StudyMaterial) => {
   message.info(`开始下载: ${material.title}`)
 }
 
-const handlePurchase = () => {
+const {redirectToPay} = usePayWithPopup()
+const handlePurchase = async () => {
   if (!isLogin.value) {
     openModal('login')
     return
   }
-  /* TODO: 跳转到支付页面 */
-  message.info('正在跳转到支付页面...')
+  await redirectToPay(qbankDetail.value)
 }
 
 const getFileIconClass = (fileType: string) => {
@@ -491,7 +493,7 @@ onUnmounted(() => {
                         class="text-2xl opacity-90 mb-1 group-hover:scale-110 transition-transform mx-auto block"/>
                   <span class="text-sm font-medium whitespace-nowrap">{{ mode.name }}</span>
                   <Icon
-                      v-if="!hasAccess"
+                      v-if="mode.disabled"
                       name="ep:lock"
                       class="text-xs ml-1"
                   />
@@ -499,9 +501,7 @@ onUnmounted(() => {
               </div>
             </div>
             <div v-if="!hasAccess" class="mt-3 text-center text-xs text-[var(--color-text-secondary)]">
-              <span>{{
-                  (qbankDetail?.price || 0) === 0 ? '登录后即可免费使用全部功能' : '购买题库后可解锁全部练习模式'
-                }}</span>
+              <span>购买题库后可解锁全部练习模式</span>
               <el-button v-if="(qbankDetail?.price || 0) > 0" type="primary" link size="small" @click="handlePurchase">
                 立即购买
               </el-button>
