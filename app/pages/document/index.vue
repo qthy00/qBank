@@ -171,212 +171,271 @@ onMounted(() => {
 </script>
 
 <template>
-  <div class="min-h-screen bg-gray-50">
+  <div class="min-h-screen bg-(--color-bg-container)">
     <!-- 页面标题区 -->
-    <div class="bg-white border-b border-gray-200">
-      <div class="max-w-6xl mx-auto px-4 py-6">
-        <h1 class="text-2xl font-bold text-gray-800">文档下载</h1>
-        <p class="text-sm text-gray-500 mt-2">历年真题、模拟试题、考试大纲、教材讲义等备考资料</p>
+    <div class="relative overflow-hidden">
+      <!-- 背景渐变 -->
+      <div class="absolute inset-0 bg-gradient-to-br from-(--color-primary) via-(--color-primary-light) to-(--color-primary-lighter)"></div>
+      <!-- 装饰图案 -->
+      <div class="absolute inset-0 opacity-10">
+        <div class="absolute top-0 right-0 w-96 h-96 bg-white rounded-full -translate-y-1/2 translate-x-1/2"></div>
+        <div class="absolute bottom-0 left-0 w-64 h-64 bg-white rounded-full translate-y-1/2 -translate-x-1/2"></div>
+      </div>
+      <!-- 内容 -->
+      <div class="relative max-w-6xl mx-auto px-4 py-12">
+        <div class="text-center">
+          <h1 class="text-3xl font-bold text-white mb-3">文档下载</h1>
+          <p class="text-white/80 text-base max-w-2xl mx-auto">历年真题、模拟试题、考试大纲、教材讲义等备考资料，助力考试成功</p>
+        </div>
       </div>
     </div>
 
-    <div class="max-w-6xl mx-auto px-4 py-6">
-      <!-- 类型切换标签 -->
-      <div class="bg-white rounded-xl shadow-sm mb-6">
-        <div class="flex items-center px-6 border-b border-gray-100">
+    <div class="max-w-6xl mx-auto px-4 py-8 -mt-6">
+      <!-- 筛选卡片 -->
+      <div class="bg-white rounded-2xl shadow-lg shadow-(--color-shadow)/50 overflow-hidden mb-8">
+        <!-- 类型切换标签 -->
+        <div class="flex items-center border-b border-(--color-border-light)">
           <button
-            class="px-6 py-4 text-base font-medium border-b-2 transition-colors duration-200"
+            class="flex-1 px-6 py-4 text-base font-medium transition-all duration-300 border-b-2"
             :class="activeTab === 'real'
-              ? 'border-blue-600 text-blue-600'
-              : 'border-transparent text-gray-600 hover:text-gray-800'"
+              ? 'border-(--color-primary) text-(--color-primary) bg-(--color-primary-light)'
+              : 'border-transparent text-(--color-text-secondary) hover:text-(--color-primary) hover:bg-(--color-bg-container)'"
             @click="handleTabChange('real')"
           >
-            <div class="flex items-center gap-2">
-              <Icon name="ep:collection" />
+            <div class="flex items-center justify-center gap-2">
+              <Icon name="ep:collection" class="text-lg" />
               <span>真题资料</span>
             </div>
           </button>
           <button
-            class="px-6 py-4 text-base font-medium border-b-2 transition-colors duration-200"
+            class="flex-1 px-6 py-4 text-base font-medium transition-all duration-300 border-b-2"
             :class="activeTab === 'material'
-              ? 'border-blue-600 text-blue-600'
-              : 'border-transparent text-gray-600 hover:text-gray-800'"
+              ? 'border-(--color-primary) text-(--color-primary) bg-(--color-primary-light)'
+              : 'border-transparent text-(--color-text-secondary) hover:text-(--color-primary) hover:bg-(--color-bg-container)'"
             @click="handleTabChange('material')"
           >
-            <div class="flex items-center gap-2">
-              <Icon name="ep:reading" />
+            <div class="flex items-center justify-center gap-2">
+              <Icon name="ep:reading" class="text-lg" />
               <span>学习资料</span>
             </div>
           </button>
         </div>
 
-        <div class="p-6">
+        <div class="p-6 space-y-5">
           <!-- 分类筛选 -->
-          <div class="mb-4">
-            <div class="flex items-center gap-2 flex-wrap">
-              <span class="text-sm text-gray-500 mr-2">分类：</span>
-              <button
-                v-for="category in categories"
-                :key="category.id"
-                class="px-4 py-1.5 text-sm rounded-full transition-colors duration-200"
-                :class="activeCategory === category.id
-                  ? 'bg-blue-600 text-white'
-                  : 'bg-gray-100 text-gray-600 hover:bg-gray-200'"
-                @click="handleCategoryChange(category.id)"
-              >
-                {{ category.name }}
-              </button>
+          <div>
+            <div class="flex items-start gap-3">
+              <span class="text-sm font-medium text-(--color-text-secondary) pt-1.5 shrink-0">
+                <Icon name="ep:folder" class="mr-1" />
+                分类：
+              </span>
+              <div class="flex items-center gap-2 flex-wrap">
+                <button
+                  v-for="category in categories"
+                  :key="category.id"
+                  class="px-4 py-1.5 text-sm rounded-full transition-all duration-300"
+                  :class="activeCategory === category.id
+                    ? 'bg-(--color-primary) text-white shadow-md shadow-(--color-primary)/30'
+                    : 'bg-(--color-bg-container) text-(--color-text-secondary) hover:bg-(--color-primary-light) hover:text-(--color-primary)'"
+                  @click="handleCategoryChange(category.id)"
+                >
+                  {{ category.name }}
+                </button>
+              </div>
             </div>
           </div>
 
           <!-- 考试类型筛选 -->
-          <div class="mb-4">
-            <div class="flex items-center gap-2 flex-wrap">
-              <span class="text-sm text-gray-500 mr-2">考试类型：</span>
-              <button
-                v-for="exam in examTypes"
-                :key="exam.code"
-                class="px-4 py-1.5 text-sm rounded-full transition-colors duration-200"
-                :class="activeExamType === exam.code
-                  ? 'bg-blue-600 text-white'
-                  : 'bg-gray-100 text-gray-600 hover:bg-gray-200'"
-                @click="handleExamTypeChange(exam.code)"
-              >
-                {{ exam.name }}
-              </button>
+          <div>
+            <div class="flex items-start gap-3">
+              <span class="text-sm font-medium text-(--color-text-secondary) pt-1.5 shrink-0">
+                <Icon name="ep:suitcase" class="mr-1" />
+                考试：
+              </span>
+              <div class="flex items-center gap-2 flex-wrap">
+                <button
+                  v-for="exam in examTypes"
+                  :key="exam.code"
+                  class="px-4 py-1.5 text-sm rounded-full transition-all duration-300"
+                  :class="activeExamType === exam.code
+                    ? 'bg-(--color-success) text-white shadow-md shadow-(--color-success)/30'
+                    : 'bg-(--color-bg-container) text-(--color-text-secondary) hover:bg-(--color-success-light) hover:text-(--color-success)'"
+                  @click="handleExamTypeChange(exam.code)"
+                >
+                  {{ exam.name }}
+                </button>
+              </div>
             </div>
           </div>
 
           <!-- 年份筛选 -->
-          <div class="mb-4">
-            <div class="flex items-center gap-2 flex-wrap">
-              <span class="text-sm text-gray-500 mr-2">年份：</span>
-              <button
-                v-for="year in yearOptions"
-                :key="year.year"
-                class="px-4 py-1.5 text-sm rounded-full transition-colors duration-200"
-                :class="activeYear === year.year
-                  ? 'bg-blue-600 text-white'
-                  : 'bg-gray-100 text-gray-600 hover:bg-gray-200'"
-                @click="handleYearChange(year.year)"
-              >
-                {{ year.year }}年
-              </button>
+          <div>
+            <div class="flex items-start gap-3">
+              <span class="text-sm font-medium text-(--color-text-secondary) pt-1.5 shrink-0">
+                <Icon name="ep:calendar" class="mr-1" />
+                年份：
+              </span>
+              <div class="flex items-center gap-2 flex-wrap">
+                <button
+                  v-for="year in yearOptions"
+                  :key="year.year"
+                  class="px-4 py-1.5 text-sm rounded-full transition-all duration-300"
+                  :class="activeYear === year.year
+                    ? 'bg-(--color-warning) text-white shadow-md shadow-(--color-warning)/30'
+                    : 'bg-(--color-bg-container) text-(--color-text-secondary) hover:bg-(--color-warning-light) hover:text-(--color-warning)'"
+                  @click="handleYearChange(year.year)"
+                >
+                  {{ year.year }}年
+                </button>
+              </div>
             </div>
           </div>
 
           <!-- 搜索框 -->
-          <div class="flex items-center justify-between">
-            <div class="flex items-center gap-2">
-              <span class="text-sm text-gray-500">共 {{ total }} 个文档</span>
+          <div class="pt-4 border-t border-(--color-border-light)">
+            <div class="flex items-center justify-between">
+              <div class="flex items-center gap-2">
+                <Icon name="ep:document" class="text-(--color-primary) text-lg" />
+                <span class="text-sm text-(--color-text-secondary)">共 <span class="text-(--color-primary) font-semibold">{{ total }}</span> 个文档</span>
+              </div>
+              <div class="flex items-center gap-3">
+                <el-input
+                  v-model="queryParams.keyword"
+                  placeholder="搜索文档..."
+                  class="w-72"
+                  clearable
+                  @keyup.enter="handleSearch"
+                >
+                  <template #prefix>
+                    <Icon name="ep:search" class="text-(--color-text-placeholder)" />
+                  </template>
+                </el-input>
+                <button
+                  class="px-5 py-2 bg-(--color-primary) text-white rounded-lg hover:bg-(--color-primary-dark) transition-colors duration-300 flex items-center gap-2"
+                  @click="handleSearch"
+                >
+                  <Icon name="ep:search" class="text-sm" />
+                  <span>搜索</span>
+                </button>
+              </div>
             </div>
-            <el-input
-              v-model="queryParams.keyword"
-              placeholder="搜索文档..."
-              class="w-64"
-              clearable
-              @keyup.enter="handleSearch"
-            >
-              <template #suffix>
-                <Icon name="ep:search" class="text-gray-400 cursor-pointer" @click="handleSearch" />
-              </template>
-            </el-input>
           </div>
         </div>
       </div>
 
       <!-- 文档列表 -->
-      <div v-loading="loading" class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-4">
+      <div v-loading="loading" class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6">
         <!-- 空状态 -->
-        <el-empty v-if="documentList.length === 0 && !loading" description="暂无文档" class="col-span-full py-12" />
+        <el-empty v-if="documentList.length === 0 && !loading" description="暂无文档" class="col-span-full py-16 bg-white rounded-2xl" />
 
         <!-- 文档卡片 -->
         <div
-          v-for="doc in documentList"
+          v-for="(doc, index) in documentList"
           :key="doc.id"
-          class="bg-white rounded-xl shadow-sm overflow-hidden hover:shadow-md transition-shadow duration-200 cursor-pointer group"
+          class="group bg-white rounded-xl shadow-md shadow-(--color-shadow)/30 overflow-hidden cursor-pointer transition-all duration-300 hover:shadow-xl hover:shadow-(--color-shadow)/50 hover:-translate-y-2"
+          :style="{ animationDelay: `${index * 50}ms` }"
           @click="handleViewDetail(doc.id)"
         >
           <!-- 封面图 -->
-          <div class="relative h-40 overflow-hidden bg-gray-100">
+          <div class="relative h-44 overflow-hidden">
             <img
               v-if="doc.coverImage"
               :src="doc.coverImage"
               :alt="doc.title"
-              class="w-full h-full object-cover group-hover:scale-105 transition-transform duration-300"
+              class="w-full h-full object-cover group-hover:scale-110 transition-transform duration-500"
             />
-            <div v-else class="w-full h-full flex items-center justify-center text-gray-400">
-              <Icon name="ep:document" class="text-4xl" />
+            <div v-else class="w-full h-full flex items-center justify-center bg-gradient-to-br from-(--color-primary-light) to-(--color-primary-lighter)">
+              <Icon name="ep:document" class="text-5xl text-(--color-primary)" />
             </div>
 
-            <!-- VIP/免费标签 -->
-            <div class="absolute top-2 right-2">
+            <!-- VIP/免费/价格标签 -->
+            <div class="absolute top-3 right-3">
               <span
                 v-if="doc.isFree"
-                class="px-2 py-1 text-xs font-medium text-white bg-green-500 rounded"
+                class="px-3 py-1.5 text-xs font-medium text-white bg-(--color-success) rounded-full shadow-md"
               >
+                <Icon name="ep:present" class="mr-1" />
                 免费
               </span>
               <span
                 v-else-if="doc.isVip"
-                class="px-2 py-1 text-xs font-medium text-white bg-orange-500 rounded"
+                class="px-3 py-1.5 text-xs font-medium text-white bg-(--color-warning) rounded-full shadow-md"
               >
+                <Icon name="ep:medal" class="mr-1" />
                 VIP
               </span>
               <span
                 v-else
-                class="px-2 py-1 text-xs font-medium text-white bg-blue-500 rounded"
+                class="px-3 py-1.5 text-xs font-medium text-white bg-(--color-danger) rounded-full shadow-md"
               >
+                <Icon name="ep:money" class="mr-1" />
                 ¥{{ doc.price }}
               </span>
             </div>
 
             <!-- 文件类型标签 -->
-            <div class="absolute bottom-2 left-2">
-              <span class="px-2 py-1 text-xs font-medium text-white bg-black/50 rounded">
+            <div class="absolute bottom-3 left-3">
+              <span class="px-3 py-1 text-xs font-medium text-white bg-black/60 backdrop-blur-sm rounded-full">
                 {{ doc.fileType }}
+              </span>
+            </div>
+
+            <!-- 下载次数 -->
+            <div class="absolute bottom-3 right-3">
+              <span class="px-3 py-1 text-xs font-medium text-white bg-black/60 backdrop-blur-sm rounded-full flex items-center gap-1">
+                <Icon name="ep:download" />
+                {{ formatDownloadCount(doc.downloadCount) }}
               </span>
             </div>
           </div>
 
           <!-- 内容区 -->
-          <div class="p-4">
+          <div class="p-5">
             <!-- 标题 -->
-            <h3 class="text-sm font-medium text-gray-800 mb-2 line-clamp-2 group-hover:text-blue-600 transition-colors h-10">
+            <h3 class="text-sm font-semibold text-(--color-text-primary) mb-3 line-clamp-2 group-hover:text-(--color-primary) transition-colors duration-300 h-10">
               {{ doc.title }}
             </h3>
 
             <!-- 文档信息 -->
-            <div class="flex items-center gap-3 text-xs text-gray-500 mb-3">
+            <div class="flex items-center justify-between text-xs text-(--color-text-tertiary) mb-3">
               <span class="flex items-center gap-1">
-                <Icon name="ep:document" class="text-xs" />
+                <Icon name="ep:document" class="text-(--color-primary)" />
                 {{ formatFileSize(doc.fileSize) }}
               </span>
-              <span class="flex items-center gap-1">
-                <Icon name="ep:download" class="text-xs" />
-                {{ formatDownloadCount(doc.downloadCount) }}
+              <span v-if="doc.pages" class="flex items-center gap-1">
+                <Icon name="ep:files" class="text-(--color-primary)" />
+                {{ doc.pages }}页
               </span>
-              <span v-if="doc.pages">{{ doc.pages }}页</span>
             </div>
 
             <!-- 底部信息 -->
-            <div class="flex items-center justify-between">
-              <span class="text-xs text-blue-600 bg-blue-50 px-2 py-1 rounded">
+            <div class="flex items-center justify-between pt-3 border-t border-(--color-border-light)">
+              <span class="px-2.5 py-1 text-xs font-medium text-(--color-primary) bg-(--color-primary-light) rounded-full">
                 {{ doc.categoryName }}
               </span>
-              <span class="text-xs text-gray-400">{{ doc.year }}年</span>
+              <span class="text-xs text-(--color-text-tertiary)">{{ doc.year }}年</span>
             </div>
+          </div>
+
+          <!-- 悬停覆盖层 -->
+          <div class="absolute inset-0 bg-gradient-to-t from-(--color-primary)/90 via-(--color-primary)/40 to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-300 flex items-end justify-center pb-6">
+            <button class="px-6 py-2.5 bg-white text-(--color-primary) rounded-full font-medium shadow-lg transform translate-y-4 group-hover:translate-y-0 transition-transform duration-300">
+              查看详情
+            </button>
           </div>
         </div>
       </div>
 
       <!-- 分页 -->
-      <div v-if="total > 0" class="flex items-center justify-center mt-8">
+      <div v-if="total > 0" class="flex items-center justify-center mt-10">
         <el-pagination
           v-model:current-page="queryParams.page"
           :page-size="queryParams.limit"
           :total="total"
           layout="prev, pager, next, jumper"
+          prev-text="上一页"
+          next-text="下一页"
+          class="custom-pagination"
           @change="handlePageChange"
         />
       </div>
@@ -385,6 +444,40 @@ onMounted(() => {
 </template>
 
 <style scoped>
+/* 自定义分页样式 */
+:deep(.custom-pagination) {
+  --el-pagination-hover-color: var(--color-primary);
+  --el-pagination-button-color: var(--color-text-secondary);
+}
+
+:deep(.custom-pagination .el-pager li.is-active) {
+  background-color: var(--color-primary);
+  border-color: var(--color-primary);
+  color: white;
+  border-radius: 8px;
+}
+
+:deep(.custom-pagination .el-pager li:hover) {
+  color: var(--color-primary);
+}
+
+/* 文档卡片动画 */
+.bg-white.rounded-xl {
+  animation: fadeInUp 0.5s ease-out forwards;
+  opacity: 0;
+}
+
+@keyframes fadeInUp {
+  from {
+    opacity: 0;
+    transform: translateY(20px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
 .line-clamp-2 {
   display: -webkit-box;
   -webkit-line-clamp: 2;
