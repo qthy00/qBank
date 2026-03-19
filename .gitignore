@@ -18,6 +18,12 @@ logs
 .fleet
 .idea
 
+# Archive files
+*.zip
+*.tar.gz
+*.rar
+*.7z
+
 # Local env files
 #.env
 #.env.*
