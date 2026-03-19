@@ -1,4 +1,3 @@
-import request from '@/config'
 
 
 
@@ -111,13 +110,13 @@ export const getAffiliateTool = (query: any) => {
 
 
 // 获得分销用户排行分页（基于用户量）
-export const getAffiliateUserRankPageByUserCount = (query) => {
+export const getAffiliateUserRankPageByUserCount = (query: any) => {
   return httpGet( 'getAffiliateUserRankPageByUserCount',
       `/swap/affiliate-user/rank-page-by-user-count`, {query})
 }
 
 // 获得分销用户排行分页（基于佣金）
-export const getBrokerageUserChildSummaryPageByPrice = (query) => {
+export const getBrokerageUserChildSummaryPageByPrice = (query:any) => {
   return httpGet( 'getBrokerageUserChildSummaryPageByPrice',
       `/swap/affiliate-user/rank-page-by-price`,{ query })
 }
