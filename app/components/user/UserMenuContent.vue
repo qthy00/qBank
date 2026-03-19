@@ -15,7 +15,7 @@
       />
     </template>
   </el-menu-item>
-  <el-menu-item index="/mistakes">
+  <el-menu-item index="/account/mistakes">
     <Icon name="arcticons:androits-gps-test" class="mr-1" />
     <span>我的错题</span>
   </el-menu-item>

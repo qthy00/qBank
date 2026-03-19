@@ -1,8 +1,8 @@
 <script setup lang="ts">
 import OrderDetail from '@/views/account/order/OrderDetail.vue'
 import { getSwapOrderPage, type Order } from '@/api/order'
-import { formatDate } from '@/utils/formatTime.ts'
-import { fen2yuan } from '@/utils/money.ts'
+import { formatDate } from '@/utils/formatTime'
+import { fen2yuan } from '@/utils/money'
 
 
 definePageMeta({

@@ -2,7 +2,7 @@
 import type { StudySuggestionVO } from '~/types/statistics'
 
 /**
- * 学习建议组件
+ * 学习建议组件 - 清爽简洁风格
  */
 interface Props {
   /* 学习建议数据 */
@@ -11,37 +11,35 @@ interface Props {
 
 const props = defineProps<Props>()
 
-/* 获取建议类型标签 */
-const getTypeLabel = (type: string) => {
-  const labels: Record<string, string> = {
-    strength: '优势',
-    weakness: '薄弱',
-    habit: '习惯',
-    goal: '目标',
+/* 获取建议类型配置 */
+const getTypeConfig = (type: string) => {
+  const configs: Record<string, { label: string; icon: string; color: string; bgColor: string }> = {
+    strength: {
+      label: '优势',
+      icon: 'ep:trophy',
+      color: '#22c55e',
+      bgColor: '#dcfce7'
+    },
+    weakness: {
+      label: '提升',
+      icon: 'ep:warning',
+      color: '#f59e0b',
+      bgColor: '#fef3c7'
+    },
+    habit: {
+      label: '习惯',
+      icon: 'ep:calendar',
+      color: '#3b82f6',
+      bgColor: '#dbeafe'
+    },
+    goal: {
+      label: '目标',
+      icon: 'ep:flag',
+      color: '#8b5cf6',
+      bgColor: '#f3e8ff'
+    },
   }
-  return labels[type] || '建议'
-}
-
-/* 获取建议类型颜色 */
-const getTypeColor = (type: string) => {
-  const colors: Record<string, string> = {
-    strength: '#22c55e',
-    weakness: '#ef4444',
-    habit: '#3b82f6',
-    goal: '#8b5cf6',
-  }
-  return colors[type] || '#6b7280'
-}
-
-/* 获取建议图标 */
-const getTypeIcon = (type: string) => {
-  const icons: Record<string, string> = {
-    strength: 'ep:trophy',
-    weakness: 'ep:warning',
-    habit: 'ep:calendar',
-    goal: 'ep:flag',
-  }
-  return icons[type] || 'ep:info'
+  return configs[type] || configs.habit
 }
 
 /* 按优先级排序 */
@@ -52,189 +50,255 @@ const sortedSuggestions = computed(() => {
 
 <template>
   <div class="study-suggestions">
+    <!-- 标题区 -->
     <div class="section-header">
-      <h3 class="section-title">
-        <Icon name="ep:lightbulb" class="title-icon" />
-        学习建议
-        <el-tag size="small" type="warning" class="count-tag">
-          {{ data.length }}条
-        </el-tag>
-      </h3>
+      <div class="title-section">
+        <div class="title-icon-wrapper">
+          <Icon name="ep:lightbulb" class="title-icon" />
+        </div>
+        <div class="title-text">
+          <h3 class="section-title">学习建议</h3>
+          <span class="section-subtitle">AI智能分析个性化建议</span>
+        </div>
+      </div>
+      <el-tag type="warning" effect="light">{{ data.length }}条</el-tag>
     </div>
 
-    <div class="suggestions-list">
+    <!-- 建议列表 -->
+    <div v-if="data.length > 0" class="suggestions-list">
       <div
-        v-for="suggestion in sortedSuggestions"
+        v-for="(suggestion, index) in sortedSuggestions"
         :key="suggestion.title"
         class="suggestion-item"
-        :class="suggestion.type"
+        :style="{ borderLeftColor: getTypeConfig(suggestion.type).color }"
       >
-        <div class="suggestion-icon" :style="{ backgroundColor: getTypeColor(suggestion.type) + '20' }">
-          <Icon
-            :name="getTypeIcon(suggestion.type)"
-            :style="{ color: getTypeColor(suggestion.type) }"
-          />
+        <!-- 类型图标 -->
+        <div
+          class="type-icon"
+          :style="{ background: getTypeConfig(suggestion.type).bgColor, color: getTypeConfig(suggestion.type).color }"
+        >
+          <Icon :name="getTypeConfig(suggestion.type).icon" />
         </div>
+
+        <!-- 内容 -->
         <div class="suggestion-content">
-          <div class="suggestion-header">
-            <span class="suggestion-title">{{ suggestion.title }}</span>
+          <div class="content-header">
+            <h4 class="suggestion-title">{{ suggestion.title }}</h4>
             <el-tag
               size="small"
-              :style="{ backgroundColor: getTypeColor(suggestion.type) + '20', color: getTypeColor(suggestion.type), borderColor: getTypeColor(suggestion.type) + '40' }"
+              effect="light"
+              :style="{ color: getTypeConfig(suggestion.type).color, backgroundColor: getTypeConfig(suggestion.type).bgColor, border: 'none' }"
             >
-              {{ getTypeLabel(suggestion.type) }}
+              {{ getTypeConfig(suggestion.type).label }}
             </el-tag>
           </div>
+
           <p class="suggestion-text">{{ suggestion.content }}</p>
-          <p v-if="suggestion.data" class="suggestion-data">
-            <Icon name="ep:data-analysis" class="data-icon" />
-            {{ suggestion.data }}
-          </p>
+
+          <div v-if="suggestion.data" class="data-pill">
+            <Icon name="ep:data-analysis" />
+            <span>{{ suggestion.data }}</span>
+          </div>
+        </div>
+
+        <!-- 优先级 -->
+        <div class="priority-dots">
+          <span
+            v-for="n in 5"
+            :key="n"
+            class="dot"
+            :class="{ active: n <= suggestion.priority }"
+            :style="{ backgroundColor: n <= suggestion.priority ? getTypeConfig(suggestion.type).color : '#e5e7eb' }"
+          ></span>
         </div>
       </div>
     </div>
 
     <!-- 空状态 -->
-    <el-empty
-      v-if="data.length === 0"
-      description="暂无学习建议"
-      :image-size="80"
-    >
-      <p class="empty-tip">继续学习后，系统将为您生成个性化建议</p>
-    </el-empty>
+    <div v-else class="empty-state">
+      <div class="empty-icon">
+        <Icon name="ep:loading" />
+      </div>
+      <h4 class="empty-title">分析中...</h4>
+      <p class="empty-desc">系统正在根据您的学习数据生成建议</p>
+    </div>
   </div>
 </template>
 
 <style scoped lang="scss">
-.study-suggestions {
-  .section-header {
-    margin-bottom: 20px;
+/* 标题区 */
+.section-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 20px;
+}
 
-    .section-title {
-      font-size: 18px;
-      font-weight: 600;
-      color: var(--el-text-color-primary);
-      display: flex;
-      align-items: center;
-      gap: 8px;
+.title-section {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+}
 
-      .title-icon {
-        color: #eab308;
-      }
+.title-icon-wrapper {
+  width: 40px;
+  height: 40px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background: #fef3c7;
+  border-radius: 10px;
+  font-size: 20px;
+  color: #f59e0b;
+}
 
-      .count-tag {
-        margin-left: 8px;
-      }
-    }
+.title-text {
+  .section-title {
+    font-size: 18px;
+    font-weight: 600;
+    color: var(--el-text-color-primary);
+    margin-bottom: 4px;
   }
 
-  .suggestions-list {
-    display: flex;
-    flex-direction: column;
-    gap: 16px;
-    max-height: 400px;
-    overflow-y: auto;
-
-    .suggestion-item {
-      display: flex;
-      gap: 12px;
-      padding: 16px;
-      border-radius: 8px;
-      background: var(--el-fill-color-light);
-      transition: all 0.3s;
-
-      &:hover {
-        background: var(--el-fill-color);
-        transform: translateX(4px);
-      }
-
-      &.strength {
-        border-left: 3px solid #22c55e;
-      }
-
-      &.weakness {
-        border-left: 3px solid #ef4444;
-      }
-
-      &.habit {
-        border-left: 3px solid #3b82f6;
-      }
-
-      &.goal {
-        border-left: 3px solid #8b5cf6;
-      }
-
-      .suggestion-icon {
-        width: 40px;
-        height: 40px;
-        display: flex;
-        align-items: center;
-        justify-content: center;
-        border-radius: 8px;
-        flex-shrink: 0;
-
-        svg {
-          width: 20px;
-          height: 20px;
-        }
-      }
-
-      .suggestion-content {
-        flex: 1;
-        min-width: 0;
-
-        .suggestion-header {
-          display: flex;
-          justify-content: space-between;
-          align-items: center;
-          gap: 8px;
-          margin-bottom: 8px;
-
-          .suggestion-title {
-            font-size: 15px;
-            font-weight: 600;
-            color: var(--el-text-color-primary);
-          }
-        }
-
-        .suggestion-text {
-          font-size: 14px;
-          color: var(--el-text-color-secondary);
-          line-height: 1.6;
-          margin-bottom: 8px;
-        }
-
-        .suggestion-data {
-          display: flex;
-          align-items: center;
-          gap: 6px;
-          font-size: 13px;
-          color: var(--el-color-primary);
-          background: var(--el-color-primary-light-9);
-          padding: 6px 10px;
-          border-radius: 4px;
-
-          .data-icon {
-            font-size: 14px;
-          }
-        }
-      }
-    }
-  }
-
-  .empty-tip {
-    font-size: 14px;
+  .section-subtitle {
+    font-size: 13px;
     color: var(--el-text-color-secondary);
-    text-align: center;
-    margin-top: 8px;
   }
 }
 
+/* 建议列表 */
+.suggestions-list {
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+}
+
+.suggestion-item {
+  display: flex;
+  align-items: flex-start;
+  gap: 14px;
+  padding: 16px;
+  background: var(--el-fill-color-light);
+  border-left: 3px solid;
+  border-radius: 10px;
+  transition: all 0.2s ease;
+
+  &:hover {
+    background: var(--el-fill-color);
+  }
+}
+
+.type-icon {
+  width: 40px;
+  height: 40px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  border-radius: 10px;
+  font-size: 18px;
+  flex-shrink: 0;
+}
+
+.suggestion-content {
+  flex: 1;
+  min-width: 0;
+}
+
+.content-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  gap: 12px;
+  margin-bottom: 8px;
+}
+
+.suggestion-title {
+  font-size: 15px;
+  font-weight: 600;
+  color: var(--el-text-color-primary);
+}
+
+.suggestion-text {
+  font-size: 13px;
+  color: var(--el-text-color-regular);
+  line-height: 1.6;
+  margin-bottom: 12px;
+}
+
+.data-pill {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  padding: 6px 12px;
+  background: var(--el-color-primary-light-9);
+  border-radius: 20px;
+  font-size: 12px;
+  color: var(--el-color-primary);
+
+  svg {
+    font-size: 14px;
+  }
+}
+
+/* 优先级点 */
+.priority-dots {
+  display: flex;
+  gap: 4px;
+  padding-top: 4px;
+  flex-shrink: 0;
+}
+
+.dot {
+  width: 6px;
+  height: 6px;
+  background: #e5e7eb;
+  border-radius: 50%;
+}
+
+/* 空状态 */
+.empty-state {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  padding: 40px;
+  text-align: center;
+}
+
+.empty-icon {
+  width: 60px;
+  height: 60px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background: #dbeafe;
+  border-radius: 50%;
+  font-size: 28px;
+  color: #3b82f6;
+  margin-bottom: 16px;
+}
+
+.empty-title {
+  font-size: 18px;
+  font-weight: 600;
+  color: var(--el-text-color-primary);
+  margin-bottom: 6px;
+}
+
+.empty-desc {
+  font-size: 14px;
+  color: var(--el-text-color-secondary);
+}
+
+/* 响应式 */
 @media (max-width: 768px) {
-  .study-suggestions {
-    .suggestions-list {
-      max-height: 300px;
-    }
+  .content-header {
+    flex-direction: column;
+    align-items: flex-start;
+  }
+
+  .priority-dots {
+    display: none;
   }
 }
 </style>

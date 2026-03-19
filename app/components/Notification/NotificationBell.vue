@@ -66,7 +66,7 @@
         <div class="notification-list max-h-[400px] overflow-y-auto">
           <!-- 加载状态 -->
           <div v-if="loading" class="flex justify-center items-center py-8">
-            <el-loading-spinner />
+            <Icon name="svg-spinners:8-dots-rotate" />
           </div>
 
           <!-- 空状态 -->

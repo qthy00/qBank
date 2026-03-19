@@ -2,7 +2,7 @@
 import type { WeakPointVO } from '~/types/statistics'
 
 /**
- * 薄弱知识点列表组件
+ * 薄弱知识点列表组件 - 清爽简洁风格
  */
 interface Props {
   /* 薄弱知识点数据 */
@@ -29,9 +29,18 @@ const getPriorityLabel = (priority: number) => {
 const getPriorityColor = (priority: number) => {
   if (priority >= 5) return '#ef4444'
   if (priority >= 4) return '#f97316'
-  if (priority >= 3) return '#eab308'
+  if (priority >= 3) return '#f59e0b'
   if (priority >= 2) return '#3b82f6'
   return '#6b7280'
+}
+
+/* 获取优先级背景色 */
+const getPriorityBgColor = (priority: number) => {
+  if (priority >= 5) return '#fee2e2'
+  if (priority >= 4) return '#ffedd5'
+  if (priority >= 3) return '#fef3c7'
+  if (priority >= 2) return '#dbeafe'
+  return '#f3f4f6'
 }
 
 /* 去练习 */
@@ -45,54 +54,61 @@ const goPractice = (point: WeakPointVO) => {
 
 <template>
   <div class="weak-points">
+    <!-- 标题区 -->
     <div class="section-header">
-      <h3 class="section-title">
-        <Icon name="ep:warning" class="title-icon" />
-        薄弱知识点
-        <el-tag size="small" type="danger" class="count-tag">
-          {{ data.length }}个
-        </el-tag>
-      </h3>
+      <div class="title-section">
+        <div class="title-icon-wrapper">
+          <Icon name="ep:warning" class="title-icon" />
+        </div>
+        <div class="title-text">
+          <h3 class="section-title">薄弱环节</h3>
+          <span class="section-subtitle">优先攻克这些知识点</span>
+        </div>
+      </div>
+      <el-tag type="danger" effect="light">{{ data.length }}个</el-tag>
     </div>
 
-    <div class="points-list">
+    <!-- 列表 -->
+    <div v-if="data.length > 0" class="points-list">
       <div
-        v-for="(point, index) in data"
+        v-for="(point, index) in data.slice(0, 4)"
         :key="point.id"
         class="point-item"
         :class="{ 'high-priority': point.priority >= 4 }"
       >
-        <div class="point-rank">{{ index + 1 }}</div>
+        <!-- 内容 -->
         <div class="point-content">
           <div class="point-header">
             <div class="point-info">
               <span class="point-name">{{ point.name }}</span>
-              <span class="point-subject">{{ point.subjectName }}</span>
+              <el-tag size="small" type="info" effect="light">{{ point.subjectName }}</el-tag>
             </div>
             <div class="point-badges">
-              <el-tag
-                size="small"
-                :style="{ backgroundColor: getPriorityColor(point.priority) + '20', color: getPriorityColor(point.priority), borderColor: getPriorityColor(point.priority) + '40' }"
+              <span
+                class="priority-badge"
+                :style="{ backgroundColor: getPriorityBgColor(point.priority), color: getPriorityColor(point.priority) }"
               >
                 {{ getPriorityLabel(point.priority) }}
-              </el-tag>
-              <span :class="['accuracy-text', getAccuracyColorClass(point.accuracy)]">
+              </span>
+              <span
+                class="accuracy-badge"
+                :style="{ color: getPriorityColor(point.priority) }"
+              >
                 {{ point.accuracy }}%
               </span>
             </div>
           </div>
+
           <p class="point-reason">{{ point.reason }}</p>
+
           <div class="point-action">
-            <span class="recommend-count">
-              推荐练习 {{ point.recommendCount }} 题
-            </span>
-            <el-button
-              type="primary"
-              size="small"
-              @click="goPractice(point)"
-            >
-              <Icon name="ep:edit" class="btn-icon" />
+            <el-tag size="small" type="primary" effect="plain">
+              <Icon name="ep:edit-pen" style="margin-right: 4px;" />
+              推荐 {{ point.recommendCount }} 题
+            </el-tag>
+            <el-button type="primary" size="small" @click="goPractice(point)">
               去练习
+              <Icon name="ep:arrow-right" class="btn-icon" />
             </el-button>
           </div>
         </div>
@@ -100,175 +116,191 @@ const goPractice = (point: WeakPointVO) => {
     </div>
 
     <!-- 空状态 -->
-    <el-empty
-      v-if="data.length === 0"
-      description="暂无薄弱知识点"
-      :image-size="80"
-    >
-      <p class="empty-tip">您的知识点掌握情况良好，继续保持！</p>
-    </el-empty>
+    <div v-else class="empty-state">
+      <div class="empty-icon">
+        <Icon name="ep:check-circle" />
+      </div>
+      <h4 class="empty-title">太棒了！</h4>
+      <p class="empty-desc">您的知识点掌握情况良好，暂无薄弱环节</p>
+    </div>
   </div>
 </template>
 
 <style scoped lang="scss">
-.weak-points {
-  .section-header {
-    margin-bottom: 20px;
+/* 标题区 */
+.section-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 20px;
+}
 
-    .section-title {
-      font-size: 18px;
-      font-weight: 600;
-      color: var(--el-text-color-primary);
-      display: flex;
-      align-items: center;
-      gap: 8px;
+.title-section {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+}
 
-      .title-icon {
-        color: #ef4444;
-      }
+.title-icon-wrapper {
+  width: 40px;
+  height: 40px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background: #fef2f2;
+  border-radius: 10px;
+  font-size: 20px;
+  color: #ef4444;
+}
 
-      .count-tag {
-        margin-left: 8px;
-      }
-    }
+.title-text {
+  .section-title {
+    font-size: 18px;
+    font-weight: 600;
+    color: var(--el-text-color-primary);
+    margin-bottom: 4px;
   }
 
-  .points-list {
-    display: flex;
-    flex-direction: column;
-    gap: 12px;
-    max-height: 400px;
-    overflow-y: auto;
-
-    .point-item {
-      display: flex;
-      gap: 12px;
-      padding: 16px;
-      border-radius: 8px;
-      background: var(--el-fill-color-light);
-      transition: all 0.3s;
-
-      &.high-priority {
-        background: #fef2f2;
-        border: 1px solid #fecaca;
-      }
-
-      &:hover {
-        transform: translateX(4px);
-        box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
-      }
-
-      .point-rank {
-        width: 28px;
-        height: 28px;
-        display: flex;
-        align-items: center;
-        justify-content: center;
-        background: var(--el-color-primary);
-        color: white;
-        font-size: 14px;
-        font-weight: 600;
-        border-radius: 50%;
-        flex-shrink: 0;
-      }
-
-      .point-content {
-        flex: 1;
-        min-width: 0;
-
-        .point-header {
-          display: flex;
-          justify-content: space-between;
-          align-items: flex-start;
-          gap: 12px;
-          margin-bottom: 8px;
-
-          .point-info {
-            display: flex;
-            flex-direction: column;
-            gap: 4px;
-
-            .point-name {
-              font-size: 15px;
-              font-weight: 500;
-              color: var(--el-text-color-primary);
-            }
-
-            .point-subject {
-              font-size: 12px;
-              color: var(--el-text-color-secondary);
-            }
-          }
-
-          .point-badges {
-            display: flex;
-            align-items: center;
-            gap: 8px;
-            flex-shrink: 0;
-
-            .accuracy-text {
-              font-size: 16px;
-              font-weight: 600;
-            }
-          }
-        }
-
-        .point-reason {
-          font-size: 13px;
-          color: var(--el-text-color-secondary);
-          line-height: 1.5;
-          margin-bottom: 12px;
-        }
-
-        .point-action {
-          display: flex;
-          justify-content: space-between;
-          align-items: center;
-
-          .recommend-count {
-            font-size: 13px;
-            color: var(--el-text-color-secondary);
-          }
-
-          .btn-icon {
-            margin-right: 4px;
-          }
-        }
-      }
-    }
-  }
-
-  .empty-tip {
-    font-size: 14px;
+  .section-subtitle {
+    font-size: 13px;
     color: var(--el-text-color-secondary);
-    text-align: center;
-    margin-top: 8px;
   }
 }
 
+/* 列表 */
+.points-list {
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+}
+
+.point-item {
+  display: flex;
+  background: var(--el-fill-color-light);
+  border-radius: 10px;
+  overflow: hidden;
+  transition: all 0.2s ease;
+
+  &:hover {
+    background: var(--el-fill-color);
+  }
+
+  &.high-priority {
+    border-left: 3px solid #ef4444;
+  }
+}
+
+.point-content {
+  flex: 1;
+  padding: 16px;
+}
+
+.point-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: flex-start;
+  gap: 12px;
+  margin-bottom: 10px;
+}
+
+.point-info {
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+}
+
+.point-name {
+  font-size: 15px;
+  font-weight: 600;
+  color: var(--el-text-color-primary);
+}
+
+.point-badges {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  flex-shrink: 0;
+}
+
+.priority-badge {
+  padding: 4px 10px;
+  font-size: 11px;
+  font-weight: 600;
+  border-radius: 4px;
+}
+
+.accuracy-badge {
+  font-size: 16px;
+  font-weight: 700;
+}
+
+.point-reason {
+  font-size: 13px;
+  color: var(--el-text-color-regular);
+  line-height: 1.5;
+  margin-bottom: 14px;
+}
+
+.point-action {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+}
+
+.btn-icon {
+  font-size: 12px;
+  margin-left: 4px;
+}
+
+/* 空状态 */
+.empty-state {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  padding: 40px;
+  text-align: center;
+}
+
+.empty-icon {
+  width: 60px;
+  height: 60px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background: #dcfce7;
+  border-radius: 50%;
+  font-size: 28px;
+  color: #22c55e;
+  margin-bottom: 16px;
+}
+
+.empty-title {
+  font-size: 18px;
+  font-weight: 600;
+  color: var(--el-text-color-primary);
+  margin-bottom: 6px;
+}
+
+.empty-desc {
+  font-size: 14px;
+  color: var(--el-text-color-secondary);
+}
+
+/* 响应式 */
 @media (max-width: 768px) {
-  .weak-points {
-    .points-list {
-      max-height: 300px;
+  .point-header {
+    flex-direction: column;
+  }
 
-      .point-item {
-        .point-content {
-          .point-header {
-            flex-direction: column;
+  .point-badges {
+    align-self: flex-start;
+  }
 
-            .point-badges {
-              align-self: flex-start;
-            }
-          }
-
-          .point-action {
-            flex-direction: column;
-            gap: 8px;
-            align-items: flex-start;
-          }
-        }
-      }
-    }
+  .point-action {
+    flex-direction: column;
+    gap: 10px;
+    align-items: stretch;
   }
 }
 </style>
