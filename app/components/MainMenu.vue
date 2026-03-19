@@ -43,7 +43,7 @@ const handleSearch = () => {
           <div
               class="group relative flex flex-col items-center text-sm text-(--color-text-primary) hover:text-(--color-text-hover) cursor-pointer px-2 flex-shrink-0">
             <a
-                href="/" target="_blank"
+                href="/qBank" target="_blank"
                 class="group flex flex-col items-center text-(--color-text) hover:text-(--color-text-hover)">
               <i class="hy-ico-tiku ic-20"/>
               <span class="mt-2 relative leading-5">
@@ -57,7 +57,7 @@ const handleSearch = () => {
           <div
               class="group relative flex flex-col items-center text-sm text-(--color-text-primary) hover:text-(--color-text-hover) cursor-pointer px-2 flex-shrink-0">
             <a
-                href="/" target="_blank"
+                href="/document" target="_blank"
                 class="group flex flex-col items-center text-(--color-text) hover:text-(--color-text-hover)">
               <i class="hy-ico-wd ic-20"/>
               <span class="mt-2 relative leading-5">
@@ -97,18 +97,8 @@ const handleSearch = () => {
         </div>
 
         <!-- 搜索框 + 搜索按钮 -->
-        <div v-else class="search-box flex rounded-2xl overflow-hidden mx-4">
-          <el-input
-              type="text" placeholder="请输入搜索关键字"
-              class="rounded-2xl"
-              input-style="px-4 py-2  border-none focus:outline-none focus:ring-0 placeholder-(--color-text-secondary)" />
-          <el-button
-              type="primary"
-              size="large"
-              @click="handleSearch()"
-              class="!w-90px px-6 py-2 ">
-            搜索
-          </el-button>
+        <div v-else class="relative">
+          <GlobalSearch in-main-menu/>
         </div>
       </div>
       <div class="flex items-center justify-end w-1/12 min-w-[50px] relative">

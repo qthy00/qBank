@@ -7,6 +7,10 @@
     <Icon name="arcticons:androits-gps-test" class="mr-1" />
     <span>我的错题</span>
   </el-menu-item>
+  <el-menu-item index="/account/statistics">
+    <Icon name="ep:data-analysis" class="mr-1" />
+    <span>学习统计</span>
+  </el-menu-item>
   <el-menu-item index="/account/favorites">
     <Icon name="ep:star" class="mr-1" />
     <span>个人收藏</span>

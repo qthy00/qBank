@@ -167,6 +167,7 @@ const payNow = async () => {
         pointStatus: false,
         itemId,
         quantity,
+        type: 3
       }
       const order = await createOrder(orderForm)
       if (!order) {

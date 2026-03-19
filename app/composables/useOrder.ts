@@ -62,7 +62,7 @@ export const useOrder= () => {
      *
      * @param afterSale 售后
      */
-    function formatAfterSaleStatus(afterSale) {
+    function formatAfterSaleStatus(afterSale:any) {
         if (afterSale.status === 10) {
             return '申请售后';
         }
@@ -85,7 +85,7 @@ export const useOrder= () => {
      *
      * @param afterSale 售后
      */
-    function formatAfterSaleStatusDescription(afterSale) {
+    function formatAfterSaleStatusDescription(afterSale:any) {
         if (afterSale.status === 10) {
             return '退款申请待商家处理';
         }
