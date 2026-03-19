@@ -10,6 +10,8 @@ import type {
   AccuracyTrendVO,
   SubjectAccuracyVO,
   StudyHeatmapItemVO,
+  AbilityAssessmentVO,
+  AbilityAssessmentQueryReqVO,
 } from '~/types/statistics'
 
 /* 是否使用模拟数据 */
@@ -254,5 +256,121 @@ const getMockStudyStatistics = (): StudyStatisticsVO => {
     accuracyTrend: getMockAccuracyTrend(),
     subjectAccuracy: getMockSubjectAccuracy(),
     heatmap: getMockStudyHeatmap(),
+  }
+}
+
+/**
+ * 获取能力评估报告
+ * @param params 查询参数
+ */
+export const getAbilityAssessment = async (params?: AbilityAssessmentQueryReqVO): Promise<AbilityAssessmentVO> => {
+  if (USE_MOCK) {
+    return getMockAbilityAssessment(params)
+  }
+  return await httpGet('AbilityAssessment', '/member/statistics/ability-assessment', { query: params })
+}
+
+/**
+ * 生成模拟能力评估报告
+ */
+const getMockAbilityAssessment = (params?: AbilityAssessmentQueryReqVO): AbilityAssessmentVO => {
+  const subjects = ['高等数学', '线性代数', '概率统计', '数据结构', '操作系统', '计算机网络', '数据库原理']
+  const knowledgePoints: KnowledgePointVO[] = []
+  const chapterAccuracy: ChapterAccuracyVO[] = []
+  const weakPoints: WeakPointVO[] = []
+
+  /* 生成知识点数据 */
+  subjects.forEach((subject, subjectIndex) => {
+    const pointCount = Math.floor(Math.random() * 5) + 3
+    for (let i = 0; i < pointCount; i++) {
+      const questionCount = Math.floor(Math.random() * 100) + 20
+      const correctCount = Math.floor(questionCount * (Math.random() * 0.4 + 0.4))
+      const accuracy = Math.round((correctCount / questionCount) * 100)
+      knowledgePoints.push({
+        id: subjectIndex * 100 + i,
+        name: `${subject}知识点${i + 1}`,
+        subjectName: subject,
+        mastery: accuracy,
+        questionCount,
+        correctCount,
+        accuracy,
+      })
+    }
+
+    /* 生成章节数据 */
+    const chapterCount = Math.floor(Math.random() * 4) + 2
+    for (let i = 0; i < chapterCount; i++) {
+      const totalCount = Math.floor(Math.random() * 80) + 20
+      const correctCount = Math.floor(totalCount * (Math.random() * 0.4 + 0.4))
+      chapterAccuracy.push({
+        chapterId: subjectIndex * 100 + i,
+        chapterName: `第${i + 1}章 ${subject}基础`,
+        subjectName: subject,
+        accuracy: Math.round((correctCount / totalCount) * 100),
+        totalCount,
+        correctCount,
+        progress: Math.floor(Math.random() * 40) + 60,
+      })
+    }
+  })
+
+  /* 生成薄弱知识点（正确率低于60%的）*/
+  knowledgePoints
+    .filter((kp) => kp.accuracy < 60)
+    .sort((a, b) => a.accuracy - b.accuracy)
+    .slice(0, 5)
+    .forEach((kp, index) => {
+      weakPoints.push({
+        id: kp.id,
+        name: kp.name,
+        subjectName: kp.subjectName,
+        accuracy: kp.accuracy,
+        priority: 5 - index,
+        reason: `${kp.subjectName}中正确率较低，建议重点练习`,
+        recommendCount: Math.floor(Math.random() * 20) + 10,
+      })
+    })
+
+  /* 生成学习建议 */
+  const suggestions: StudySuggestionVO[] = [
+    {
+      type: 'weakness',
+      title: '重点攻克薄弱环节',
+      content: '您在' + weakPoints[0]?.subjectName + '的正确率偏低，建议每天额外练习20道相关题目。',
+      data: `薄弱知识点: ${weakPoints.length}个`,
+      priority: 5,
+    },
+    {
+      type: 'habit',
+      title: '保持每日学习习惯',
+      content: '建议每天保持至少30分钟的学习时间，有助于知识点的巩固。',
+      priority: 4,
+    },
+    {
+      type: 'strength',
+      title: '发挥优势科目',
+      content: '您在' + subjects[0] + '方面表现优秀，可以尝试挑战更高难度的题目。',
+      priority: 3,
+    },
+    {
+      type: 'goal',
+      title: '设定阶段性目标',
+      content: '建议每周完成至少3次模拟考试，检验学习效果。',
+      priority: 4,
+    },
+  ]
+
+  /* 计算综合评分 */
+  const avgAccuracy = knowledgePoints.reduce((sum, kp) => sum + kp.accuracy, 0) / knowledgePoints.length
+  const overallScore = Math.round(avgAccuracy * 0.8 + (knowledgePoints.length > 10 ? 20 : knowledgePoints.length * 2))
+
+  return {
+    overallScore: Math.min(overallScore, 100),
+    knowledgePoints,
+    chapterAccuracy,
+    weakPoints,
+    suggestions,
+    generateTime: new Date().toISOString(),
+    updateTime: new Date().toISOString(),
   }
 }

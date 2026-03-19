@@ -3,6 +3,18 @@
     <Icon name="ep:user" class="mr-1" />
     <span>个人信息</span>
   </el-menu-item>
+  <el-menu-item index="/account/messages">
+    <Icon name="ep:bell" class="mr-1" />
+    <template #title>
+      <span>消息中心</span>
+      <el-badge
+        v-if="notificationStore.unreadCount > 0"
+        :value="notificationStore.unreadCount"
+        :max="99"
+        class="ml-2"
+      />
+    </template>
+  </el-menu-item>
   <el-menu-item index="/mistakes">
     <Icon name="arcticons:androits-gps-test" class="mr-1" />
     <span>我的错题</span>
@@ -10,6 +22,10 @@
   <el-menu-item index="/account/statistics">
     <Icon name="ep:data-analysis" class="mr-1" />
     <span>学习统计</span>
+  </el-menu-item>
+  <el-menu-item index="/account/report">
+    <Icon name="ep:medal" class="mr-1" />
+    <span>能力评估</span>
   </el-menu-item>
   <el-menu-item index="/account/favorites">
     <Icon name="ep:star" class="mr-1" />
@@ -45,3 +61,9 @@
 <!--    <span>投稿列表</span>-->
 <!--  </el-menu-item>-->
 </template>
+
+<script setup lang="ts">
+import { useNotificationStore } from '~/stores/notification'
+
+const notificationStore = useNotificationStore()
+</script>

@@ -163,3 +163,109 @@ export interface StudyRecordListRespVO {
   /* 总数 */
   total: number
 }
+
+/**
+ * 知识点掌握程度
+ */
+export interface KnowledgePointVO {
+  /* 知识点ID */
+  id: number
+  /* 知识点名称 */
+  name: string
+  /* 所属科目 */
+  subjectName: string
+  /* 掌握程度（0-100）*/
+  mastery: number
+  /* 做题数量 */
+  questionCount: number
+  /* 正确数量 */
+  correctCount: number
+  /* 正确率 */
+  accuracy: number
+}
+
+/**
+ * 章节正确率
+ */
+export interface ChapterAccuracyVO {
+  /* 章节ID */
+  chapterId: number
+  /* 章节名称 */
+  chapterName: string
+  /* 所属科目 */
+  subjectName: string
+  /* 正确率 */
+  accuracy: number
+  /* 做题数量 */
+  totalCount: number
+  /* 正确数量 */
+  correctCount: number
+  /* 章节进度（百分比）*/
+  progress: number
+}
+
+/**
+ * 薄弱知识点
+ */
+export interface WeakPointVO {
+  /* 知识点ID */
+  id: number
+  /* 知识点名称 */
+  name: string
+  /* 所属科目 */
+  subjectName: string
+  /* 正确率 */
+  accuracy: number
+  /* 推荐优先级（1-5，越高越优先）*/
+  priority: number
+  /* 推荐理由 */
+  reason: string
+  /* 推荐练习数量 */
+  recommendCount: number
+}
+
+/**
+ * 学习建议
+ */
+export interface StudySuggestionVO {
+  /* 建议类型：strength-优势, weakness-薄弱, habit-习惯, goal-目标 */
+  type: 'strength' | 'weakness' | 'habit' | 'goal'
+  /* 建议标题 */
+  title: string
+  /* 建议内容 */
+  content: string
+  /* 相关数据 */
+  data?: string
+  /* 优先级（1-5）*/
+  priority: number
+}
+
+/**
+ * 能力评估报告
+ */
+export interface AbilityAssessmentVO {
+  /* 综合评分（0-100）*/
+  overallScore: number
+  /* 知识点掌握程度列表 */
+  knowledgePoints: KnowledgePointVO[]
+  /* 章节正确率列表 */
+  chapterAccuracy: ChapterAccuracyVO[]
+  /* 薄弱知识点列表（已排序）*/
+  weakPoints: WeakPointVO[]
+  /* 学习建议列表 */
+  suggestions: StudySuggestionVO[]
+  /* 报告生成时间 */
+  generateTime: string
+  /* 数据更新时间 */
+  updateTime: string
+}
+
+/**
+ * 能力评估查询参数
+ */
+export interface AbilityAssessmentQueryReqVO {
+  /* 科目ID（可选，不传则查询全部）*/
+  subjectId?: number
+  /* 时间范围：week-近7天，month-近30天，all-全部 */
+  timeRange?: 'week' | 'month' | 'all'
+}

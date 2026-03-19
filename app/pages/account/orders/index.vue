@@ -29,6 +29,7 @@ const queryParams = reactive({
 const options = [
   { label: '全部订单', value: '' },
   { label: '待支付', value: 0 },
+  { label: '已支付', value: 10 },
   { label: '已完成', value: 30 },
   { label: '已取消', value: 40 },
   { label: '售后单', value: 99 },
@@ -51,11 +52,15 @@ const getList = async () => {
 
 
 const handleQuery = async () => {
-  console.log('查询')
+  queryParams.pageNo = 1
+  await getList()
 }
 
 const resetQuery = () => {
-  console.log('重置')
+  queryParams.keyword = undefined
+  queryParams.createTime = []
+  queryParams.pageNo = 1
+  getList()
 }
 
 // 弹窗相关
@@ -67,7 +72,16 @@ const handleViewDetail = (row: any) => {
 }
 
 const {push} = useRouter()
+const handlePagination = async () => {
+  await getList()
+  /* 分页后滚动到列表顶部 */
+  if (import.meta.client) {
+    window.scrollTo({ top: 0, behavior: 'smooth' })
+  }
+}
+
 const handleTabChange = async (e) => {
+  queryParams.pageNo = 1
   if(e === 99){
     await navigateTo({path: '/account/afterSale/list'})
   }else{
@@ -134,7 +148,12 @@ onMounted(() => {
         </el-button>
       </div>
 
-      <el-empty v-if="total === 0" description="暂无数据" />
+      <el-empty v-if="!loading && total === 0" description="暂无订单数据">
+        <template #image>
+          <Icon name="ep:document" class="text-6xl text-gray-300" />
+        </template>
+        <el-button type="primary" @click="navigateTo('/qbank')">去逛逛</el-button>
+      </el-empty>
 
       <!-- 订单列表 - 卡片式 -->
       <div class="bg-white rounded-xl shadow-sm overflow-hidden p-4">
@@ -157,9 +176,11 @@ onMounted(() => {
                 <div class="flex-1">
                   <div class="flex justify-between items-center">
                     <div class="font-bold text-gray-800 line-clamp-2">{{ order.itemName }}</div>
-                    <el-tag type="primary" v-if="order.status === 0">待支付</el-tag>
-                    <el-tag type="success" v-if="order.status === 30">已完成</el-tag>
-                    <el-tag type="warning" v-if="order.status === 40">已取消</el-tag>
+                    <el-tag type="danger" v-if="order.status === 0">待支付</el-tag>
+                    <el-tag type="warning" v-else-if="order.status === 10">已支付</el-tag>
+                    <el-tag type="success" v-else-if="order.status === 30">已完成</el-tag>
+                    <el-tag type="info" v-else-if="order.status === 40">已取消</el-tag>
+                    <el-tag v-else>未知状态</el-tag>
                   </div>
 
                   <div class="mt-3 flex justify-between items-center space-x-3">
@@ -188,7 +209,7 @@ onMounted(() => {
           v-model:limit="queryParams.pageSize"
           v-model:page="queryParams.pageNo"
           :total="total"
-          @pagination="getList"
+          @pagination="handlePagination"
         />
       </div>
     </el-card>

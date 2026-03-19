@@ -82,8 +82,11 @@
       <!-- 已登录状态 -->
       <ClientOnly>
         <template v-if="!loading && authStore.isLogin">
+          <div class="flex items-center gap-3">
+            <!-- 消息通知铃铛 -->
+            <NotificationBell :is-scrolled="isScrolled" />
 
-          <el-dropdown trigger="click">
+            <el-dropdown trigger="click">
             <div
                 class="flex items-center cursor-pointer pr-4 rounded-full transition-all duration-300"
                 :class="[
@@ -112,6 +115,7 @@
               </el-dropdown-menu>
             </template>
           </el-dropdown>
+          </div>
         </template>
         <!-- 未登录状态 -->
         <template v-else>

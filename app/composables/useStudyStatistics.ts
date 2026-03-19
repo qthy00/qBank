@@ -9,6 +9,8 @@ import type {
   StudyHeatmapItemVO,
   StudyRecordQueryReqVO,
   StudyRecordListRespVO,
+  AbilityAssessmentVO,
+  AbilityAssessmentQueryReqVO,
 } from '~/types/statistics'
 import {
   getStudyStatistics,
@@ -17,6 +19,7 @@ import {
   getSubjectAccuracy,
   getStudyHeatmap,
   getStudyRecords,
+  getAbilityAssessment,
 } from '~/api/statistics'
 
 /**
@@ -47,6 +50,9 @@ export function useStudyStatistics() {
   const records = ref<StudyRecordListRespVO['list']>([])
   const recordsTotal = ref(0)
 
+  /* 能力评估报告 */
+  const abilityAssessment = ref<AbilityAssessmentVO | null>(null)
+
   /* 趋势类型：week-近7天，month-近30天 */
   const trendType = ref<'week' | 'month'>('week')
 
@@ -54,6 +60,11 @@ export function useStudyStatistics() {
   const recordQuery = reactive<StudyRecordQueryReqVO>({
     page: 1,
     limit: 10,
+  })
+
+  /* 能力评估查询参数 */
+  const assessmentQuery = reactive<AbilityAssessmentQueryReqVO>({
+    timeRange: 'all',
   })
 
   /* ==================== 计算属性 ==================== */
@@ -163,6 +174,28 @@ export function useStudyStatistics() {
   }
 
   /**
+   * 获取能力评估报告
+   */
+  const fetchAbilityAssessment = async () => {
+    loading.value = true
+    try {
+      abilityAssessment.value = await getAbilityAssessment(assessmentQuery)
+    } catch (error) {
+      console.error('获取能力评估报告失败:', error)
+    } finally {
+      loading.value = false
+    }
+  }
+
+  /**
+   * 切换评估时间范围
+   */
+  const switchAssessmentTimeRange = (range: 'week' | 'month' | 'all') => {
+    assessmentQuery.timeRange = range
+    fetchAbilityAssessment()
+  }
+
+  /**
    * 切换趋势类型
    */
   const switchTrendType = (type: 'week' | 'month') => {
@@ -237,6 +270,8 @@ export function useStudyStatistics() {
     recordsTotal,
     trendType,
     recordQuery,
+    abilityAssessment,
+    assessmentQuery,
     /* 计算属性 */
     currentTrendData,
     avgDailyDuration,
@@ -248,7 +283,9 @@ export function useStudyStatistics() {
     fetchSubjectAccuracy,
     fetchHeatmap,
     fetchRecords,
+    fetchAbilityAssessment,
     switchTrendType,
+    switchAssessmentTimeRange,
     formatDuration,
     formatNumber,
     getAccuracyColorClass,

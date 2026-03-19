@@ -38,7 +38,7 @@ const instructions = `## 强制技能激活流程（必须执行）
 - crud-development: CRUD/业务模块/Entity/Service/DAO 开发
 - api-development: API设计/RESTful/接口规范
 - database-ops: 数据库/SQL/建表/字典/菜单
-- backend- annotations：注解/@SerialMap/@RateLimiter
+- backend-annotations：注解/@SerialMap/@RateLimiter
 - utils-toolkit: 工具类/StringUtils/MapStructUtils
 - ui-pc：前端组件/AForm/AModal/Element Plus封装
 - ui-mobile：移动端/wd-/小程序/APP/WD UI
