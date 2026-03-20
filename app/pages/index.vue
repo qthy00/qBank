@@ -194,6 +194,8 @@ onMounted(async () => {
   <div class="min-h-screen bg-gray-100">
     <!-- 导航 -->
     <Navbar/>
+    <!-- 公告栏 -->
+    <AnnouncementBar />
     <!-- 菜单部分 -->
     <MainMenu/>
     <!-- 内容部分 -->
