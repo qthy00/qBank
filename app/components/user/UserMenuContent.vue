@@ -27,6 +27,10 @@
     <Icon name="ep:medal" class="mr-1" />
     <span>能力评估</span>
   </el-menu-item>
+  <el-menu-item index="/account/checkin">
+    <Icon name="ep:calendar-check" class="mr-1" />
+    <span>学习打卡</span>
+  </el-menu-item>
   <el-menu-item index="/account/favorites">
     <Icon name="ep:star" class="mr-1" />
     <span>个人收藏</span>

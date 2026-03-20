@@ -79,9 +79,15 @@ try{
     if(fs.existsSync(audioFile)){
         const platform = process.platform;
         if (platform === 'win32') {
-            // Windows
-            execSync(`powershell -c "(New-Object Media.SoundPlayer '${audioFile.replace(/'/g, "''")}').PlaySync()"`,
-                {stdio: ['pipe','pipe','pipe']});
+            // Windows - 使用 wmplayer 或 PowerShell 的 Windows Media Player 播放 MP3
+            try {
+                // 使用 Windows Media Player COM 对象播放 MP3
+                execSync(`Add-Type -AssemblyName PresentationCore; $p=New-Object System.Windows.Media.MediaPlayer; $p.Open('${audioFile.replace(/'/g, "''")}'); $p.Play(); Read-Host`,
+                    {stdio: ['pipe','pipe','pipe'], timeout: 5000});
+            } catch {
+                // 备选：使用 start 命令调用默认播放器（异步，可能听不到）
+                // execSync(`start "" "${audioFile}"`, {stdio: ['pipe','pipe','pipe']});
+            }
         } else if (platform === 'darwin') {
             // macOS
             execSync(`afplay "${audioFile}"`, {stdio: ['pipe','pipe','pipe']});
