@@ -41,17 +41,74 @@
           </div>
         </div>
 
-        <!-- 优惠券（简单实现） -->
-        <!--      <el-form-item label="优惠券" class="my-6">-->
-        <!--        <el-select v-model="selectedCoupon" placeholder="选择优惠券" class="w-full">-->
-        <!--          <el-option-->
-        <!--            v-for="coupon in coupons"-->
-        <!--            :key="coupon.code"-->
-        <!--            :label="coupon.label"-->
-        <!--            :value="coupon"-->
-        <!--          />-->
-        <!--        </el-select>-->
-        <!--      </el-form-item>-->
+        <!-- 优惠券选择 -->
+        <div class="coupon-section my-6">
+          <div class="flex items-center justify-between">
+            <span class="text-gray-600">优惠券</span>
+            <div class="flex items-center">
+              <span v-if="selectedCoupon" class="text-red-500 mr-2">
+                -¥{{ fen2yuan(selectedCoupon.actualDiscountAmount) }}
+              </span>
+              <span v-else-if="availableCoupons.length > 0" class="text-gray-400 mr-2">
+                {{ availableCoupons.filter(c => c.isSatisfied).length }}张可用
+              </span>
+              <el-button
+                type="primary"
+                link
+                size="small"
+                @click="showCouponPanel = true"
+              >
+                {{ selectedCoupon ? '更换' : '选择优惠券' }}
+                <Icon name="ep:arrow-right" />
+              </el-button>
+            </div>
+          </div>
+        </div>
+
+        <!-- 优惠券选择面板 -->
+        <el-dialog v-model="showCouponPanel" title="选择优惠券" width="500px" destroy-on-close>
+          <div v-loading="couponLoading" class="coupon-list">
+            <div
+              v-for="coupon in availableCoupons"
+              :key="coupon.id"
+              class="coupon-item"
+              :class="{
+                'selected': selectedCoupon?.id === coupon.id,
+                'disabled': !coupon.isSatisfied
+              }"
+              @click="coupon.isSatisfied ? selectCoupon(coupon) : null"
+            >
+              <div class="coupon-info">
+                <div class="coupon-name">{{ coupon.couponName }}</div>
+                <div class="coupon-value">
+                  <span class="amount">¥{{ fen2yuan(coupon.actualDiscountAmount) }}</span>
+                  <span v-if="coupon.minAmount > 0" class="condition">
+                    满¥{{ fen2yuan(coupon.minAmount) }}可用
+                  </span>
+                </div>
+                <div class="coupon-time">有效期至 {{ formatDate(coupon.validEndTime) }}</div>
+              </div>
+              <div class="coupon-check">
+                <el-radio v-model="selectedCoupon" :label="coupon" :disabled="!coupon.isSatisfied">
+                  <span v-if="!coupon.isSatisfied" class="text-gray-400">{{ coupon.unsatisfiedReason }}</span>
+                </el-radio>
+              </div>
+            </div>
+            <div
+              class="coupon-item none-option"
+              :class="{ 'selected': !selectedCoupon }"
+              @click="selectCoupon(null)"
+            >
+              <span class="text-gray-600">不使用优惠券</span>
+              <el-radio :model-value="!selectedCoupon" label="none" />
+            </div>
+            <el-empty v-if="availableCoupons.length === 0 && !couponLoading" description="暂无可用优惠券" />
+          </div>
+          <template #footer>
+            <el-button @click="showCouponPanel = false">取消</el-button>
+            <el-button type="primary" @click="showCouponPanel = false">确定</el-button>
+          </template>
+        </el-dialog>
 
         <!-- 支付方式 -->
         <el-form-item label="支付方式" class="my-6">
@@ -93,7 +150,13 @@
         <!-- 价格汇总 -->
         <div class="flex justify-between items-center font-semibold text-lg my-8">
           <span>应付金额</span>
-          <span class="text-red-600 text-2xl">¥{{ fen2yuan(orderInfo?.payPrice) }}</span>
+          <div class="text-right">
+            <div v-if="selectedCoupon" class="text-sm text-gray-500 mb-1">
+              <span class="mr-2">原价：¥{{ fen2yuan(orderInfo?.payPrice) }}</span>
+              <span class="text-red-500">优惠：-¥{{ fen2yuan(selectedCoupon.actualDiscountAmount) }}</span>
+            </div>
+            <span class="text-red-600 text-2xl">¥{{ fen2yuan(finalPayPrice) }}</span>
+          </div>
         </div>
 
         <!-- 操作按钮 -->
@@ -123,8 +186,10 @@ import {PayOrderStatusEnum} from '@/utils/constants'
 import {fetchOrderInfo} from '@/api/pay'
 import {fen2yuan} from '@/utils/money'
 import {formatDate} from '@/utils/formatTime'
-import {getRootUrl} from '@/utils/routerHelper.ts'
+import {getRootUrl} from '@/utils/routerHelper'
 import platform from '@/platform'
+import {getOrderAvailableCoupons, useCoupon } from '@/api/coupon'
+import type {OrderAvailableCoupon} from "@/types/coupon";
 
 useHead({
   title: '收银台'
@@ -149,6 +214,18 @@ const orderId = ref<number>(0)
 const paymentMethod = ref('alipay')
 const interval = ref<any>(undefined) // 定时任务，轮询是否完成支付
 const wechatBindRef = ref()
+
+// 优惠券相关
+const availableCoupons = ref<OrderAvailableCoupon[]>([])
+const selectedCoupon = ref<OrderAvailableCoupon | null>(null)
+const couponLoading = ref(false)
+const showCouponPanel = ref(false)
+const finalPayPrice = computed(() => {
+  if (selectedCoupon.value) {
+    return Math.max(0, (orderInfo.value?.payPrice || 0) - selectedCoupon.value.actualDiscountAmount)
+  }
+  return orderInfo.value?.payPrice || 0
+})
 
 // 支付
 const payNow = async () => {
@@ -175,6 +252,10 @@ const payNow = async () => {
         return
       }
       orderId.value = order.payOrderId
+      /* 应用优惠券 */
+      if (selectedCoupon.value) {
+        await applyCoupon()
+      }
     }
 
     platform.pay(paymentMethod.value, orderType, orderId.value,
@@ -241,6 +322,8 @@ const loadOrderInfo = async () => {
         type: 3
       }
       orderInfo.value = await getSwapOrderInfo(orderForm)
+      /* 加载可用优惠券 */
+      await loadAvailableCoupons()
     } else {
       const data = await fetchOrderInfo({id: orderId.value, sync: true})
       // 1.2 无法查询到支付信息
@@ -273,14 +356,14 @@ const loadOrderInfo = async () => {
         payPrice: data.price,
         totalPrice: data.price,
         createTime: data.createTime,
-        no: data.merchantOrderId,
+        no: String(data.merchantOrderId),
       }
       // 设置支付状态
       checkPayStatus()
     }
 
     infoLoading.value = false
-  } catch (e) {
+  } catch {
     message.error('当前无法查看支付信息，请稍后重试')
     return
   }
@@ -328,6 +411,42 @@ const goReturnUrl = (payResult: string) => {
 //   const data = await getEnableChannelCodeList(orderInfo.appId)
 //   payMethods.value = getPayMethods(data)
 // }
+
+/* 加载可用优惠券 */
+const loadAvailableCoupons = async () => {
+  if (!orderInfo.value) return
+  couponLoading.value = true
+  try {
+    const data = await getOrderAvailableCoupons({
+      goodsId: itemId,
+      orderAmount: orderInfo.value.totalPrice
+    })
+    availableCoupons.value = data || []
+  } catch (e) {
+    console.error('加载优惠券失败', e)
+  } finally {
+    couponLoading.value = false
+  }
+}
+
+/* 选择优惠券 */
+const selectCoupon = (coupon: OrderAvailableCoupon | null) => {
+  selectedCoupon.value = coupon
+  showCouponPanel.value = false
+}
+
+/* 应用优惠券到订单 */
+const applyCoupon = async () => {
+  if (!selectedCoupon.value || !orderId.value) return
+  try {
+    await useCoupon({
+      userCouponId: selectedCoupon.value.id,
+      orderId: orderId.value
+    })
+  } catch (e) {
+    console.error('应用优惠券失败', e)
+  }
+}
 
 onMounted(() => {
   if (query.returnUrl) {
@@ -389,5 +508,85 @@ onMounted(() => {
 /* 未选中时的样式优化 */
 :deep(.el-radio-button__inner) {
   transition: all 0.3s ease;
+}
+
+/* 优惠券样式 */
+.coupon-section {
+  padding: 12px 0;
+  border-bottom: 1px dashed #e5e7eb;
+}
+
+.coupon-list {
+  max-height: 400px;
+  overflow-y: auto;
+}
+
+.coupon-item {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 16px;
+  border: 1px solid #e5e7eb;
+  border-radius: 8px;
+  margin-bottom: 12px;
+  cursor: pointer;
+  transition: all 0.3s ease;
+}
+
+.coupon-item:hover {
+  border-color: #409EFF;
+  background: #f0f9ff;
+}
+
+.coupon-item.selected {
+  border-color: #409EFF;
+  background: #e6f4ff;
+}
+
+.coupon-item.disabled {
+  opacity: 0.6;
+  cursor: not-allowed;
+}
+
+.coupon-item.disabled:hover {
+  border-color: #e5e7eb;
+  background: transparent;
+}
+
+.coupon-item.none-option {
+  justify-content: space-between;
+}
+
+.coupon-info {
+  flex: 1;
+}
+
+.coupon-name {
+  font-weight: 600;
+  color: #1f2937;
+  margin-bottom: 4px;
+}
+
+.coupon-value {
+  display: flex;
+  align-items: baseline;
+  gap: 8px;
+  margin-bottom: 4px;
+}
+
+.coupon-value .amount {
+  font-size: 20px;
+  font-weight: 700;
+  color: #ef4444;
+}
+
+.coupon-value .condition {
+  font-size: 12px;
+  color: #9ca3af;
+}
+
+.coupon-time {
+  font-size: 12px;
+  color: #6b7280;
 }
 </style>

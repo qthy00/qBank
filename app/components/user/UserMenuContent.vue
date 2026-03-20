@@ -35,6 +35,10 @@
     <Icon name="ep:shopping-bag" class="mr-1" />
     <span>订单管理</span>
   </el-menu-item>
+  <el-menu-item index="/account/coupon">
+    <Icon name="ep:ticket" class="mr-1" />
+    <span>我的优惠券</span>
+  </el-menu-item>
   <el-menu-item index="/account/activation">
     <Icon name="mdi:code-tags-check" class="mr-1"/>
     <span>激活码</span>

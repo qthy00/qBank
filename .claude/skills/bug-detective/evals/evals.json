@@ -1,0 +1,91 @@
+{
+  "skill_name": "bug-detective",
+  "evals": [
+    {
+      "id": 1,
+      "prompt": "页面报错了：TypeError: Cannot read properties of undefined (reading 'name') at setup (UserProfile.vue:25)，帮我看看是什么问题",
+      "expected_output": "分析 Vue 空值错误，定位到 UserProfile.vue:25，提供可选链修复方案",
+      "files": [],
+      "assertions": [
+        {
+          "name": "错误类型识别",
+          "type": "contains",
+          "target": "output",
+          "expected": ["TypeError", "空值", "undefined"]
+        },
+        {
+          "name": "位置定位",
+          "type": "contains",
+          "target": "output",
+          "expected": ["UserProfile.vue:25"]
+        },
+        {
+          "name": "修复方案",
+          "type": "contains",
+          "target": "output",
+          "expected": ["?."]
+        }
+      ]
+    },
+    {
+      "id": 2,
+      "prompt": "控制台出现 [Vue warn]: Hydration completed but contains mismatches，这个怎么解决？",
+      "expected_output": "识别 SSR hydration mismatch 错误，提供 ClientOnly 或 v-if 修复方案",
+      "files": [],
+      "assertions": [
+        {
+          "name": "错误类型识别",
+          "type": "contains",
+          "target": "output",
+          "expected": ["Hydration", "mismatch", "SSR"]
+        },
+        {
+          "name": "修复建议",
+          "type": "contains",
+          "target": "output",
+          "expected": ["ClientOnly", "v-if"]
+        }
+      ]
+    },
+    {
+      "id": 3,
+      "prompt": "后端报错：Field userService in UserController required a bean of type 'com.example.service.UserService' that could not be found",
+      "expected_output": "识别 Spring Boot Bean 注入失败，提供 @Service 注解或包扫描修复方案",
+      "files": [],
+      "assertions": [
+        {
+          "name": "技术栈识别",
+          "type": "contains",
+          "target": "output",
+          "expected": ["Spring", "Bean"]
+        },
+        {
+          "name": "修复方案",
+          "type": "contains",
+          "target": "output",
+          "expected": ["@Service", "@Component"]
+        }
+      ]
+    },
+    {
+      "id": 4,
+      "prompt": "构建失败了，终端显示 window is not defined，这是什么问题？",
+      "expected_output": "识别 SSR 环境下的 window/document 访问错误，提供 import.meta.client 判断修复",
+      "files": [],
+      "assertions": [
+        {
+          "name": "根因分析",
+          "type": "contains",
+          "target": "output",
+          "expected": ["SSR", "window", "import.meta.client"]
+        },
+        {
+          "name": "修复代码",
+          "type": "contains",
+          "target": "output",
+          "expected": ["import.meta.client"]
+        }
+      ]
+    }
+  ]
+}

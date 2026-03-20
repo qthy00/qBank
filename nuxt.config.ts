@@ -166,6 +166,10 @@ export default defineNuxtConfig({
         // },
         // 该配置用于服务端请求转发
         routeRules: {
+            "/api/**": {
+                // 本地mock API，不代理
+                proxy: false,
+            },
             "/app-api/**": {
                 // proxy: `http://127.0.0.1:38080/app-api/**`,
                 proxy: process.env.NUXT_BASE_URL! + process.env.NUXT_API_URL + '/**',
