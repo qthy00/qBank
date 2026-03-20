@@ -205,71 +205,51 @@ export const getSumValue = (values: number[]): number => {
   }, 0)
 }
 
-// ========== 通用金额方法 ==========
+// ========== 金额转换工具函数 ==========
 
 /**
- * 将一个整数转换为分数保留两位小数
- * @param num
+ * 分转元
+ * 将分为单位的金额转换为元，保留2位小数
+ * @param fen 金额（分）
+ * @returns 格式化后的金额字符串（元）
+ * @example fenToYuan(100) // "1.00"
+ * @example fenToYuan(599) // "5.99"
  */
-export const formatToFraction = (num: number | string | undefined): string => {
-  if (typeof num === 'undefined') return '0.00'
-  const parsedNumber = typeof num === 'string' ? parseFloat(num) : num
-  return (parsedNumber / 100.0).toFixed(2)
-}
-
-/**
- * 将一个数转换为 1.00 这样
- * 数据呈现的时候使用
- *
- * @param num 整数
- */
-// TODO @芋艿：看看怎么融合掉
-export const floatToFixed2 = (num: number | string | undefined): string => {
-  let str = '0.00'
-  if (typeof num === 'undefined') {
-    return str
-  }
-  const f = formatToFraction(num)
-  const decimalPart = f.toString().split('.')[1]
-  const len = decimalPart ? decimalPart.length : 0
-  switch (len) {
-    case 0:
-      str = f.toString() + '.00'
-      break
-    case 1:
-      str = f.toString() + '0'
-      break
-    case 2:
-      str = f.toString()
-      break
-  }
-  return str
-}
-
-/**
- * 将一个分数转换为整数
- * @param num
- */
-// TODO @芋艿：看看怎么融合掉
-export const convertToInteger = (num: number | string | undefined): number => {
-  if (typeof num === 'undefined') return 0
-  const parsedNumber = typeof num === 'string' ? parseFloat(num) : num
-  // TODO 分转元后还有小数则四舍五入
-  return Math.round(parsedNumber * 100)
+export const fenToYuan = (fen: string | number): string => {
+  if (fen === '' || fen === null || fen === undefined) return '0.00'
+  const num = typeof fen === 'string' ? parseFloat(fen) : fen
+  if (isNaN(num)) return '0.00'
+  return (num / 100).toFixed(2)
 }
 
 /**
  * 元转分
+ * 将元为单位的金额转换为分，四舍五入取整
+ * @param yuan 金额（元）
+ * @returns 整数金额（分）
+ * @example yuanToFen(1.00) // 100
+ * @example yuanToFen(5.99) // 599
  */
-export const yuanToFen = (amount: string | number): number => {
-  return convertToInteger(amount)
+export const yuanToFen = (yuan: string | number): number => {
+  if (yuan === '' || yuan === null || yuan === undefined) return 0
+  const num = typeof yuan === 'string' ? parseFloat(yuan) : yuan
+  if (isNaN(num)) return 0
+  return Math.round(num * 100)
 }
 
 /**
- * 分转元
+ * 格式化金额显示
+ * 将数字格式化为保留2位小数的金额字符串
+ * @param amount 金额
+ * @returns 格式化后的金额字符串
+ * @example formatAmount(100) // "100.00"
+ * @example formatAmount(5.9) // "5.90"
  */
-export const fenToYuan = (price: string | number): string => {
-  return formatToFraction(price)
+export const formatAmount = (amount: string | number | undefined): string => {
+  if (amount === '' || amount === null || amount === undefined) return '0.00'
+  const num = typeof amount === 'string' ? parseFloat(amount) : amount
+  if (isNaN(num)) return '0.00'
+  return num.toFixed(2)
 }
 
 /**

@@ -1,0 +1,58 @@
+{
+  "permissions": {
+    "deny": [
+      "Bash(mvn:*)",
+      "Bash(./mvnw:*)"
+    ]
+  },
+  "hooks": {
+    "UserPromptSubmit": [
+      {
+        "matcher": "",
+        "hooks": [
+          {
+            "type": "command",
+            "command": "node ./.claude/hooks/skill-forced-eval.js"
+          }
+        ]
+      }
+    ],
+    "PreToolUse": [
+      {
+        "matcher": "Bash|Write",
+        "hooks": [
+          {
+            "type": "command",
+            "command": "node ./.claude/hooks/pre-tool-use.js",
+            "timeout": 5000
+          }
+        ]
+      }
+    ],
+    "Stop": [
+      {
+        "matcher": "",
+        "hooks": [
+          {
+            "type": "command",
+            "command": "node ./.claude/hooks/stop.js",
+            "timeout": 10000
+          }
+        ]
+      }
+    ],
+    "SessionStart": [
+      {
+        "matcher": "",
+        "hooks": [
+          {
+            "type": "command",
+            "command": "node ./.claude/hooks/session-start.js",
+            "timeout": 10000
+          }
+        ]
+      }
+    ]
+
+  }
+}
