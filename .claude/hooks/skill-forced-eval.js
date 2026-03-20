@@ -39,6 +39,8 @@ const instructions = `## 强制技能激活流程（必须执行）
 【前端PC】
 - ui-pc: 前端组件/AForm/AModal/Element Plus封装/页面开发
 - store-pc: 前端Store/Pinia/状态管理/useUserStore
+- mock-data: Mock数据/模拟数据/假数据/测试数据生成规范
+- api-docs: API接口文档/接口定义/Swagger文档/后端接口规范
 - brainstorm：头脑风暴/创意/方案设计
 - task-tracker: 任务跟踪/创建任务/技术调研/跟踪任务/问题记录/更新进度
 
