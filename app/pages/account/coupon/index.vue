@@ -108,16 +108,16 @@ const getStatusText = (status: number) => {
   }
 }
 
-const getStatusType = (status: number) => {
+const getStatusTheme = (status: number) => {
   switch (status) {
     case UserCouponStatusEnum.UNUSED:
-      return 'success'
+      return { color: '#67c23a', bg: '#f0f9eb', border: '#e1f3d8' }
     case UserCouponStatusEnum.USED:
-      return 'info'
+      return { color: '#909399', bg: '#f4f4f5', border: '#e9e9eb' }
     case UserCouponStatusEnum.EXPIRED:
-      return 'danger'
+      return { color: '#f56c6c', bg: '#fef0f0', border: '#fde2e2' }
     default:
-      return ''
+      return { color: '#909399', bg: '#f4f4f5', border: '#e9e9eb' }
   }
 }
 
@@ -152,328 +152,567 @@ onMounted(() => {
 </script>
 
 <template>
-  <el-card class="ml-3" shadow="never">
-    <template #header>
-      <div class="flex items-center justify-between">
-        <CardTitle title="我的优惠券"/>
-        <div class="flex gap-2">
-          <el-button type="primary" plain size="small" @click="navigateTo('/coupon')">
-            <Icon name="ep:plus" class="mr-1" />
-            去领券
-          </el-button>
-          <el-button type="info" plain size="small" @click="showUsageHistory">
-            <Icon name="ep:clock" class="mr-1" />
-            使用记录
-          </el-button>
+  <div class="coupon-page">
+    <el-card shadow="never" class="page-card">
+      <template #header>
+        <div class="page-header">
+          <div class="header-left">
+            <div class="header-icon">
+              <Icon name="ep:ticket" />
+            </div>
+            <div class="header-info">
+              <h2 class="header-title">我的优惠券</h2>
+              <p class="header-desc">管理您的优惠券，下单时自动抵扣</p>
+            </div>
+          </div>
+          <div class="header-actions">
+            <button class="action-btn primary" @click="navigateTo('/coupon')">
+              <Icon name="ep:plus" />
+              <span>去领券</span>
+            </button>
+            <button class="action-btn secondary" @click="showUsageHistory">
+              <Icon name="ep:clock" />
+              <span>使用记录</span>
+            </button>
+          </div>
+        </div>
+      </template>
+
+      <!-- 标签页 -->
+      <div class="tabs-section">
+        <div class="custom-tabs">
+          <button
+            v-for="tab in [
+              { status: UserCouponStatusEnum.UNUSED, label: '未使用', icon: 'ep:check' },
+              { status: UserCouponStatusEnum.USED, label: '已使用', icon: 'ep:circle-check' },
+              { status: UserCouponStatusEnum.EXPIRED, label: '已过期', icon: 'ep:delete' }
+            ]"
+            :key="tab.status"
+            class="tab-item"
+            :class="{ active: activeTab === tab.status }"
+            @click="activeTab = tab.status; handleTabChange()"
+          >
+            <Icon :name="tab.icon" class="tab-icon" />
+            <span class="tab-label">{{ tab.label }}</span>
+            <span
+              class="tab-badge"
+              :style="activeTab === tab.status ? {
+                background: getStatusTheme(tab.status).color,
+                color: 'white'
+              } : {}"
+            >
+              {{ getTabCount(tab.status) }}
+            </span>
+          </button>
         </div>
       </div>
-    </template>
 
-    <!-- 标签页 -->
-    <el-tabs v-model="activeTab" @tab-change="handleTabChange" class="coupon-tabs">
-      <el-tab-pane :label="`未使用 (${getTabCount(1)})`" :name="1">
-        <div v-loading="loading" class="coupon-list">
-          <div
-            v-for="coupon in filteredCoupons"
-            :key="coupon.id"
-            class="my-coupon-card"
-            :class="{ 'expiring': coupon.isExpiringSoon }"
-          >
-            <div class="coupon-main">
-              <div class="coupon-info">
-                <div class="coupon-header-row">
-                  <h3 class="coupon-title">{{ coupon.couponName }}</h3>
-                  <el-tag :type="getStatusType(coupon.status)" size="small">
-                    {{ getStatusText(coupon.status) }}
-                  </el-tag>
-                </div>
-                <div class="coupon-amount-row">
-                  <span class="amount-label">优惠金额：</span>
-                  <span class="amount-value">¥{{ fen2yuan(coupon.discountAmount) }}</span>
-                  <span v-if="coupon.minAmount > 0" class="amount-condition">
-                    (满¥{{ fen2yuan(coupon.minAmount) }}可用)
-                  </span>
-                </div>
-                <div class="coupon-meta">
-                  <span class="meta-item">
-                    <Icon name="ep:tag" />
-                    {{ getTypeText(coupon.type) }}
-                  </span>
-                  <span class="meta-item">
-                    <Icon name="ep:calendar" />
-                    有效期：{{ formatDate(coupon.validStartTime) }} 至 {{ formatDate(coupon.validEndTime) }}
-                  </span>
-                </div>
-                <el-alert
-                  v-if="coupon.isExpiringSoon"
-                  title="即将过期，请尽快使用"
-                  type="warning"
-                  :closable="false"
-                  show-icon
-                  class="expiring-alert"
-                />
-              </div>
-              <div class="coupon-action">
-                <el-button
-                  type="primary"
-                  size="default"
-                  @click="handleUse(coupon)"
-                >
-                  立即使用
-                </el-button>
-              </div>
+      <!-- 优惠券列表 -->
+      <div v-loading="loading" class="coupon-list">
+        <div
+          v-for="coupon in filteredCoupons"
+          :key="coupon.id"
+          class="coupon-item"
+          :class="[
+            `status-${coupon.status}`,
+            { 'expiring': coupon.isExpiringSoon && coupon.status === UserCouponStatusEnum.UNUSED }
+          ]"
+        >
+          <!-- 左侧金额区 -->
+          <div class="item-left">
+            <div class="amount-block">
+              <span class="currency">¥</span>
+              <span class="amount">{{ fen2yuan(coupon.discountAmount) }}</span>
+            </div>
+            <div v-if="coupon.minAmount > 0" class="condition">
+              满{{ fen2yuan(coupon.minAmount) }}元可用
+            </div>
+            <div v-else class="condition">
+              无门槛
             </div>
           </div>
-        </div>
-      </el-tab-pane>
 
-      <el-tab-pane :label="`已使用 (${getTabCount(2)})`" :name="2">
-        <div v-loading="loading" class="coupon-list">
-          <div
-            v-for="coupon in filteredCoupons"
-            :key="coupon.id"
-            class="my-coupon-card used"
-          >
-            <div class="coupon-main">
-              <div class="coupon-info">
-                <div class="coupon-header-row">
-                  <h3 class="coupon-title">{{ coupon.couponName }}</h3>
-                  <el-tag type="info" size="small">已使用</el-tag>
-                </div>
-                <div class="coupon-amount-row">
-                  <span class="amount-label">优惠金额：</span>
-                  <span class="amount-value used">¥{{ fen2yuan(coupon.discountAmount) }}</span>
-                </div>
-                <div class="coupon-meta">
-                  <span class="meta-item">
-                    <Icon name="ep:tag" />
-                    {{ getTypeText(coupon.type) }}
-                  </span>
-                  <span class="meta-item">
-                    <Icon name="ep:clock" />
-                    使用时间：{{ formatDateTime(coupon.useTime) }}
-                  </span>
-                </div>
-              </div>
-              <div class="coupon-action">
-                <el-button type="info" plain size="default" disabled>
-                  已使用
-                </el-button>
-              </div>
+          <!-- 分隔线 -->
+          <div class="divider" />
+
+          <!-- 中间信息区 -->
+          <div class="item-center">
+            <div class="coupon-header">
+              <h3 class="coupon-name">{{ coupon.couponName }}</h3>
+              <span
+                class="status-badge"
+                :style="{
+                  color: getStatusTheme(coupon.status).color,
+                  backgroundColor: getStatusTheme(coupon.status).bg
+                }"
+              >
+                {{ getStatusText(coupon.status) }}
+              </span>
+            </div>
+
+            <div class="coupon-tags">
+              <span class="tag type-tag">{{ getTypeText(coupon.type) }}</span>
+              <span v-if="coupon.isExpiringSoon && coupon.status === UserCouponStatusEnum.UNUSED" class="tag warning-tag">
+                <Icon name="ep:warning" />
+                即将过期
+              </span>
+            </div>
+
+            <div class="coupon-time">
+              <Icon name="ep:calendar" class="time-icon" />
+              <span v-if="coupon.status === UserCouponStatusEnum.USED">
+                使用时间：{{ formatDateTime(coupon.useTime) }}
+              </span>
+              <span v-else-if="coupon.status === UserCouponStatusEnum.EXPIRED">
+                过期时间：{{ formatDate(coupon.validEndTime) }}
+              </span>
+              <span v-else>
+                有效期：{{ formatDate(coupon.validStartTime) }} 至 {{ formatDate(coupon.validEndTime) }}
+              </span>
             </div>
           </div>
-        </div>
-      </el-tab-pane>
 
-      <el-tab-pane :label="`已过期 (${getTabCount(3)})`" :name="3">
-        <div v-loading="loading" class="coupon-list">
-          <div
-            v-for="coupon in filteredCoupons"
-            :key="coupon.id"
-            class="my-coupon-card expired"
-          >
-            <div class="coupon-main">
-              <div class="coupon-info">
-                <div class="coupon-header-row">
-                  <h3 class="coupon-title">{{ coupon.couponName }}</h3>
-                  <el-tag type="danger" size="small">已过期</el-tag>
-                </div>
-                <div class="coupon-amount-row">
-                  <span class="amount-label">优惠金额：</span>
-                  <span class="amount-value expired">¥{{ fen2yuan(coupon.discountAmount) }}</span>
-                </div>
-                <div class="coupon-meta">
-                  <span class="meta-item">
-                    <Icon name="ep:tag" />
-                    {{ getTypeText(coupon.type) }}
-                  </span>
-                  <span class="meta-item">
-                    <Icon name="ep:calendar" />
-                    过期时间：{{ formatDate(coupon.validEndTime) }}
-                  </span>
-                </div>
-              </div>
-              <div class="coupon-action">
-                <el-button type="danger" plain size="default" disabled>
-                  已过期
-                </el-button>
-              </div>
-            </div>
+          <!-- 右侧操作区 -->
+          <div class="item-right">
+            <button
+              v-if="coupon.status === UserCouponStatusEnum.UNUSED"
+              class="use-btn"
+              @click="handleUse(coupon)"
+            >
+              立即使用
+            </button>
+            <button
+              v-else
+              class="use-btn disabled"
+              disabled
+            >
+              {{ coupon.status === UserCouponStatusEnum.USED ? '已使用' : '已过期' }}
+            </button>
           </div>
         </div>
-      </el-tab-pane>
-    </el-tabs>
+      </div>
 
-    <!-- 空状态 -->
-    <div v-if="!loading && filteredCoupons.length === 0" class="empty-state">
-      <el-empty description="暂无优惠券">
-        <template #image>
-          <Icon name="ep:ticket" class="empty-icon" />
-        </template>
-        <el-button type="primary" @click="navigateTo('/coupon')">
+      <!-- 空状态 -->
+      <div v-if="!loading && filteredCoupons.length === 0" class="empty-state">
+        <div class="empty-icon">
+          <Icon name="ep:ticket" />
+        </div>
+        <p class="empty-title">
+          {{ activeTab === UserCouponStatusEnum.UNUSED ? '暂无未使用优惠券' :
+             activeTab === UserCouponStatusEnum.USED ? '暂无已使用优惠券' : '暂无已过期优惠券' }}
+        </p>
+        <p class="empty-desc">
+          {{ activeTab === UserCouponStatusEnum.UNUSED ? '快去领券中心领取吧' : '' }}
+        </p>
+        <button
+          v-if="activeTab === UserCouponStatusEnum.UNUSED"
+          class="empty-action"
+          @click="navigateTo('/coupon')"
+        >
           去领券中心
-        </el-button>
-      </el-empty>
-    </div>
+        </button>
+      </div>
 
-    <!-- 分页 -->
-    <div v-if="total > pageSize" class="pagination-wrapper">
-      <el-pagination
-        v-model:current-page="currentPage"
-        v-model:page-size="pageSize"
-        :total="total"
-        layout="prev, pager, next"
-        @change="handlePageChange"
-      />
-    </div>
-  </el-card>
+      <!-- 分页 -->
+      <div v-if="total > pageSize" class="pagination-wrapper">
+        <el-pagination
+          v-model:current-page="currentPage"
+          v-model:page-size="pageSize"
+          :total="total"
+          layout="prev, pager, next"
+          @change="handlePageChange"
+        />
+      </div>
+    </el-card>
 
-  <!-- 使用记录弹窗 -->
-  <el-dialog
-    v-model="showRecords"
-    title="优惠券使用记录"
-    width="700px"
-    destroy-on-close
-  >
-    <div v-loading="recordLoading" class="record-list">
-      <el-table :data="usageRecords" style="width: 100%">
-        <el-table-column prop="couponName" label="优惠券" min-width="120" />
-        <el-table-column prop="orderNo" label="订单编号" min-width="140" />
-        <el-table-column label="优惠金额" width="100">
-          <template #default="{ row }">
-            <span class="text-red-500">-¥{{ fen2yuan(row.discountAmount) }}</span>
-          </template>
-        </el-table-column>
-        <el-table-column label="使用时间" width="160">
-          <template #default="{ row }">
-            {{ formatDateTime(row.useTime) }}
-          </template>
-        </el-table-column>
-      </el-table>
-    </div>
-    <div v-if="usageRecords.length === 0 && !recordLoading" class="record-empty">
-      <el-empty description="暂无使用记录" />
-    </div>
-  </el-dialog>
+    <!-- 使用记录弹窗 -->
+    <el-dialog
+      v-model="showRecords"
+      title="优惠券使用记录"
+      width="720px"
+      destroy-on-close
+      class="record-dialog"
+    >
+      <div v-loading="recordLoading" class="record-content">
+        <div v-if="usageRecords.length > 0" class="record-list">
+          <div
+            v-for="record in usageRecords"
+            :key="record.id"
+            class="record-item"
+          >
+            <div class="record-info">
+              <div class="record-header">
+                <span class="record-coupon">{{ record.couponName }}</span>
+                <span class="record-amount">-¥{{ fen2yuan(record.discountAmount) }}</span>
+              </div>
+              <div class="record-meta">
+                <span class="record-order">
+                  <Icon name="ep:document" />
+                  {{ record.orderNo }}
+                </span>
+                <span class="record-time">
+                  <Icon name="ep:clock" />
+                  {{ formatDateTime(record.useTime) }}
+                </span>
+              </div>
+            </div>
+          </div>
+        </div>
+        <div v-else-if="!recordLoading" class="record-empty">
+          <Icon name="ep:document-delete" class="empty-icon" />
+          <p>暂无使用记录</p>
+        </div>
+      </div>
+    </el-dialog>
+  </div>
 </template>
 
 <style scoped lang="scss">
-.coupon-tabs {
-  :deep(.el-tabs__header) {
-    margin-bottom: 20px;
-  }
+/* 页面容器 */
+.coupon-page {
+  padding: 0 12px;
 }
 
+.page-card {
+  border-radius: 12px;
+  border: none;
+}
+
+.page-card :deep(.el-card__header) {
+  padding: 0;
+  border-bottom: 1px solid var(--color-border, #e4e7ed);
+}
+
+.page-card :deep(.el-card__body) {
+  padding: 0;
+}
+
+/* 页面头部 */
+.page-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 24px;
+  flex-wrap: wrap;
+  gap: 16px;
+}
+
+.header-left {
+  display: flex;
+  align-items: center;
+  gap: 16px;
+}
+
+.header-icon {
+  width: 56px;
+  height: 56px;
+  background: linear-gradient(135deg, var(--el-color-primary, #409eff), var(--el-color-primary-light-3, #66b1ff));
+  border-radius: 14px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 28px;
+  color: white;
+}
+
+.header-info {
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+}
+
+.header-title {
+  font-size: 20px;
+  font-weight: 600;
+  color: var(--color-text-primary, #303133);
+  margin: 0;
+}
+
+.header-desc {
+  font-size: 13px;
+  color: var(--color-text-secondary, #909399);
+  margin: 0;
+}
+
+.header-actions {
+  display: flex;
+  gap: 12px;
+}
+
+.action-btn {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  padding: 10px 20px;
+  border-radius: 8px;
+  font-size: 14px;
+  font-weight: 500;
+  cursor: pointer;
+  transition: all 0.2s ease;
+  border: none;
+}
+
+.action-btn.primary {
+  background: var(--el-color-primary, #409eff);
+  color: white;
+}
+
+.action-btn.primary:hover {
+  background: var(--el-color-primary-light-3, #66b1ff);
+  transform: translateY(-1px);
+}
+
+.action-btn.secondary {
+  background: var(--color-bg-container, #f5f7fa);
+  color: var(--color-text-primary, #303133);
+  border: 1px solid var(--color-border, #e4e7ed);
+}
+
+.action-btn.secondary:hover {
+  background: var(--color-border, #e4e7ed);
+}
+
+/* 标签页 */
+.tabs-section {
+  padding: 16px 24px;
+  border-bottom: 1px solid var(--color-border, #e4e7ed);
+}
+
+.custom-tabs {
+  display: flex;
+  gap: 8px;
+}
+
+.tab-item {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  padding: 10px 20px;
+  border: 1px solid var(--color-border, #e4e7ed);
+  border-radius: 8px;
+  background: white;
+  font-size: 14px;
+  color: var(--color-text-primary, #303133);
+  cursor: pointer;
+  transition: all 0.2s ease;
+}
+
+.tab-item:hover {
+  border-color: var(--el-color-primary, #409eff);
+  color: var(--el-color-primary, #409eff);
+}
+
+.tab-item.active {
+  background: var(--el-color-primary, #409eff);
+  border-color: var(--el-color-primary, #409eff);
+  color: white;
+}
+
+.tab-icon {
+  font-size: 16px;
+}
+
+.tab-badge {
+  padding: 2px 10px;
+  background: var(--color-bg-container, #f5f7fa);
+  border-radius: 12px;
+  font-size: 12px;
+  font-weight: 500;
+  color: var(--color-text-secondary, #909399);
+  transition: all 0.2s ease;
+}
+
+/* 优惠券列表 */
 .coupon-list {
+  padding: 20px 24px;
   display: flex;
   flex-direction: column;
   gap: 16px;
 }
 
-.my-coupon-card {
+.coupon-item {
+  display: flex;
+  align-items: stretch;
   background: white;
-  border: 1px solid #e5e7eb;
+  border: 1px solid var(--color-border, #e4e7ed);
   border-radius: 12px;
-  padding: 20px;
+  overflow: hidden;
   transition: all 0.3s ease;
 }
 
-.my-coupon-card:hover {
-  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.08);
+.coupon-item:hover {
+  border-color: var(--el-color-primary, #409eff);
+  box-shadow: 0 4px 16px rgba(64, 158, 255, 0.1);
 }
 
-.my-coupon-card.expiring {
-  border-color: #f59e0b;
-  background: linear-gradient(to right, #fffbeb, #ffffff);
+.coupon-item.status-2,
+.coupon-item.status-3 {
+  opacity: 0.7;
+  background: var(--color-bg-container, #f5f7fa);
 }
 
-.my-coupon-card.used {
-  opacity: 0.8;
-  background: #f9fafb;
+.coupon-item.expiring {
+  border-color: #e6a23c;
+  background: linear-gradient(135deg, #fdf6ec 0%, #ffffff 100%);
 }
 
-.my-coupon-card.expired {
-  opacity: 0.6;
-  background: #f9fafb;
-}
-
-.coupon-main {
+/* 左侧金额区 */
+.item-left {
+  width: 140px;
   display: flex;
-  justify-content: space-between;
+  flex-direction: column;
   align-items: center;
-  gap: 20px;
+  justify-content: center;
+  padding: 20px;
+  background: linear-gradient(135deg, #fef0f0 0%, #ffffff 100%);
+  border-right: 1px dashed var(--color-border, #e4e7ed);
 }
 
-.coupon-info {
+.coupon-item.status-2 .item-left,
+.coupon-item.status-3 .item-left {
+  background: linear-gradient(135deg, #f4f4f5 0%, #ffffff 100%);
+}
+
+.coupon-item.expiring .item-left {
+  background: linear-gradient(135deg, #fdf6ec 0%, #ffffff 100%);
+}
+
+.amount-block {
+  display: flex;
+  align-items: baseline;
+  gap: 2px;
+}
+
+.currency {
+  font-size: 18px;
+  font-weight: 600;
+  color: var(--el-color-danger, #f56c6c);
+}
+
+.amount {
+  font-size: 36px;
+  font-weight: 700;
+  color: var(--el-color-danger, #f56c6c);
+  line-height: 1;
+}
+
+.coupon-item.status-2 .amount,
+.coupon-item.status-2 .currency,
+.coupon-item.status-3 .amount,
+.coupon-item.status-3 .currency {
+  color: var(--color-text-placeholder, #c0c4cc);
+}
+
+.condition {
+  font-size: 12px;
+  color: var(--color-text-secondary, #909399);
+  margin-top: 8px;
+}
+
+/* 分隔线 */
+.divider {
+  width: 1px;
+  background: var(--color-border, #e4e7ed);
+}
+
+/* 中间信息区 */
+.item-center {
   flex: 1;
+  padding: 20px;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  gap: 10px;
 }
 
-.coupon-header-row {
+.coupon-header {
   display: flex;
   align-items: center;
   gap: 12px;
-  margin-bottom: 8px;
 }
 
-.coupon-title {
+.coupon-name {
   font-size: 16px;
   font-weight: 600;
-  color: #1f2937;
+  color: var(--color-text-primary, #303133);
   margin: 0;
 }
 
-.coupon-amount-row {
+.status-badge {
+  padding: 4px 10px;
+  border-radius: 12px;
+  font-size: 12px;
+  font-weight: 500;
+}
+
+.coupon-tags {
   display: flex;
-  align-items: baseline;
   gap: 8px;
-  margin-bottom: 12px;
 }
 
-.amount-label {
-  font-size: 14px;
-  color: #6b7280;
-}
-
-.amount-value {
-  font-size: 24px;
-  font-weight: 700;
-  color: #ef4444;
-}
-
-.amount-value.used {
-  color: #9ca3af;
-}
-
-.amount-value.expired {
-  color: #9ca3af;
-}
-
-.amount-condition {
-  font-size: 13px;
-  color: #9ca3af;
-}
-
-.coupon-meta {
-  display: flex;
-  gap: 16px;
-}
-
-.meta-item {
+.tag {
   display: flex;
   align-items: center;
   gap: 4px;
+  padding: 4px 10px;
+  border-radius: 4px;
+  font-size: 12px;
+}
+
+.type-tag {
+  background: var(--color-bg-container, #f5f7fa);
+  color: var(--color-text-secondary, #909399);
+}
+
+.warning-tag {
+  background: #fdf6ec;
+  color: #e6a23c;
+}
+
+.coupon-time {
+  display: flex;
+  align-items: center;
+  gap: 6px;
   font-size: 13px;
-  color: #6b7280;
+  color: var(--color-text-secondary, #909399);
 }
 
-.expiring-alert {
-  margin-top: 12px;
+.time-icon {
+  font-size: 14px;
 }
 
-.coupon-action {
-  flex-shrink: 0;
+/* 右侧操作区 */
+.item-right {
+  display: flex;
+  align-items: center;
+  padding: 20px;
+  border-left: 1px solid var(--color-border, #e4e7ed);
 }
 
+.use-btn {
+  padding: 10px 24px;
+  border: none;
+  border-radius: 8px;
+  background: var(--el-color-primary, #409eff);
+  color: white;
+  font-size: 14px;
+  font-weight: 500;
+  cursor: pointer;
+  transition: all 0.2s ease;
+  white-space: nowrap;
+}
+
+.use-btn:hover:not(:disabled) {
+  background: var(--el-color-primary-light-3, #66b1ff);
+  transform: scale(1.02);
+}
+
+.use-btn.disabled {
+  background: var(--color-text-placeholder, #c0c4cc);
+  cursor: not-allowed;
+}
+
+/* 空状态 */
 .empty-state {
   padding: 60px 20px;
   text-align: center;
@@ -481,27 +720,180 @@ onMounted(() => {
 
 .empty-icon {
   font-size: 64px;
-  color: #d1d5db;
+  color: var(--color-text-placeholder, #c0c4cc);
   margin-bottom: 16px;
 }
 
+.empty-title {
+  font-size: 16px;
+  font-weight: 500;
+  color: var(--color-text-primary, #303133);
+  margin: 0 0 8px 0;
+}
+
+.empty-desc {
+  font-size: 14px;
+  color: var(--color-text-secondary, #909399);
+  margin: 0 0 20px 0;
+}
+
+.empty-action {
+  padding: 10px 24px;
+  border: none;
+  border-radius: 8px;
+  background: var(--el-color-primary, #409eff);
+  color: white;
+  font-size: 14px;
+  font-weight: 500;
+  cursor: pointer;
+  transition: all 0.2s ease;
+}
+
+.empty-action:hover {
+  background: var(--el-color-primary-light-3, #66b1ff);
+}
+
+/* 分页 */
 .pagination-wrapper {
   display: flex;
   justify-content: center;
-  margin-top: 24px;
-  padding-top: 20px;
-  border-top: 1px solid #e5e7eb;
+  padding: 20px 24px;
+  border-top: 1px solid var(--color-border, #e4e7ed);
+}
+
+/* 使用记录弹窗 */
+.record-dialog :deep(.el-dialog__header) {
+  padding: 20px 24px;
+  border-bottom: 1px solid var(--color-border, #e4e7ed);
+}
+
+.record-dialog :deep(.el-dialog__body) {
+  padding: 0;
+}
+
+.record-content {
+  min-height: 200px;
+  max-height: 400px;
+  overflow-y: auto;
 }
 
 .record-list {
-  min-height: 200px;
+  padding: 16px;
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+}
+
+.record-item {
+  padding: 16px;
+  background: var(--color-bg-container, #f5f7fa);
+  border-radius: 8px;
+}
+
+.record-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  margin-bottom: 8px;
+}
+
+.record-coupon {
+  font-size: 14px;
+  font-weight: 500;
+  color: var(--color-text-primary, #303133);
+}
+
+.record-amount {
+  font-size: 16px;
+  font-weight: 600;
+  color: var(--el-color-danger, #f56c6c);
+}
+
+.record-meta {
+  display: flex;
+  gap: 20px;
+  font-size: 13px;
+  color: var(--color-text-secondary, #909399);
+}
+
+.record-order,
+.record-time {
+  display: flex;
+  align-items: center;
+  gap: 4px;
 }
 
 .record-empty {
-  padding: 40px;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  padding: 60px 20px;
+  color: var(--color-text-secondary, #909399);
 }
 
-:deep(.el-dialog__body) {
-  padding-top: 10px;
+.record-empty .empty-icon {
+  font-size: 48px;
+  margin-bottom: 12px;
+}
+
+/* 响应式 */
+@media (max-width: 768px) {
+  .page-header {
+    flex-direction: column;
+    align-items: flex-start;
+    padding: 16px;
+  }
+
+  .header-actions {
+    width: 100%;
+  }
+
+  .action-btn {
+    flex: 1;
+    justify-content: center;
+  }
+
+  .custom-tabs {
+    flex-wrap: wrap;
+  }
+
+  .tab-item {
+    padding: 8px 16px;
+    font-size: 13px;
+  }
+
+  .coupon-list {
+    padding: 16px;
+  }
+
+  .coupon-item {
+    flex-direction: column;
+  }
+
+  .item-left {
+    width: 100%;
+    border-right: none;
+    border-bottom: 1px dashed var(--color-border, #e4e7ed);
+    padding: 16px;
+  }
+
+  .divider {
+    display: none;
+  }
+
+  .item-center {
+    padding: 16px;
+  }
+
+  .item-right {
+    border-left: none;
+    border-top: 1px solid var(--color-border, #e4e7ed);
+    padding: 16px;
+  }
+
+  .use-btn {
+    width: 100%;
+  }
 }
 </style>
