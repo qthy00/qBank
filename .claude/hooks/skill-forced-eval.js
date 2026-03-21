@@ -41,14 +41,11 @@ const instructions = `## 强制技能激活流程（必须执行）
 - store-pc: 前端Store/Pinia/状态管理/useUserStore
 - mock-data: Mock数据/模拟数据/假数据/测试数据生成规范
 - api-docs: API接口文档/接口定义/Swagger文档/后端接口规范
-- brainstorm：头脑风暴/创意/方案设计
-- task-tracker: 任务跟踪/创建任务/技术调研/跟踪任务/问题记录/更新进度
 
 【业务集成】
 - payment-integration: 支付/微信支付/支付宝/退款/订单
 - wechat-integration: 微信/小程序登录/公众号/订阅消息
 - file-oss-management: 文件上传/OSS/云存储/MinIO/本地存储
-- ai-langchain4j: AI大模型/ChatGPT/Deepseek/文心一言/通义千问
 - media-processing: 图片处理/二维码/水印/Excel导入导出/PDF
 
 【调试与优化】
