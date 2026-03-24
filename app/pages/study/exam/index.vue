@@ -17,6 +17,39 @@
     </div>
 
     <div class="container mx-auto px-4 py-6">
+      <!-- 快速入口卡片 -->
+      <div class="grid grid-cols-1 md:grid-cols-2 gap-4 mb-6">
+        <div
+          class="bg-gradient-to-r from-blue-500 to-blue-600 rounded-lg p-6 text-white cursor-pointer hover:shadow-lg transition-all"
+          @click="goToSmartExam"
+        >
+          <div class="flex items-center gap-4">
+            <div class="w-12 h-12 bg-white/20 rounded-lg flex items-center justify-center">
+              <Icon name="ep:magic-stick" class="text-2xl" />
+            </div>
+            <div>
+              <h3 class="font-semibold text-lg">智能组卷</h3>
+              <p class="text-sm text-blue-100">基于薄弱知识点，自动生成针对性练习</p>
+            </div>
+          </div>
+        </div>
+
+        <div
+          class="bg-gradient-to-r from-purple-500 to-purple-600 rounded-lg p-6 text-white cursor-pointer hover:shadow-lg transition-all"
+          @click="scrollToHistory"
+        >
+          <div class="flex items-center gap-4">
+            <div class="w-12 h-12 bg-white/20 rounded-lg flex items-center justify-center">
+              <Icon name="ep:clock" class="text-2xl" />
+            </div>
+            <div>
+              <h3 class="font-semibold text-lg">考试历史</h3>
+              <p class="text-sm text-purple-100">查看过往的考试记录和成绩分析</p>
+            </div>
+          </div>
+        </div>
+      </div>
+
       <!-- 选择题库 -->
       <div v-if="!qbankId" class="bg-white rounded-lg shadow-sm p-6">
         <h2 class="text-lg font-semibold text-gray-900 mb-4">选择题库</h2>
@@ -199,7 +232,7 @@
           </div>
 
           <!-- 历史记录 -->
-          <div class="bg-white rounded-lg shadow-sm p-6">
+          <div class="bg-white rounded-lg shadow-sm p-6 exam-history-section">
             <h3 class="text-lg font-semibold text-gray-900 mb-4">最近考试记录</h3>
             <div v-if="examHistory.length === 0" class="text-center py-8 text-gray-500">
               <Icon name="ep:document" class="text-4xl mb-2" />
@@ -286,6 +319,18 @@ const goBack = () => {
     navigateTo(`/qbank/${qbankId.value}`)
   } else {
     navigateTo('/qbank')
+  }
+}
+
+const goToSmartExam = () => {
+  navigateTo('/study/exam/smart')
+}
+
+const scrollToHistory = () => {
+  /* 滚动到历史记录区域 */
+  const historySection = document.querySelector('.exam-history-section')
+  if (historySection) {
+    historySection.scrollIntoView({ behavior: 'smooth' })
   }
 }
 
