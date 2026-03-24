@@ -69,6 +69,19 @@ const handleSearch = () => {
           <div
               class="group relative flex flex-col items-center text-sm text-(--color-text-primary) hover:text-(--color-text-hover) cursor-pointer px-2 flex-shrink-0">
             <a
+                href="/exam/smart"
+                class="group flex flex-col items-center text-(--color-text) hover:text-(--color-text-hover)">
+              <i class="hy-ico-tiku ic-20"/>
+              <span class="mt-2 relative leading-5">
+                    智能组卷
+                    <span
+                        class="absolute left-0 -bottom-0 w-full h-0.5 bg-(--color-text-hover) scale-x-0 group-hover:scale-x-100 origin-left transition-transform duration-300"/>
+                  </span>
+            </a>
+          </div>
+          <div
+              class="group relative flex flex-col items-center text-sm text-(--color-text-primary) hover:text-(--color-text-hover) cursor-pointer px-2 flex-shrink-0">
+            <a
                 href="/document" target="_blank"
                 class="group flex flex-col items-center text-(--color-text) hover:text-(--color-text-hover)">
               <i class="hy-ico-wd ic-20"/>
