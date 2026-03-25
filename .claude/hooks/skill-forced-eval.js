@@ -36,9 +36,10 @@ const instructions = `## 强制技能激活流程（必须执行）
 
 可用技能列表（按类别排序）：
 
-【前端PC】
+【前端PC开发】
 - ui-pc: 前端组件/AForm/AModal/Element Plus封装/页面开发
 - store-pc: 前端Store/Pinia/状态管理/useUserStore
+- nuxt4-patterns: Nuxt 4模式/SSR/hydration/性能优化/路由规则
 - mock-data: Mock数据/模拟数据/假数据/测试数据生成规范
 - api-docs: API接口文档/接口定义/Swagger文档/后端接口规范
 
@@ -50,8 +51,8 @@ const instructions = `## 强制技能激活流程（必须执行）
 
 【调试与优化】
 - bug-detective: BUG/报错/异常/不工作/排查修复
+- security-guard: 安全/Sa-Token/认证授权/加密/XSS/CSRF防护
 - chrome-devtools: 浏览器调试/截图/元素检查/性能分析
-- security-guard: 安全/Sa-Token/认证授权/加密
 
 【工程化】
 - architecture-design: 架构/模块划分/重构/依赖管理
@@ -60,7 +61,22 @@ const instructions = `## 强制技能激活流程（必须执行）
 - git-workflow: Git/提交/commit/分支
 - tech-decision: 技术选型/方案对比/架构决策
 - brainstorm: 头脑风暴/创意/方案设计/功能规划
-- task-tracker: 任务跟踪/记录进度/继续任务/恢复上下文/多步骤开发/进度管理/任务归档
+- task-tracker: 任务跟踪/记录进度/继续任务/恢复上下文/多步骤开发
+
+【通用技能】
+- blueprint: 蓝图规划/多会话任务/复杂工程规划/分步实施计划
+- search-first: 编码前搜索/研究现有方案/技术调研
+- tdd-workflow: 测试驱动开发/TDD/单元测试/覆盖率80%+
+- coding-standards: 编码标准/最佳实践/代码规范
+- security-scan: 安全扫描/配置审计/漏洞检测
+- skill-stocktake: 技能盘点/质量审计/技能评估
+- rules-distill: 规则提炼/提取跨领域原则
+- strategic-compact: 策略性压缩/上下文管理/Token优化
+- prompt-optimizer: 提示词优化/指令改进
+- team-builder: 代理团队构建/并行代理调度
+- continuous-learning: 持续学习/本能系统/模式提取
+- grill-me: 计划压力测试/严格审视/拷问我
+- chinese-localization: 文档翻译/中文化/本地化
 
 ### 步骤 2 - 激活（紧接步骤1立即执行，逐个调用，等待每个完成）
 
@@ -85,14 +101,18 @@ const instructions = `## 强制技能激活流程（必须执行）
 用户问：“帮我开发一个优惠券管理功能”
 
 评估结果：
-- crud-development - 是 - 涉及业务模块CRUD开发
-- database-ops - 是 - 需要建表和字典配置
-- ui-pc - 否 - 用户未要求前端页面
-- api-development - 否 - 由CRUD自动生成
+- ui-pc - 是 - 涉及前端页面开发
+- store-pc - 是 - 需要状态管理
+- mock-data - 是 - 需要模拟数据
+- brainstorm - 是 - 需要方案设计
+- task-tracker - 是 - 复杂任务需要跟踪
 
 激活技能：
-> Skill(crud-development)
-> Skill(database-ops)
+> Skill(ui-pc)
+> Skill(store-pc)
+> Skill(mock-data)
+> Skill(brainstorm)
+> Skill(task-tracker)
 
 [只有完成上述步骤后才开始实现]
 
