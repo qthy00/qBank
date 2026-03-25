@@ -79,27 +79,33 @@ try{
     if(fs.existsSync(audioFile)){
         const platform = process.platform;
         if (platform === 'win32') {
-            // Windows - 使用 wmplayer 或 PowerShell 的 Windows Media Player 播放 MP3
+            // Windows - 使用 PowerShell 播放 MP3
             try {
-                // 使用 Windows Media Player COM 对象播放 MP3
-                execSync(`Add-Type -AssemblyName PresentationCore; $p=New-Object System.Windows.Media.MediaPlayer; $p.Open('${audioFile.replace(/'/g, "''")}'); $p.Play(); Read-Host`,
+                const psCommand = `Add-Type -AssemblyName PresentationCore; $p=New-Object System.Windows.Media.MediaPlayer; $p.Open('${audioFile.replace(/'/g, "''")}'); $p.Play(); Start-Sleep -Milliseconds 800`;
+                execSync(`powershell -Command "${psCommand}"`,
                     {stdio: ['pipe','pipe','pipe'], timeout: 5000});
             } catch {
-                // 备选：使用 start 命令调用默认播放器（异步，可能听不到）
-                // execSync(`start "" "${audioFile}"`, {stdio: ['pipe','pipe','pipe']});
+                // 静默忽略
             }
         } else if (platform === 'darwin') {
             // macOS
             execSync(`afplay "${audioFile}"`, {stdio: ['pipe','pipe','pipe']});
         } else if (platform === 'linux') {
-            // Linux，尝试使用多种播放器
+            // Linux，尝试使用多种播放器（MP3格式需要支持MP3的播放器）
             try{
-                execSync(`aplay "${audioFile}"`, {stdio: ['pipe','pipe','pipe']});
+                // mpg123 是专门播放MP3的工具
+                execSync(`mpg123 -q "${audioFile}"`, {stdio: ['pipe','pipe','pipe']});
             }catch{
                 try{
-                    execSync(`paplay "${audioFile}"`, {stdio: ['pipe','pipe','pipe']});
+                    // ffplay (ffmpeg)
+                    execSync(`ffplay -nodisp -autoexit "${audioFile}"`, {stdio: ['pipe','pipe','pipe']});
                 }catch{
-                    // 无法播放音频,静默忽略
+                    try{
+                        // paplay (pulseaudio，可能需要转码)
+                        execSync(`paplay "${audioFile}"`, {stdio: ['pipe','pipe','pipe']});
+                    }catch{
+                        // 无法播放音频,静默忽略
+                    }
                 }
             }
         }
