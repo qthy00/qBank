@@ -57,7 +57,7 @@ onMounted(() => {
 
 // 处理重做
 const handleRetry = (questionId: number) => {
-  router.push(`/mistakes/retry/${questionId}`)
+  router.push(`/account/mistakes/retry/${questionId}`)
 }
 
 // 处理全部重做

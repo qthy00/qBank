@@ -99,7 +99,7 @@ const handleMarkMastered = async () => {
 // 继续下一题
 const handleNext = () => {
   // 返回错题本列表
-  router.push('/mistakes')
+  router.push('/account/mistakes')
 }
 
 onMounted(() => {
@@ -111,7 +111,7 @@ onMounted(() => {
   <div class="mistake-retry-page">
     <!-- 页面头部 -->
     <div class="page-header">
-      <el-button text @click="router.push('/mistakes')">
+      <el-button text @click="router.push('/account/mistakes')">
         <Icon name="material-symbols:arrow-back" class="btn-icon" />
         返回错题本
       </el-button>
