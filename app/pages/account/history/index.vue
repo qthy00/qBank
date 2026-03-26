@@ -25,6 +25,9 @@ const statistics = ref({
   avgAccuracy: 0,
 })
 
+/* 路由 */
+const router = useRouter()
+
 /* 查询参数 */
 const query = reactive<PracticeRecordQueryReqVO>({
   page: 1,
@@ -198,8 +201,7 @@ const handleContinue = async (record: PracticeRecordVO) => {
  * 查看详情
  */
 const handleViewDetail = (record: PracticeRecordVO) => {
-  /* TODO: 跳转到练习详情页 */
-  useMessage().info('查看详情功能开发中')
+  router.push(`/account/history/detail/${record.id}`)
 }
 
 /* ==================== 初始化 ==================== */
