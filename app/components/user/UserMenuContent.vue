@@ -51,6 +51,14 @@
     <Icon name="ep:ticket" class="mr-1" />
     <span>我的优惠券</span>
   </el-menu-item>
+  <el-menu-item index="/account/points">
+    <Icon name="ep:coin" class="mr-1" />
+    <span>积分中心</span>
+  </el-menu-item>
+  <el-menu-item index="/account/level">
+    <Icon name="ep:trophy" class="mr-1" />
+    <span>会员等级</span>
+  </el-menu-item>
   <el-menu-item index="/account/activation">
     <Icon name="mdi:code-tags-check" class="mr-1"/>
     <span>激活码</span>

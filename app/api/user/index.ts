@@ -1,6 +1,10 @@
 import type {FavoriteVO, FeedbackQuestionVO, UserProfileUpdateReqVO } from '~/types/user'
 import { httpGet, httpUpload, httpPost, httpPut } from "~/composables/useHttp";
 import type {PackageAccessVO} from "~/types/user";
+import { getMockUser, getMockUserPermissions, updateMockUser } from './mock'
+
+/* 是否启用Mock数据 */
+const ENABLE_MOCK = true
 
 /* ==================== 请求类型定义 ==================== */
 
@@ -85,11 +89,17 @@ export interface DeviceQueryVO {
 
 // 获取用户权限信息
 export const getInfo = () => {
+  if (ENABLE_MOCK) {
+    return getMockUserPermissions()
+  }
   return httpGet('getInfo',  '/member/auth/get-permission-info' )
 }
 
 // 查询会员用户详情
 export const getUser = async () => {
+  if (ENABLE_MOCK) {
+    return getMockUser()
+  }
   return await httpGet('UserInfo', `/member/user/get`)
 }
 
