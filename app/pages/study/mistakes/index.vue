@@ -3,6 +3,7 @@ import { useMistakes } from '~/composables/useMistakes'
 import MistakeStats from './components/MistakeStats.vue'
 import MistakeFilter from './components/MistakeFilter.vue'
 import MistakeList from './components/MistakeList.vue'
+import MistakesExportDialog from '~/components/MistakesExportDialog/index.vue'
 
 /**
  * 错题本主页面
@@ -45,6 +46,9 @@ const {
 // 选中的错题
 const selectedIds = ref<number[]>([])
 
+// 导出弹窗
+const exportDialogVisible = ref(false)
+
 // 初始化获取数据
 onMounted(() => {
   fetchMistakeStats()
@@ -85,6 +89,16 @@ const handleBatchRemove = async () => {
   await batchRemove(selectedIds.value)
   selectedIds.value = []
 }
+
+// 导出错题
+const handleExport = () => {
+  exportDialogVisible.value = true
+}
+
+// 导出成功回调
+const handleExportSuccess = () => {
+  selectedIds.value = []
+}
 </script>
 
 <template>
@@ -110,6 +124,10 @@ const handleBatchRemove = async () => {
       <el-button type="primary" @click="handleBatchMaster">
         <Icon name="material-symbols:check-circle" class="btn-icon" />
         批量标记掌握
+      </el-button>
+      <el-button @click="handleExport">
+        <Icon name="material-symbols:download" class="btn-icon" />
+        导出错题
       </el-button>
       <el-button type="danger" @click="handleBatchRemove">
         <Icon name="material-symbols:delete" class="btn-icon" />
@@ -139,6 +157,13 @@ const handleBatchRemove = async () => {
         layout="total, prev, pager, next"
       />
     </div>
+
+    <!-- 导出弹窗 -->
+    <MistakesExportDialog
+      v-model:visible="exportDialogVisible"
+      :selected-ids="selectedIds"
+      @success="handleExportSuccess"
+    />
   </div>
 </template>
 

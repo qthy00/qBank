@@ -65,11 +65,16 @@ export default {
     }
   },
 
-  //在需要定位页面调用 TODO 未测试
+  // [2026-03-26] 以下三个功能经讨论决定暂不实现，已注释以清理技术债务
+  // 原因：与学习场景无关联，ROI为0，待后续业务需要时再启用
+  // 讨论文档：docs/discussion-wechat-location-20260326.md
+
+  /*
+  // 获取定位 - 暂未使用
   getLocation(callback) {
     this.isReady(() => {
       jweixin.getLocation({
-        type: 'gcj02', // 默认为wgs84的gps坐标，如果要返回直接给openLocation用的火星坐标，可传入'gcj02'
+        type: 'gcj02',
         success: function (res) {
           callback(res);
         },
@@ -80,14 +85,12 @@ export default {
     });
   },
 
-
-
-  // 微信扫码 TODO 未测试
+  // 微信扫码 - 暂未使用
   scanQRCode(callback) {
     this.isReady(() => {
       jweixin.scanQRCode({
-        needResult: 1, // 默认为0，扫描结果由微信处理，1则直接返回扫描结果，
-        scanType: ['qrCode', 'barCode'], // 可以指定扫二维码还是一维码，默认二者都有
+        needResult: 1,
+        scanType: ['qrCode', 'barCode'],
         success: function (res) {
           callback(res);
         },
@@ -98,7 +101,7 @@ export default {
     });
   },
 
-  // 打开坐标位置 TODO 未测试
+  // 打开坐标位置 - 暂未使用
   openLocation(data, callback) {
     this.isReady(() => {
       jweixin.openLocation({
@@ -109,8 +112,9 @@ export default {
       });
     });
   },
+  */
 
-  // 微信支付
+  // 微信支付 - 实际使用中
   wxpay(data, callback) {
     this.isReady(() => {
       jweixin.chooseWXPay({
