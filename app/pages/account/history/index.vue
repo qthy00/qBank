@@ -6,7 +6,7 @@ import { getPracticeRecords, getPracticeStatistics, continuePractice } from '~/a
  * 练习记录页面
  */
 definePageMeta({
-  layout: 'user',
+  layout: 'member',
 })
 
 /* 加载状态 */
@@ -380,32 +380,33 @@ onMounted(() => {
 
 <style scoped lang="scss">
 .page-container {
-  padding: 16px;
+  padding: 0 16px 16px;
 }
 
 .page-header {
-  margin-bottom: 24px;
+  margin-bottom: 20px;
+  padding-top: 8px;
 
   .header-title {
     display: flex;
     align-items: center;
     gap: 8px;
-    margin-bottom: 8px;
+    margin-bottom: 6px;
 
     .title-icon {
-      font-size: 24px;
+      font-size: 22px;
       color: var(--el-color-primary);
     }
 
     h1 {
-      font-size: 20px;
+      font-size: 18px;
       font-weight: 600;
       color: var(--el-text-color-primary);
     }
   }
 
   .header-desc {
-    font-size: 14px;
+    font-size: 13px;
     color: var(--el-text-color-secondary);
   }
 }
@@ -413,47 +414,52 @@ onMounted(() => {
 .statistics-cards {
   display: grid;
   grid-template-columns: repeat(4, 1fr);
-  gap: 16px;
-  margin-bottom: 24px;
+  gap: 12px;
+  margin-bottom: 20px;
 
-  @media (max-width: 768px) {
+  @media (max-width: 1024px) {
+    grid-template-columns: repeat(2, 1fr);
+  }
+
+  @media (max-width: 640px) {
     grid-template-columns: repeat(2, 1fr);
   }
 }
 
 .stat-card {
-  background: var(--el-fill-color-light);
+  background: var(--el-bg-color);
+  border: 1px solid var(--el-border-color-lighter);
   border-radius: 8px;
-  padding: 20px;
+  padding: 16px 12px;
   text-align: center;
   transition: all 0.2s;
 
   &:hover {
-    background: var(--el-fill-color);
-    transform: translateY(-2px);
+    box-shadow: 0 2px 12px rgba(0, 0, 0, 0.08);
+    transform: translateY(-1px);
   }
 
   .stat-value {
-    font-size: 28px;
-    font-weight: 700;
+    font-size: 24px;
+    font-weight: 600;
     color: var(--el-text-color-primary);
     margin-bottom: 4px;
   }
 
   .stat-label {
-    font-size: 14px;
+    font-size: 13px;
     color: var(--el-text-color-secondary);
   }
 }
 
 .filter-section {
   display: flex;
-  gap: 12px;
-  margin-bottom: 20px;
+  gap: 10px;
+  margin-bottom: 16px;
   flex-wrap: wrap;
 
   .el-select {
-    width: 140px;
+    width: 130px;
   }
 }
 
@@ -463,16 +469,16 @@ onMounted(() => {
 
 .record-card {
   display: flex;
-  gap: 16px;
-  padding: 16px;
-  background: var(--el-fill-color-light);
+  gap: 14px;
+  padding: 14px;
+  background: var(--el-bg-color);
+  border: 1px solid var(--el-border-color-lighter);
   border-radius: 8px;
-  margin-bottom: 12px;
+  margin-bottom: 10px;
   transition: all 0.2s;
 
   &:hover {
-    background: var(--el-fill-color);
-    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+    box-shadow: 0 2px 12px rgba(0, 0, 0, 0.08);
   }
 
   @media (max-width: 768px) {

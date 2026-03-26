@@ -609,3 +609,55 @@ const validated: UserInput = userSchema.parse(input)
 * 生产代码中不允许出现 `console.log` 语句
 * 请使用适当的日志库替代
 * 查看钩子以进行自动检测
+
+---
+
+## Nuxt 布局规范（qBank 项目）
+
+### 布局选择规则
+
+根据页面路径选择正确的布局：
+
+| 页面路径 | 布局名称 | 布局文件 | 说明 |
+|---------|---------|---------|------|
+| `pages/account/**` | `member` | `layouts/member.vue` | 用户中心页面（含侧边栏菜单） |
+| `pages/user/**` | `user` | `layouts/user.vue` | 用户信息页面（简化布局） |
+| `pages/index.vue` | `default` | `layouts/default.vue` | 首页 |
+| 其他页面 | `default` | `layouts/default.vue` | 默认布局 |
+
+### 示例
+
+```typescript
+// ✅ CORRECT: account 路径使用 member 布局
+<script setup lang="ts">
+definePageMeta({
+  layout: 'member',
+})
+</script>
+
+// ❌ WRONG: account 路径错误使用 user 布局
+<script setup lang="ts">
+definePageMeta({
+  layout: 'user',  // 错误！应该使用 'member'
+})
+</script>
+```
+
+### 布局对比
+
+**member 布局**：
+- 包含 UserHeader（用户信息头部）
+- 包含 UserSideBar（用户中心侧边栏菜单）
+- 适合：个人中心、我的订单、学习记录等需要侧边栏导航的页面
+
+**user 布局**：
+- 仅包含基础导航
+- 适合：登录、注册、简单的用户信息页面
+
+### 检查清单
+
+创建 account 路径下的页面时：
+- [ ] 使用 `layout: 'member'`
+- [ ] 检查侧边栏菜单是否正确显示
+- [ ] 确保页面内容与侧边栏风格一致
+

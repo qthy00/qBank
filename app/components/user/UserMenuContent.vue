@@ -31,6 +31,10 @@
     <Icon name="ep:document" class="mr-1" />
     <span>练习记录</span>
   </el-menu-item>
+  <el-menu-item index="/account/notes">
+    <Icon name="ep:edit-pen" class="mr-1" />
+    <span>学习笔记</span>
+  </el-menu-item>
   <el-menu-item index="/account/checkin">
     <Icon name="ep:calendar-check" class="mr-1" />
     <span>学习打卡</span>

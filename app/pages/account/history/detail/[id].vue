@@ -6,7 +6,7 @@ import { getPracticeRecords } from '~/api/practice'
  * 练习详情页面
  */
 definePageMeta({
-  layout: 'user',
+  layout: 'member',
 })
 
 /* 路由参数 */
@@ -327,33 +327,34 @@ onMounted(() => {
 
 <style scoped lang="scss">
 .page-container {
-  padding: 16px;
+  padding: 0 8px 16px;
 }
 
 .page-header {
   display: flex;
   justify-content: space-between;
   align-items: center;
-  margin-bottom: 20px;
+  margin-bottom: 16px;
+  padding-top: 4px;
 
   .header-left {
     display: flex;
     align-items: center;
-    gap: 16px;
+    gap: 12px;
   }
 
   .header-title {
     display: flex;
     align-items: center;
-    gap: 8px;
+    gap: 6px;
 
     .title-icon {
-      font-size: 20px;
+      font-size: 18px;
       color: var(--el-color-primary);
     }
 
     h1 {
-      font-size: 18px;
+      font-size: 16px;
       font-weight: 600;
       margin: 0;
     }
@@ -361,46 +362,52 @@ onMounted(() => {
 }
 
 .loading-container {
-  padding: 20px;
+  padding: 16px;
 }
 
 .detail-content {
   display: flex;
   flex-direction: column;
-  gap: 16px;
+  gap: 12px;
 }
 
 /* 信息卡片 */
 .info-card {
+  :deep(.el-card__body) {
+    padding: 14px;
+  }
+
   .info-header {
     display: flex;
-    gap: 16px;
+    gap: 12px;
 
     .qbank-cover {
-      width: 120px;
-      height: 80px;
+      width: 100px;
+      height: 70px;
       object-fit: cover;
-      border-radius: 8px;
+      border-radius: 6px;
     }
 
     .info-main {
       flex: 1;
+      min-width: 0;
 
       .qbank-name {
-        font-size: 18px;
+        font-size: 16px;
         font-weight: 600;
-        margin: 0 0 12px 0;
+        margin: 0 0 8px 0;
       }
 
       .info-tags {
         display: flex;
-        gap: 8px;
-        margin-bottom: 8px;
+        gap: 6px;
+        margin-bottom: 6px;
+        flex-wrap: wrap;
       }
 
       .mode-desc {
         color: var(--el-text-color-secondary);
-        font-size: 14px;
+        font-size: 13px;
         margin: 0;
       }
     }
@@ -411,9 +418,9 @@ onMounted(() => {
 .stats-grid {
   display: grid;
   grid-template-columns: repeat(3, 1fr);
-  gap: 16px;
+  gap: 10px;
 
-  @media (max-width: 768px) {
+  @media (max-width: 640px) {
     grid-template-columns: repeat(2, 1fr);
   }
 
@@ -421,17 +428,17 @@ onMounted(() => {
     background: var(--el-bg-color);
     border: 1px solid var(--el-border-color-lighter);
     border-radius: 8px;
-    padding: 20px;
+    padding: 14px 10px;
     text-align: center;
 
     .stat-value {
-      font-size: 24px;
+      font-size: 20px;
       font-weight: 600;
-      margin-bottom: 8px;
+      margin-bottom: 4px;
     }
 
     .stat-label {
-      font-size: 14px;
+      font-size: 12px;
       color: var(--el-text-color-secondary);
     }
   }
@@ -441,25 +448,33 @@ onMounted(() => {
 .card-title {
   display: flex;
   align-items: center;
-  gap: 8px;
-  font-size: 16px;
+  gap: 6px;
+  font-size: 14px;
   font-weight: 600;
-  margin: 0 0 16px 0;
-  padding-bottom: 12px;
+  margin: 0 0 12px 0;
+  padding-bottom: 10px;
   border-bottom: 1px solid var(--el-border-color-lighter);
 }
 
 /* 时间信息 */
+.time-card,
+.analysis-card {
+  :deep(.el-card__body) {
+    padding: 14px;
+  }
+}
+
 .time-card {
   .time-list {
     display: flex;
     flex-direction: column;
-    gap: 12px;
+    gap: 10px;
 
     .time-item {
       display: flex;
       justify-content: space-between;
       align-items: center;
+      font-size: 13px;
 
       .time-label {
         color: var(--el-text-color-secondary);
@@ -477,27 +492,28 @@ onMounted(() => {
   .analysis-content {
     display: flex;
     flex-direction: column;
-    gap: 20px;
+    gap: 14px;
 
     .progress-header {
       display: flex;
       justify-content: space-between;
       align-items: center;
-      margin-bottom: 8px;
-      font-size: 14px;
+      margin-bottom: 6px;
+      font-size: 13px;
     }
 
     .analysis-summary {
-      padding: 16px;
+      padding: 12px;
       background: var(--el-fill-color-light);
-      border-radius: 8px;
+      border-radius: 6px;
 
       p {
         display: flex;
         align-items: center;
-        gap: 8px;
+        gap: 6px;
         margin: 0;
-        font-size: 14px;
+        font-size: 13px;
+        line-height: 1.5;
       }
     }
   }
