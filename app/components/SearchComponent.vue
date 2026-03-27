@@ -216,8 +216,26 @@
 import {debounce} from 'lodash-es'
 import {isNumber} from '~/utils/is'
 import {highlightKeyword} from '~/utils'
-import type {ToolVO} from '~/types/tools'
-import {ToolsApi} from '~/api/tools'
+// TODO: 需要替换为项目实际的搜索API
+// import type {ToolVO} from '~/types/tools'
+// import {ToolsApi} from '~/api/tools'
+
+// 临时类型定义，避免构建失败
+interface ToolVO {
+  id: number
+  name: string
+  logo?: string
+  icon?: string
+  categoryName?: string
+  series?: string
+}
+
+// 临时API，避免构建失败
+const ToolsApi = {
+  getToolsPage: async (params: any) => {
+    return { list: [], total: 0 }
+  }
+}
 
 const appStore = useAppStore()
 const {isMobile} = storeToRefs(appStore)

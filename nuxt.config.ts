@@ -60,6 +60,37 @@ export default defineNuxtConfig({
       '@nuxtjs/i18n',
       'nuxt-swiper'
     ],
+    // 图片优化配置
+    image: {
+        quality: 80,
+        format: ['webp', 'jpg', 'png'],
+        screens: {
+            xs: 320,
+            sm: 640,
+            md: 768,
+            lg: 1024,
+            xl: 1280,
+            xxl: 1536,
+        },
+        presets: {
+            avatar: {
+                modifiers: {
+                    format: 'webp',
+                    width: 100,
+                    height: 100,
+                    fit: 'cover',
+                },
+            },
+            thumbnail: {
+                modifiers: {
+                    format: 'webp',
+                    width: 300,
+                    height: 200,
+                    fit: 'cover',
+                },
+            },
+        },
+    },
     icon: {
         localApiEndpoint: '/nuxt-icon',
         serverBundle: {
@@ -135,6 +166,20 @@ export default defineNuxtConfig({
     },
     build: {
         transpile: ['fabric'],
+        // 代码分割优化
+        splitChunks: {
+            pages: true,
+            vendor: true,
+        },
+    },
+    // 实验性功能优化
+    experimental: {
+        // 启用组件懒加载
+        componentIslands: true,
+        // 启用头部优化
+        headNext: true,
+        // 启用payload压缩
+        payloadExtraction: true,
     },
     plugins: [
         '~/plugins/fabric.client.ts',
@@ -182,9 +227,19 @@ export default defineNuxtConfig({
         logLevel: 'verbose',
     },
     routeRules: {
+        // 静态页面预渲染
+        '/': { prerender: true },
+        '/about': { prerender: true },
+        '/contact': { prerender: true },
+        '/article/**': { isr: 3600 },
+        '/document/**': { isr: 3600 },
+        '/qbank': { isr: 1800 },
+        // 客户端渲染路由
         '/account/**': { ssr: false },
         '/qb/**': { ssr: false },
         '/study/**': { ssr: false },
         '/order/**': { ssr: false },
+        // API缓存
+        '/api/**': { cache: { maxAge: 60 * 5 } },
     }
 })

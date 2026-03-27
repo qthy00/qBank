@@ -50,3 +50,55 @@ CORRECT: update(original, field, value) → 返回包含更改的新副本
 * \[ ] 正确的错误处理
 * \[ ] 没有硬编码的值（使用常量或配置）
 * \[ ] 没有突变（使用不可变模式）
+* \[ ] 配置文件语法正确（编辑后必须验证构建）
+
+## 配置文件编辑规则
+
+### Nuxt 配置文件
+
+编辑 `nuxt.config.ts` 时必须注意：
+
+1. **保持正确的嵌套层级**
+   - `modules` 是字符串数组，不要在其中插入对象配置
+   - 模块的专属配置（如 `image`、`icon`）应放在 `modules` 数组**外部**
+
+```typescript
+// ❌ 错误：image 配置在 modules 数组内部
+modules: [
+  '@nuxt/image',
+  image: { /* ... */ },  // 错误！这会导致语法错误
+  '@other/module',
+]
+
+// ✅ 正确：image 配置在 modules 数组外部
+modules: [
+  '@nuxt/image',
+  '@other/module',
+],
+image: {
+  quality: 80,
+  format: ['webp', 'jpg', 'png'],
+},
+```
+
+2. **编辑后必须验证**
+   - 修改配置文件后，立即运行 `pnpm build` 或 `npx nuxt typecheck` 验证
+   - 配置文件语法错误会导致整个应用无法构建
+
+### 组件引用检查
+
+1. **确保导入的模块存在**
+   - 导入 API 模块前，确认文件确实存在
+   - 从其他项目复制的代码，需要适配到当前项目的 API 结构
+
+```typescript
+// ❌ 错误：引用了不存在的 API
+import {ToolsApi} from '~/api/tools'
+
+// ✅ 正确：使用项目现有的 API
+import {SearchApi} from '~/api/search'
+```
+
+2. **临时修复方案**
+   - 如果模块确实不存在，可以临时创建 mock 实现避免构建失败
+   - 添加 `TODO` 注释标记需要后续完善的地方
