@@ -36,7 +36,7 @@ const open = async () => {
 defineExpose({ open }) // 提供 open 方法，用于打开弹窗
 
 /** 提交表单 */
-const emit = defineEmits(['ok']) // 定义 success 事件，用于操作成功后的回调
+defineEmits(['ok']) // 定义 success 事件，用于操作成功后的回调
 const submitForm = async () => {
   // 校验表单
   await formRef.value.validate()

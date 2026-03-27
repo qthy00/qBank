@@ -82,7 +82,8 @@ import { getCode, reqCheck } from '~/api/login/index.js'
 
 const props = defineProps({
   captchaType: {
-    type: String
+    type: String,
+    default: undefined
   },
   type: {
     type: String,
@@ -225,12 +226,13 @@ onMounted(() => {
 //鼠标按下
 const start = (e) => {
   e = e || window.event
+  let x
   if (!e.touches) {
     //兼容PC端
-    var x = e.clientX
+    x = e.clientX
   } else {
     //兼容移动端
-    var x = e.touches[0].pageX
+    x = e.touches[0].pageX
   }
   startLeft.value = Math.floor(x - barArea.value.getBoundingClientRect().left)
   startMoveTime.value = +new Date() //开始滑动的时间
@@ -247,12 +249,13 @@ const start = (e) => {
 const move = (e) => {
   e = e || window.event
   if (status.value && isEnd.value == false) {
+    let x
     if (!e.touches) {
       //兼容PC端
-      var x = e.clientX
+      x = e.clientX
     } else {
       //兼容移动端
-      var x = e.touches[0].pageX
+      x = e.touches[0].pageX
     }
     const bar_area_left = barArea.value.getBoundingClientRect().left
     let move_block_left = x - bar_area_left //小方块相对于父元素的left值

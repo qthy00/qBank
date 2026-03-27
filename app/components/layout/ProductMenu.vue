@@ -254,14 +254,14 @@
 
 <script setup lang="ts">
 
-const props = defineProps({
+defineProps({
   showMenu: {
     type: Boolean,
     required: true,
   },
 })
 
-const { t } = useI18n()
+const { _t } = useI18n()
 
 // 响应式处理
 const appStore = useAppStore()

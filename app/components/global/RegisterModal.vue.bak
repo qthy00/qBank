@@ -191,7 +191,7 @@ const formRules = {
   password: [
     {required: true, trigger: 'blur', message: '请输入您的密码'},
     {min: 8, max: 16, message: '密码长度介于8 ~ 16之间，包含字母和数字', trigger: 'blur'},
-    {pattern: /^[^<>"'|\\]+$/, message: '不能包含非法字符：< > " \' \\|', trigger: 'blur'},
+    {pattern: /^[^<>"'|\\]+$/, message: '不能包含非法字符：< > " \' \\\ |', trigger: 'blur'},
   ],
   confirmPassword: [
     {required: true, trigger: 'blur', message: '请再次输入您的密码'},

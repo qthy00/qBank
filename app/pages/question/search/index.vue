@@ -9,7 +9,6 @@ import type {
   QuestionSearchReqVO,
   QuestionSearchResultItem,
   QuestionFilterVO,
-  FilterOption
 } from '~/types/question'
 
 /* ==================== 页面元数据 ==================== */
@@ -26,7 +25,7 @@ definePageMeta({
 
 /* ==================== 状态定义 ==================== */
 const route = useRoute()
-const router = useRouter()
+const _router = useRouter()
 const message = useMessage()
 
 /* 搜索参数 */
@@ -69,7 +68,7 @@ const hasActiveFilters = computed(() => {
     searchParams.qbankId !== undefined
 })
 
-const activeFilterCount = computed(() => {
+const _activeFilterCount = computed(() => {
   let count = 0
   if (searchParams.type !== undefined) count++
   if (searchParams.difficulty !== undefined) count++
@@ -225,7 +224,7 @@ const toggleFavorite = async (item: QuestionSearchResultItem) => {
     })
     item.isFavorited = newStatus
     message.success(newStatus ? '收藏成功' : '已取消收藏')
-  } catch (e) {
+  } catch {
     message.error('操作失败，请稍后重试')
   }
 }

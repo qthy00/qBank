@@ -18,7 +18,7 @@ interface FilterState {
 /**
  * 通知Store状态
  */
-interface NotificationState {
+interface _NotificationState {
   notifications: NotificationVO[]
   stats: NotificationStatsVO | null
   settings: NotificationSettingVO[]

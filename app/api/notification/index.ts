@@ -3,7 +3,6 @@ import type {
   NotificationPageVO,
   NotificationQueryVO,
   NotificationStatsVO,
-  UpdateNotificationStatusReqVO,
   DeleteNotificationsReqVO,
   NotificationSettingVO
 } from '~/types/notification'

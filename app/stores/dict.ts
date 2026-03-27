@@ -1,11 +1,10 @@
 import {defineStore} from 'pinia'
-// @ts-ignore
+// @ts-expect-error - DictDataVO type import error
 import type {DictDataVO} from '~/api/dict/dict.data'
-import {CACHE_KEY, useCache} from '~/composables/useCache.ts'
+import {useCache} from '~/composables/useCache.ts'
 import {getSimpleDictDataList} from '~/api/dict/dict.data'
 
-const {wsCache} = useCache('sessionStorage')
-
+const {_wsCache} = useCache('sessionStorage')
 
 export interface DictItem {
     value: any
@@ -64,8 +63,8 @@ export const useDictStore = defineStore('dict', () => {
 
             isSetDict.value = true
             // console.log('最终字典Map：', dictMap)
-        }catch (e){
-            console.error('字典数据加载失败：', error)
+        }catch {
+            console.error('字典数据加载失败')
             // 错误处理：防止页面卡死
             isSetDict.value = false;
         }

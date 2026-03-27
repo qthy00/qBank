@@ -82,7 +82,7 @@ interface Props {
   badgeColor?: string
 }
 
-const props = withDefaults(defineProps<Props>(), {
+const _props = withDefaults(defineProps<Props>(), {
   actionText: '查看详情',
   badgeText: '',
   badgeColor: ''

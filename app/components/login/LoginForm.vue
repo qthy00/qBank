@@ -120,8 +120,8 @@ const authStore = useAuthStore()
 const formLoginRef = ref()
 const redirect = ref<string>('')
 const loginLoading = ref(false)
-const verify = ref()
-const captchaType = ref('blockPuzzle') // blockPuzzle 滑块 clickWord 点击文字
+// const verify = ref()
+// const captchaType = ref('blockPuzzle') // blockPuzzle 滑块 clickWord 点击文字
 
 const {isMobile} = storeToRefs(appStore)
 const getShow = computed(() => unref(currentState) === LoginStateEnum.LOGIN)
@@ -149,16 +149,16 @@ const socialList = [
 ]
 
 // 获取验证码
-const getCode = async () => {
-  // 情况一，未开启：则直接登录
-  if (!loginData.captchaEnable) {
-    await handleLogin({})
-  } else {
-    // 情况二，已开启：则展示验证码；只有完成验证码的情况，才进行登录
-    // 弹出验证码
-    verify.value.show()
-  }
-}
+// const getCode = async () => {
+//   // 情况一，未开启：则直接登录
+//   if (!loginData.captchaEnable) {
+//     await handleLogin({})
+//   } else {
+//     // 情况二，已开启：则展示验证码；只有完成验证码的情况，才进行登录
+//     // 弹出验证码
+//     verify.value.show()
+//   }
+// }
 
 // 记住我
 const getLoginFormCache = () => {

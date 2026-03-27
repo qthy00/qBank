@@ -21,7 +21,7 @@ const getWechatQrCodeUrl = async () => {
     let redirectUri = `https://www.gongjua.cn${path}?event=bind&type=${socialType}`
     for (const key in query) {
       // 推荐添加类型检查，避免遍历到原型链上的属性
-      if (query.hasOwnProperty(key)) {
+      if (Object.prototype.hasOwnProperty.call(query, key)) {
         redirectUri += '&' + key + '=' + query[key]
       }
     }

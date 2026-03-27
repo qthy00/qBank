@@ -30,7 +30,7 @@ const props = defineProps({
 const emit = defineEmits(['update:value', 'change'])
 const sourceValue = ref(props.value)
 const { getPrefixCls } = useDesign()
-const prefixCls = getPrefixCls('cropper-avatar')
+const _prefixCls = getPrefixCls('cropper-avatar')
 const message = useMessage()
 const { t } = useI18n()
 

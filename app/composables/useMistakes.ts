@@ -82,7 +82,7 @@ export function useMistakes() {
       await fetchMistakeStats(filter.categoryId)
       message.success('标记成功')
       return true
-    } catch (error) {
+    } catch {
       message.error('标记失败')
       return false
     }
@@ -101,7 +101,7 @@ export function useMistakes() {
       await fetchMistakeStats(filter.categoryId)
       message.success('取消掌握标记')
       return true
-    } catch (error) {
+    } catch {
       message.error('操作失败')
       return false
     }
@@ -118,7 +118,7 @@ export function useMistakes() {
       await fetchMistakeStats(filter.categoryId)
       message.success('移除成功')
       return true
-    } catch (error) {
+    } catch {
       message.error('移除失败')
       return false
     }
@@ -138,7 +138,7 @@ export function useMistakes() {
       await fetchMistakeStats(filter.categoryId)
       message.success(`成功标记 ${questionIds.length} 道题目`)
       return true
-    } catch (error) {
+    } catch {
       message.error('批量标记失败')
       return false
     }
@@ -156,7 +156,7 @@ export function useMistakes() {
       await fetchMistakeStats(filter.categoryId)
       message.success(`成功移除 ${questionIds.length} 道题目`)
       return true
-    } catch (error) {
+    } catch {
       message.error('批量移除失败')
       return false
     }

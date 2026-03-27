@@ -75,7 +75,7 @@ export const isString = (val: unknown): val is string => {
   return is(val, 'String')
 }
 
-export const isFunction = (val: unknown): val is Function => {
+export const isFunction = (val: unknown): val is (...args: any[]) => any => {
   return typeof val === 'function'
 }
 
@@ -108,9 +108,8 @@ export const isServer = typeof window === 'undefined'
 export const isClient = !isServer
 
 export const isUrl = (path: string): boolean => {
-  // fix:修复hash路由无法跳转的问题
   const reg =
-  /(((^https?:(?:\/\/)?)(?:[-:&=\+\$,\w]+@)?[A-Za-z0-9.-]+(?::\d+)?|(?:www.|[-:&=\+\$,\w]+@)[A-Za-z0-9.-]+)((?:\/[\+~%#\/.\w-_]*)?\??(?:[-\+=&%@.\w_]*)#?(?:[\w]*))?)$/
+  /(((^https?:(?:\/\/)?)(?:[-:&=+$ ,\w]+@)?[A-Za-z0-9.-]+(?::\d+)?|(?:www.|[-:&=+$ ,\w]+@)[A-Za-z0-9.-]+)((?:\/[+~%#/.\w-_]*)?\??(?:[-+=&%@.\w_]*)#?(?:[\w]*))?)$/
   return reg.test(path)
 }
 
@@ -174,7 +173,6 @@ export function isMobile(): boolean {
   // 结合屏幕宽度判断
   const isSmallScreen = window.innerWidth <= 768
   // 检测常见移动设备的User Agent
-  const mobileRegex = /Android|webOS|iPhone|iPad|iPod|BlackBerry|IEMobile|Opera Mini/i
   return isMobileAgent || isSmallScreen
 }
 

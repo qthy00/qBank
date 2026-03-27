@@ -135,7 +135,7 @@ const handleResponse = async (data: any, url: string, options: any) => {
 
                 // 重新执行当前请求
                 return service(url, options)
-            } catch (e) {
+            } catch {
                 // 刷新令牌失败，执行登出
                 requestList.forEach(cb => cb())
                 return handleAuthorized()
@@ -184,9 +184,9 @@ const handleResponse = async (data: any, url: string, options: any) => {
 }
 
 // 处理错误
-const handleError = (error: any, url: string, options: any) => {
+const handleError = (error: any) => {
     console.log('err' + error)
-    const { t } = useI18n()
+    const { _t } = useI18n()
     let msg = error.message || ''
 
     if (error.name === 'AbortError') {

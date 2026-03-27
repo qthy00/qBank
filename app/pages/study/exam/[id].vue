@@ -194,7 +194,7 @@
                     <div class="space-y-4">
                       <p class="text-gray-700 leading-relaxed">
                         <template v-for="(part, index) in parseFillContent(currentQuestion.content)" :key="index">
-                          <template v-if="part === '（　　）'">
+                          <template v-if="part === '（）'">
                             <input
                               v-model="fillAnswers[index]"
                               placeholder="请输入"
@@ -409,7 +409,6 @@
 import type { QuestionVO, Paper, AnswerCache, AnswerDetail } from '~/types/qBank'
 import type { SubmitPaperReqVO, PaperAnswerVO } from '~/types/exam'
 import { submitMockPaper, generateMockPaper } from '~/api/exam'
-import { getMockQbankDetail } from '~/api/qbank/mock'
 import PaperSetting from '~/views/qBank/components/PaperSetting.vue'
 import AIGeneratingDialog from '~/components/AIGeneratingDialog.vue'
 
@@ -720,7 +719,7 @@ const parseFillContent = (content: string) => {
   if (!content) return []
   return content.split(/（\s*）/g).flatMap((part, i, arr) => {
     if (i < arr.length - 1) {
-      return [part, '（　　）']
+      return [part, '（）']
     }
     return [part]
   })

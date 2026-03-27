@@ -2,7 +2,7 @@
  * 智能组卷相关类型定义
  */
 
-import type { QuestionTypeConfig, QuestionVO } from './index'
+import type { QuestionVO } from './index'
 
 /**
  * 薄弱知识点

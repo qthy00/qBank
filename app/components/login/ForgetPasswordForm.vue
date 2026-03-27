@@ -101,7 +101,7 @@
 </template>
 <script lang="ts" setup>
 import type { RouteLocationNormalizedLoaded } from 'vue-router'
-import {sendEmailCode, sendSmsCode, smsResetPassword} from '@/api/login'
+import {sendEmailCode, smsResetPassword} from '@/api/login'
 import { ElLoading } from 'element-plus'
 import { Lock } from "@element-plus/icons-vue"
 import {isEmail, isMobileNumber} from "~/utils/is";

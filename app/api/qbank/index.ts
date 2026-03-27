@@ -1,10 +1,9 @@
 import {httpGet, httpPost } from "~/composables/useHttp";
-import type {examsInfoVO, examsItemVO} from "~/types/qBank/examInfo";
-import type {QbankListReqVO, QbankListRespVO, QbankDetailVO, QbankAccessVO, PackageVO, QuestionReqVO} from "~/types/qBank/index";
+import type {examsItemVO} from "~/types/qBank/examInfo";
+import type {QbankListReqVO, QbankListRespVO, QbankAccessVO, PackageVO, QuestionReqVO} from "~/types/qBank/index";
 import {
   mockCategories,
   getMockQbankList,
-  getMockQbankDetail,
   getMockQbankAccess,
 } from './mock'
 

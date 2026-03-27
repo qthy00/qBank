@@ -26,7 +26,8 @@ export default {
       type: String,
       required: true
     }
-  }
+  },
+  emits: ['close'],
 }
 </script>
 

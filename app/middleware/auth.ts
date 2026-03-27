@@ -2,7 +2,7 @@
  * 认证中间件
  * 检查用户是否登录，未登录则重定向到登录页
  */
-export default defineNuxtRouteMiddleware((to, from) => {
+export default defineNuxtRouteMiddleware((to, _from) => {
   // Mock 模式下跳过认证检查（用于开发测试）
   const USE_MOCK = true
   if (USE_MOCK) {

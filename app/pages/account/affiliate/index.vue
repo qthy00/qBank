@@ -384,20 +384,20 @@ useHead({
 })
 
 const appStore = useAppStore()
-const {isMobile} = storeToRefs(appStore)
+const {isMobile: _isMobile} = storeToRefs(appStore)
 const message = useMessage()
 // 基础数据
-const promotionOrders = ref(128) // 推广订单
-const validUsers = ref(45) // 有效用户
-const conversionRate = ref(18.6) // 转化率
-const avgCommission = ref(25.8) // 平均佣金
-const availableForWithdrawal = ref(131.1) // 可提现金额
-const withdrawalCount = ref(2) // 本月提现次数
-const withdrawalLimit = ref(5) // 每月提现上限
+const _promotionOrders = ref(128) // 推广订单
+const _validUsers = ref(45) // 有效用户
+const _conversionRate = ref(18.6) // 转化率
+const _avgCommission = ref(25.8) // 平均佣金
+const _availableForWithdrawal = ref(131.1) // 可提现金额
+const _withdrawalCount = ref(2) // 本月提现次数
+const _withdrawalLimit = ref(5) // 每月提现上限
 
 // 图表数据
-const dateRange = ref('30')
-const chartData = ref({
+const _dateRange = ref('30')
+const _chartData = ref({
   xAxis: [],
   series: [],
 })
@@ -447,14 +447,14 @@ const menuList = ref([
 // 订单列表数据
 const loading = ref(false)
 const currentPage = ref(1)
-const total = ref(0)
-const searchKeyword = ref('')
+const _total = ref(0)
+const _searchKeyword = ref('')
 
 // 提现相关
-const showWithdrawDialog = ref(false)
+const _showWithdrawDialog = ref(false)
 
 // 最近提现记录
-const recentWithdrawals = ref([
+const _recentWithdrawals = ref([
   {
     amount: 200.0,
     status: 'success',
@@ -478,7 +478,7 @@ const recentWithdrawals = ref([
 // 分销规则弹窗
 const showRulesDialog = ref(false)
 
-const getList = () => {}
+const _getList = () => {}
 
 // 生成图表数据
 // const generateChartData = (days) => {
@@ -496,12 +496,12 @@ const getList = () => {}
 // }
 
 // 处理日期范围变化
-const handleDateChange = (days) => {
+const _handleDateChange = (_days) => {
   // generateChartData(Number(days))
 }
 
 // 搜索订单
-const searchOrders = () => {
+const _searchOrders = () => {
   currentPage.value = 1
   loadOrderList()
 }
@@ -516,7 +516,7 @@ const loadOrderList = () => {
 }
 
 // 下载二维码
-const downloadQrCode = () => {
+const _downloadQrCode = () => {
   // 模拟下载
   message.success('二维码已开始下载')
 }

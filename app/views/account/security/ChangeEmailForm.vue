@@ -24,7 +24,7 @@ const formRules = reactive({
   ],
 })
 const formRef = ref()
-const width = ref('40%')
+const _width = ref('40%')
 /** 打开弹窗 */
 const open = async () => {
   resetForm()

@@ -29,8 +29,8 @@ const mockUsageRecords = [
 
 export default defineEventHandler(async (event) => {
   const query = getQuery(event)
-  const pageNo = query.pageNo ? Number(query.pageNo) : 1
-  const pageSize = query.pageSize ? Number(query.pageSize) : 10
+  const _pageNo = query.pageNo ? Number(query.pageNo) : 1
+  const _pageSize = query.pageSize ? Number(query.pageSize) : 10
 
   return {
     list: mockUsageRecords,

@@ -161,6 +161,10 @@ import share from '~/utils/share.ts'
 import {SocialApi} from '~/api/user/social.ts'
 import {StatApi} from "~/api/stat"
 
+defineOptions({
+  name: 'AppNavbar'
+})
+
 const userStore = useUserStore()
 const authStore = useAuthStore()
 const message = useMessage()
@@ -174,7 +178,7 @@ const showMenu = ref(false)
 const isScrolled = ref(false)
 const loading = ref(true)
 
-const toggleMenu = () => {
+const _toggleMenu = () => {
   showMenu.value = !showMenu.value
 }
 
@@ -189,6 +193,7 @@ const logout = async () => {
       reloadPage()
     }
   } catch {
+    /* 用户取消 */
   }
 }
 

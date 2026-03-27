@@ -182,7 +182,7 @@ const pieData = computed(() => {
   return data
 })
 
-const masteryOptions = reactive({
+const _masteryOptions = reactive({
   tooltip: {
     trigger: 'axis',
     axisPointer: {

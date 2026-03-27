@@ -12,7 +12,7 @@ interface Props {
   loading: boolean
 }
 
-const props = defineProps<Props>()
+const _props = defineProps<Props>()
 
 const emit = defineEmits<{
   (e: 'pageChange', page: number): void
@@ -21,7 +21,7 @@ const emit = defineEmits<{
 /**
  * 格式化日期
  */
-const formatDate = (dateStr: string): string => {
+const _formatDate = (dateStr: string): string => {
   const date = new Date(dateStr)
   return `${date.getFullYear()}-${String(date.getMonth() + 1).padStart(2, '0')}-${String(date.getDate()).padStart(2, '0')}`
 }

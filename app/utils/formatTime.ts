@@ -101,7 +101,7 @@ export function formatTime(date: Date, timeZone?: string): string {
  */
 export function getTimeInTimeZone(date: Date, timeZone: string): Date {
   // 注意：这是一个简化的实现，在实际应用中应该使用更精确的时区库如date-fns-tz或moment-timezone
-  const utcTime = date.getTime() + date.getTimezoneOffset() * 60000
+  const _utcTime = date.getTime() + date.getTimezoneOffset() * 60000
   const options = { timeZone }
   const formatted = new Intl.DateTimeFormat('en-US', {
     year: 'numeric',
@@ -233,11 +233,12 @@ export function getWeek(dateTime: Date): number {
  */
 export function formatPast(param: string | number | Date, format = 'YYYY-MM-DD HH:mm:ss'): string {
   // 传入格式处理、存储转换值
-  let t: any, s: number
+  let s: number
+  let t: number
   // 获取js 时间戳
   let time: number = new Date().getTime()
   // 是否是对象
-  typeof param === 'string' || 'object' ? (t = new Date(param).getTime()) : (t = param)
+  t = typeof param === 'string' || typeof param === 'object' ? new Date(param).getTime() : param
   // 当前时间戳 - 传入时间戳
   time = Number.parseInt(`${time - t}`)
   if (time < 10000) {
@@ -261,7 +262,7 @@ export function formatPast(param: string | number | Date, format = 'YYYY-MM-DD H
     return `${s}天前`
   } else {
     // 超过3天
-    const date = typeof param === 'string' || 'object' ? new Date(param) : param
+    const date = typeof param === 'string' || typeof param === 'object' ? new Date(param) : param
     return formatDate(date, format)
   }
 }

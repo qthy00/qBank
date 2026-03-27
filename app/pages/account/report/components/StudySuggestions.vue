@@ -67,7 +67,7 @@ const sortedSuggestions = computed(() => {
     <!-- 建议列表 -->
     <div v-if="data.length > 0" class="suggestions-list">
       <div
-        v-for="(suggestion, index) in sortedSuggestions"
+        v-for="suggestion in sortedSuggestions"
         :key="suggestion.title"
         class="suggestion-item"
         :style="{ borderLeftColor: getTypeConfig(suggestion.type).color }"

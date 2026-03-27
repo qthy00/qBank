@@ -1,7 +1,7 @@
 import type {FavoriteVO, FeedbackQuestionVO, UserProfileUpdateReqVO,PackageAccessVO } from '~/types/user'
 import { httpGet, httpUpload, httpPost, httpPut } from "~/composables/useHttp";
 
-import { getMockUser, getMockUserPermissions, updateMockUser } from './mock'
+import { getMockUser, getMockUserPermissions } from './mock'
 
 /* 是否启用Mock数据 */
 const ENABLE_MOCK = true

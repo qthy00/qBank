@@ -21,7 +21,7 @@ const message = useMessage()
 const USE_MOCK = true
 
 // 模式：单题重做 / 批量重做
-const mode = computed(() => route.query.mode as string || 'single')
+const _mode = computed(() => route.query.mode as string || 'single')
 const questionId = computed(() => Number(route.params.id))
 
 // 题目数据
@@ -91,7 +91,7 @@ const handleMarkMastered = async () => {
     }
     message.success('已标记为掌握')
     router.back()
-  } catch (error) {
+  } catch {
     message.error('标记失败')
   }
 }

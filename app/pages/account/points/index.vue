@@ -15,7 +15,7 @@ useHead({
 })
 
 const pointStore = usePointStore()
-const userStore = useUserStore()
+const _userStore = useUserStore()
 
 /* 筛选状态：''-全部, 'income'-收入, 'expense'-支出 */
 const filterStatus = ref<'all' | 'income' | 'expense'>('all')

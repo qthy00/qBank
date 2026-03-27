@@ -10,9 +10,6 @@ useHead({
   title: '联系我们'
 })
 
-// 响应式状态
-const loading: Ref<boolean> = ref(true); // 加载状态
-const error: Ref<boolean> = ref(false); // 异常状态
 const {data} = await ArticleApi.getArticleDetail(755705198567493, true);
 
 </script>
@@ -25,6 +22,7 @@ const {data} = await ArticleApi.getArticleDetail(755705198567493, true);
     <div v-if="data?.contentHtml" class="text-wrap p-6 px-4 py-8 md:px-8">
       <h1 class="text-3xl font-bold text-center mb-8 py-6">{{ data?.title }}</h1>
       <div class="container-content p-4">
+        <!-- eslint-disable-next-line vue/no-v-html -->
         <div
 class="protocol-content"
             v-html="data?.contentHtml"

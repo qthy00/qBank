@@ -1,6 +1,6 @@
 <script setup lang="ts">
 import {questionApi,typeNames} from '~/api/qbank'
-import {getNoteList, createNote, updateNote, deleteNote} from '~/api/note'
+import {getNoteList} from '~/api/note'
 import type {QuestionVO} from '~/types/qBank'
 import type {NoteVO, NoteFormVO} from '~/types/note'
 import {createImageViewer} from '~/components/ImageViewer'
@@ -220,7 +220,7 @@ const getMockNote = (noteId: number, qId: number): NoteVO => {
 }
 
 /* ==================== 笔记操作回调 ==================== */
-const handleNoteSaved = (noteData: NoteFormVO) => {
+const handleNoteSaved = (_noteData: NoteFormVO) => {
   message.success('笔记保存成功')
   /* 刷新笔记数据 */
   fetchNote()

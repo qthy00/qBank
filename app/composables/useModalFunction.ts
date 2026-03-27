@@ -89,7 +89,7 @@ function closeFeedbackModal() {
 
 
 // 发送短信验证码  60秒
-function getSmsCode(event, mobile) {
+function getSmsCode(_event, _mobile) {
   // const modalStore = $store('modal');
   // const lastSendTimer = modalStore.lastTimer[event];
   // if (typeof lastSendTimer === 'undefined') {
@@ -135,7 +135,7 @@ function getSmsCode(event, mobile) {
 }
 
 // 获取短信验证码倒计时 -- 60秒
-function getSmsTimer(event, mobile = '') {
+function _getSmsTimer(_event: string, _mobile = '') {
   // const modalStore = $store('modal');
   // const lastSendTimer = modalStore.lastTimer[event];
   //

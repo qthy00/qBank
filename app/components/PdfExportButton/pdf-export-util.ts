@@ -71,7 +71,7 @@ const addHeader = (
 ) => {
   const pageWidth = pdf.internal.pageSize.getWidth();
   let logoWidth = 0;
-  const logoMargin = 5;
+  const _logoMargin = 5;
   // 如果有 logo
   if (headerInfo.logoUrl) {
     try {
@@ -183,7 +183,7 @@ export const exportToPdf = async (options: PdfExportOptions): Promise<void> => {
     // 克隆内容以避免影响原页面
     const clonedContent = targetRef.cloneNode(true) as HTMLElement;
     // 设置克隆内容的样式使其适合PDF
-    const pdfWidth = orientation === 'p' ? 210 : 297; // A4尺寸(mm)
+    const _pdfWidth = orientation === 'p' ? 210 : 297; // A4尺寸(mm)
     clonedContent.style.width = `${contentArea.width}mm`;
     clonedContent.style.minHeight = 'auto';
     clonedContent.style.padding = '0';

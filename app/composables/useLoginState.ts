@@ -1,4 +1,4 @@
-import type { Ref } from 'vue'
+import type {} from 'vue'
 
 export enum LoginStateEnum {
   LOGIN,

@@ -194,7 +194,7 @@ import { formatDate, formatPast2 } from '@/utils/formatTime'
 import { questionApi } from '@/api/qbank'
 import logo from '@/assets/images/gj_logo.png'
 
-const { push } = useRouter()
+const { _push } = useRouter()
 const { params, query } = useRoute()
 const message = useMessage()
 

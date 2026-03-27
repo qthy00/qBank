@@ -4,8 +4,6 @@ import type {
   QuestionFilterVO,
   QuestionSearchResultItem,
   QuestionHotSearchItem,
-  QuestionTypeEnum,
-  QuestionDifficulty
 } from '~/types/question'
 
 /**
@@ -118,7 +116,7 @@ const questionTemplates = [
 ]
 
 /* 生成题目内容 */
-const generateQuestionContent = (index: number, type: number): string => {
+const generateQuestionContent = (index: number, _type: number): string => {
   const template = questionTemplates[index % questionTemplates.length]
   return template.content(index)
 }

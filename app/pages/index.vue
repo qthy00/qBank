@@ -2,8 +2,7 @@
 import {CmsCategoryApi} from '~/api/category'
 import {ArticleApi} from "~/api/article";
 import {questionApi} from "~/api/qbank";
-import type {examsItemVO} from "~/types/qBank/examInfo";
-
+import type {examsItemVO as _ExamsItemVO} from "~/types/qBank/examInfo";
 // 禁用所有布局
 definePageMeta({
   layout: false
@@ -88,7 +87,7 @@ watch(() => categories.value, (newCategories) => {
 // 防抖计时器（防止 hover 闪烁）
 let hoverTimer: number | null = null
 // 鼠标进入左侧列表项
-const handleMouseEnter = (catalog: any, e: MouseEvent) => {
+const handleMouseEnter = (catalog: any, _e: MouseEvent) => {
   // 清除之前的防抖计时器
   if (hoverTimer) clearTimeout(hoverTimer)
   // 更新当前详情数据

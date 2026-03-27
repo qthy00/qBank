@@ -133,6 +133,7 @@
                     <h3 class="font-medium text-blue-800 mb-3 flex items-center">
                       {{ currentQuestion.type == 6 ? '案例描述' : '通用题干/选项' }}
                     </h3>
+                    <!-- eslint-disable-next-line vue/no-v-html -->
                     <div
                       class="text-slate-700 leading-relaxed text-sm"
                       v-html="currentQuestion.parentQuestion"
@@ -149,6 +150,7 @@
                   >
                     <span class="leading-relaxed">请填写以下空格</span>
                   </h2>
+                  <!-- eslint-disable-next-line vue/no-v-html -->
                   <div
                     v-else
                     class="text-lg md:text-xl font-semibold text-slate-800 leading-relaxed m-2 flex items-center"
@@ -248,19 +250,19 @@
                   </div>
                 </div>
 
-                <!-- 填空题（支持解析（　　）并自适应宽度） -->
+                <!-- 填空题（支持解析（）并自适应宽度） -->
                 <div v-if="currentQuestion.type === 4">
                   <div class="space-y-5">
                     <p class="text-slate-700 leading-relaxed">
-                      <!-- 处理带多个（　　）的填空题 -->
+                      <!-- 处理带多个（）的填空题 -->
                       <template v-if="currentQuestion.content">
-                        <!-- 拆分文本和填空位置（使用正则表达式匹配（　　）） -->
+                        <!-- 拆分文本和填空位置（使用正则表达式匹配（）） -->
                         <span
                           v-for="(part, index) in parseFillContent(currentQuestion.content)"
                           :key="index"
                         >
                           <!-- 填空题输入框进一步优化部分 -->
-                          <template v-if="part === '（　　）'">
+                          <template v-if="part === '（）'">
                             <span class="mx-1 inline-block relative">
                               <input
                                 v-model="fillAnswers[index]"
@@ -585,11 +587,11 @@ const handleOptionSelect = (key: string, questionId?: number) => {
 const parseFillContent = (content: string) => {
   content = stripHtmlTags(content)
   if (!content) return []
-  // 正则表达式匹配（　　）并拆分内容
-  return content.split(/（　　）/g).flatMap((part, i, arr) => {
-    // 除了最后一个元素外，每个拆分后的部分后面都添加一个（　　）标记
+  // 正则表达式匹配（）并拆分内容
+  return content.split(/（）/g).flatMap((part, i, arr) => {
+    // 除了最后一个元素外，每个拆分后的部分后面都添加一个（）标记
     if (i < arr.length - 1) {
-      return [part, '（　　）']
+      return [part, '（）']
     }
     return [part]
   })
@@ -740,7 +742,7 @@ const handleSubmit = async () => {
     if (answeredQuestions.value.length !== totalQuestions.value) {
       await message.confirm('还有题目未完成，是否提交试卷？')
     }
-  } catch (e) {
+  } catch {
     timerStore.startTimer(taskTimerId.value)
     return
   }
@@ -785,7 +787,7 @@ const handleSubmit = async () => {
     } else {
       message.error('检测到您尚未答题，请先答题后再提交')
     }
-  } catch (e) {
+  } catch {
     message.error('提交失败')
   } finally {
     showAIDialog.value = false
@@ -835,7 +837,7 @@ const initTimer = () => {
     } else {
       createTimer()
     }
-  } catch (e) {
+  } catch {
     createTimer()
   }
 }
@@ -935,7 +937,7 @@ const handleCancelSet = async () => {
       type: 'warning',
     })
     await loadPaperData()
-  } catch (e) {
+  } catch {
     settingRef.value.open()
   }
 }

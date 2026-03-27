@@ -22,9 +22,7 @@ const props = defineProps<{
 /* 组件事件 */
 const emit = defineEmits<{
   /** 笔记保存成功 */
-  (e: 'success'): void
-  /** 取消编辑 */
-  (e: 'cancel'): void
+  (e: 'success' | 'cancel'): void
 }>()
 
 /* 消息提示 */
@@ -191,7 +189,7 @@ const handleAddTag = (tag: string) => {
 /**
  * 获取文本摘要
  */
-const getTextSummary = (html: string, maxLength: number = 200): string => {
+const _getTextSummary = (html: string, maxLength: number = 200): string => {
   const text = html.replace(/<[^>]+>/g, '').replace(/&nbsp;/g, ' ')
   if (text.length <= maxLength) return text
   return text.substring(0, maxLength) + '...'

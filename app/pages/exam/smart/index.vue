@@ -161,7 +161,6 @@
 
 <script setup lang="ts">
 import type { WeakPoint, SmartExamParams, SmartExamResult } from '~/types/smart-exam'
-import { getWeakPointList, generateSmartExam } from '~/api/smart-exam'
 import { getMockWeakPointList, generateMockSmartExam } from '~/api/smart-exam/mock'
 import WeakPointsCard from './components/WeakPointsCard.vue'
 import ConfigPanel from './components/ConfigPanel.vue'
@@ -204,7 +203,7 @@ const fetchWeakPoints = async () => {
     selectedKnowledgePointIds.value = res.list
       .filter(item => item.weakLevel === 'high' || item.weakLevel === 'medium')
       .map(item => item.knowledgePointId)
-  } catch (error) {
+  } catch {
     message.error('获取薄弱知识点失败')
   } finally {
     loading.value = false
@@ -251,7 +250,7 @@ const handleGenerate = async (config: SmartExamParams) => {
     resultDialogVisible.value = true
 
     message.success('智能组卷成功！')
-  } catch (error) {
+  } catch {
     message.error('组卷失败，请重试')
   } finally {
     generating.value = false

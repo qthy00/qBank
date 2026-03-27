@@ -2,7 +2,7 @@
 import { getFavoriteTools } from '@/api/user'
 import { getQuestionFavorites, removeQuestionFavorite } from '@/api/question/favorite'
 import type { ToolDetailVO } from '@/types/tools'
-import type { QuestionFavoriteVO, QuestionFavoritePageVO } from '@/api/question/favorite'
+import type { QuestionFavoriteVO } from '@/api/question/favorite'
 
 definePageMeta({
   layout: 'member'
@@ -40,8 +40,8 @@ const loadTools = async () => {
       toolsTotal.value = data.total
       tools.value = data.list
     }
-  } catch (error) {
-    message.error('加载工具收藏失败')
+  } catch {
+    // 加载失败静默处理
   } finally {
     toolsLoading.value = false
   }
@@ -57,8 +57,8 @@ const loadQuestions = async () => {
       questionsTotal.value = data.total
       questions.value = data.list
     }
-  } catch (error) {
-    message.error('加载题目收藏失败')
+  } catch {
+    // 加载失败静默处理
   } finally {
     questionsLoading.value = false
   }
@@ -78,7 +78,7 @@ const handleRemoveQuestion = async (item: QuestionFavoriteVO) => {
     await removeQuestionFavorite(item.question.id)
     message.success('取消收藏成功')
     loadQuestions()
-  } catch (e) {
+  } catch {
     /* 用户取消或操作失败 */
   }
 }

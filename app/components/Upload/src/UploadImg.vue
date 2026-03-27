@@ -107,7 +107,7 @@ const props = defineProps({
     default: true,
   },
 })
-const { t } = useI18n() // 国际化
+const { t: _t } = useI18n() // 国际化
 const message = useMessage() // 消息弹窗
 // 查看图片
 const imagePreview = (imgUrl: string) => {

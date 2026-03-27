@@ -6,10 +6,9 @@ import progress from 'vite-plugin-progress'
 // import EslintPlugin from 'vite-plugin-eslint'
 import PurgeIcons from 'vite-plugin-purge-icons'
 import { ViteEjsPlugin } from 'vite-plugin-ejs'
-// @ts-ignore
+// @ts-expect-error - unplugin-element-plus/vite 没有类型定义
 import ElementPlus from 'unplugin-element-plus/vite'
 import AutoImport from 'unplugin-auto-import/vite'
-import Components from 'unplugin-vue-components/vite'
 import { ElementPlusResolver } from 'unplugin-vue-components/resolvers'
 import viteCompression from 'vite-plugin-compression'
 import topLevelAwait from 'vite-plugin-top-level-await'
@@ -17,7 +16,6 @@ import VueI18nPlugin from '@intlify/unplugin-vue-i18n/vite'
 import { createSvgIconsPlugin } from 'vite-plugin-svg-icons'
 
 import UnoCSS from 'unocss/vite'
-import { presetUno, presetAttributify, presetIcons } from 'unocss'
 
 export function createVitePlugins() {
   const root = process.cwd()

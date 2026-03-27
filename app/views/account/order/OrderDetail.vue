@@ -4,7 +4,7 @@ import {fen2yuan} from '~/utils/money.ts'
 import {formatDate} from '~/utils/formatTime.ts'
 import {useOrder} from "~/composables/useOrder";
 
-const message = useMessage() // 消息弹窗
+const _message = useMessage() // 消息弹窗
 const {handleCancel, handleDelete, handlePay} = useOrder()
 
 const dialogVisible = ref(false) // 弹窗的是否展示

@@ -1,9 +1,18 @@
 <!-- 设置项复用组件 -->
 <script setup lang="ts">
 defineProps({
-  icon: String,
-  title: String,
-  desc: String,
+  icon: {
+    type: String,
+    default: '',
+  },
+  title: {
+    type: String,
+    default: '',
+  },
+  desc: {
+    type: String,
+    default: '',
+  },
   size: {
     type: Number,
     default: 25,

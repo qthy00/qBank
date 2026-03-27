@@ -32,7 +32,7 @@ export const humpToUnderline = (str: string): string => {
  */
 export const underlineToHump = (str: string): string => {
   if (!str) return ''
-  return str.replace(/\-(\w)/g, (_, letter: string) => {
+  return str.replace(/-(\w)/g, (_, letter: string) => {
     return letter.toUpperCase()
   })
 }
@@ -128,7 +128,7 @@ export const generateUUID = () => {
  *
  * @param cellValue 字段值
  */
-// @ts-ignore
+// @ts-expect-error - element plus file size formatter
 export const fileSizeFormatter = (cellValue: string | number) => {
   const fileSize = cellValue
   const unitArr = ['Bytes', 'KB', 'MB', 'GB', 'TB', 'PB', 'EB', 'ZB', 'YB']
@@ -150,6 +150,7 @@ export const copyValueToTarget = (target: any, source: any) => {
   Object.keys(newObj).forEach((key) => {
     // 如果不是target中的属性则删除
     if (Object.keys(target).indexOf(key) === -1) {
+      // eslint-disable-next-line @typescript-eslint/no-dynamic-delete
       delete newObj[key]
     }
   })
@@ -391,7 +392,7 @@ export const areaReplace = (areaName: string) => {
 export function jsonParse(str: string) {
   try {
     return JSON.parse(str)
-  } catch (e) {
+  } catch {
     console.error(`str[${str}] 不是一个 JSON 字符串`)
     return ''
   }
@@ -412,7 +413,7 @@ export function highlightKeyword(text: string, keyword: string, tag: string = 'm
   if (!keyword.trim()) return text
 
   // 转义正则特殊字符
-  const escapedKeyword = keyword.replace(/[-\/\\^$*+?.()|[\]{}]/g, '\\$&')
+  const escapedKeyword = keyword.replace(/[-/\\^$*+?.()|[\]{}]/g, '\\$&')
   const regex = new RegExp(escapedKeyword, 'gi')
 
   const openTag = `<${tag}>`
@@ -428,7 +429,7 @@ export const copyToClipboard = async (val?: string) => {
   try{
     await navigator.clipboard.writeText(val)
     message.success('结果已复制到剪贴板')
-  } catch (error) {
+  } catch {
     message.error('复制失败，请手动复制')
   }
 }

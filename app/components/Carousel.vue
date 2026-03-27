@@ -27,6 +27,9 @@
 </template>
 
 <script setup lang="ts">
+defineOptions({
+  name: 'ImageCarousel'
+})
 // 无需手动导入 Swiper/SwiperSlide，nuxt-swiper 已全局注册
 // 定义 props 让组件更灵活
 defineProps({

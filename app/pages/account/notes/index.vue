@@ -41,7 +41,7 @@ const query = reactive({
 const selectedTag = ref('')
 
 /* 路由 */
-const router = useRouter()
+const _router = useRouter()
 
 /* 消息提示 */
 const message = useMessage()

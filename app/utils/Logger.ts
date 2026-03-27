@@ -32,7 +32,11 @@ Logger.typeColor = function (type: string) {
 Logger.print = function (type = 'default', text: any, back = false) {
   if (typeof text === 'object') {
     // 如果是對象則調用打印對象方式
-    isArray(text) ? console.table(text) : console.dir(text)
+    if (isArray(text)) {
+      console.table(text)
+    } else {
+      console.dir(text)
+    }
     return
   }
   if (back) {
@@ -63,7 +67,11 @@ Logger.pretty = function (type = 'primary', title, text) {
       `background:${Logger.typeColor(type)};border:1px solid ${Logger.typeColor(type)};
         padding: 1px; border-radius: 4px; color: #fff;`
     )
-    isArray(text) ? console.table(text) : console.dir(text)
+    if (isArray(text)) {
+      console.table(text)
+    } else {
+      console.dir(text)
+    }
     console.groupEnd()
     return
   }

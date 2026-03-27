@@ -4,7 +4,7 @@ import { formatDate } from '~/utils/formatTime.ts'
 import { createAfterSale, getSwapOrderDetail, type OrderDetail } from '~/api/order'
 
 const { query } = useRoute()
-const { push } = useRouter()
+const { push: _push } = useRouter()
 const message = useMessage()
 const itemId = query.itemId as unknown as number
 const orderId = query.orderId as unknown as number

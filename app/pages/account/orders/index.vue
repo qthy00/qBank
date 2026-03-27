@@ -12,7 +12,6 @@ useHead({
   title: '订单中心'
 })
 
-const message = useMessage() // 消息弹窗
 const { handleOrderButtons, handlePay, handleDelete, handleCancel} = useOrder()
 
 const loading = ref(true) // 列表的加载中
@@ -71,7 +70,6 @@ const handleViewDetail = (row: any) => {
   detailRef.value!.open(row)
 }
 
-const {push} = useRouter()
 const handlePagination = async () => {
   await getList()
   /* 分页后滚动到列表顶部 */
@@ -97,7 +95,7 @@ onMounted(() => {
 </script>
 
 <template>
-  <div>
+  <div class="order-page-root">
     <el-card class="ml-3" shadow="never">
       <template #header>
         <div class="flex items-center justify-between">
@@ -212,9 +210,9 @@ onMounted(() => {
         />
       </div>
     </el-card>
-  </div>
 
   <OrderDetail ref="detailRef" />
+  </div>
 </template>
 
 <style scoped>

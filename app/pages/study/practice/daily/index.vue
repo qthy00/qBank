@@ -10,7 +10,7 @@ useHead({
   title: '每日练习'
 })
 
-const router = useRouter()
+const _router = useRouter()
 const message = useMessage()
 
 /* ==========================================
@@ -108,7 +108,7 @@ const spendTime = ref(0)
 const questionStore = useQBankStore()
 const {dailyAmount} = storeToRefs(questionStore)
 
-const handleSetDailyAmount = (amount: number) => {
+const _handleSetDailyAmount = (amount: number) => {
   dailyAmount.value =  amount
 }
 /* ==========================================
@@ -132,7 +132,7 @@ const handleStartPractice = () => {
  * 计时器
  * ========================================== */
 let timerInterval: number | null = null
-const startTimer = () => {
+const _startTimer = () => {
   timerInterval = setInterval(() => {
     spendTime.value = Math.floor((Date.now() - startTime.value) / 1000)
   }, 1000)
@@ -381,7 +381,7 @@ onUnmounted(() => {
           <!-- 7天打卡日历 -->
           <div class="grid grid-cols-7 gap-2 md:gap-4">
             <div
-              v-for="(day, index) in weekDates"
+              v-for="day in weekDates"
               :key="day.date"
               class="relative cursor-pointer group"
               @click="handleSelectDate(day.date)"

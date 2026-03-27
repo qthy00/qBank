@@ -273,7 +273,7 @@ export const getAbilityAssessment = async (params?: AbilityAssessmentQueryReqVO)
 /**
  * 生成模拟能力评估报告
  */
-const getMockAbilityAssessment = (params?: AbilityAssessmentQueryReqVO): AbilityAssessmentVO => {
+const getMockAbilityAssessment = (_params?: AbilityAssessmentQueryReqVO): AbilityAssessmentVO => {
   const subjects = ['高等数学', '线性代数', '概率统计', '数据结构', '操作系统', '计算机网络', '数据库原理']
   const knowledgePoints: KnowledgePointVO[] = []
   const chapterAccuracy: ChapterAccuracyVO[] = []

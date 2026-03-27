@@ -8,12 +8,17 @@ interface Props {
   stats: MistakeStatsVO | null
 }
 
-const props = defineProps<Props>()
+const _props = defineProps<Props>()
+
+// 声明emits
+const _emit = defineEmits<{
+  (e: 'retry-all'): void
+}>()
 
 // 计算掌握率
 const masteryRate = computed(() => {
-  if (!props.stats || props.stats.totalCount === 0) return 0
-  return Math.round((props.stats.masteredCount / props.stats.totalCount) * 100)
+  if (!_props.stats || _props.stats.totalCount === 0) return 0
+  return Math.round((_props.stats.masteredCount / _props.stats.totalCount) * 100)
 })
 </script>
 
@@ -27,7 +32,7 @@ const masteryRate = computed(() => {
           <Icon name="material-symbols:book-2" class="icon" />
         </div>
         <div class="stat-content">
-          <div class="stat-value">{{ stats?.totalCount || 0 }}</div>
+          <div class="stat-value">{{ _props.stats?.totalCount || 0 }}</div>
           <div class="stat-label">总错题数</div>
         </div>
       </div>
@@ -38,7 +43,7 @@ const masteryRate = computed(() => {
           <Icon name="material-symbols:warning" class="icon" />
         </div>
         <div class="stat-content">
-          <div class="stat-value">{{ stats?.unMasteredCount || 0 }}</div>
+          <div class="stat-value">{{ _props.stats?.unMasteredCount || 0 }}</div>
           <div class="stat-label">待复习</div>
         </div>
       </div>
@@ -49,7 +54,7 @@ const masteryRate = computed(() => {
           <Icon name="material-symbols:check-circle" class="icon" />
         </div>
         <div class="stat-content">
-          <div class="stat-value">{{ stats?.masteredCount || 0 }}</div>
+          <div class="stat-value">{{ _props.stats?.masteredCount || 0 }}</div>
           <div class="stat-label">已掌握</div>
         </div>
       </div>
@@ -71,7 +76,7 @@ const masteryRate = computed(() => {
       <el-button
         type="primary"
         size="large"
-        :disabled="!stats || stats.unMasteredCount === 0"
+        :disabled="!_props.stats || _props.stats.unMasteredCount === 0"
         @click="$emit('retry-all')"
       >
         <Icon name="material-symbols:refresh" class="btn-icon" />
@@ -79,12 +84,12 @@ const masteryRate = computed(() => {
       </el-button>
 
       <el-tag
-        v-if="stats?.todayCount"
+        v-if="_props.stats?.todayCount"
         type="warning"
         effect="dark"
         class="today-tag"
       >
-        今日新增 {{ stats.todayCount }} 道错题
+        今日新增 {{ _props.stats.todayCount }} 道错题
       </el-tag>
     </div>
   </div>

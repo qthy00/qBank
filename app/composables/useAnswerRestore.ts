@@ -1,5 +1,5 @@
 
-export async function useAnswerRestore(sessionId: number, answerStore: any, i18n: (key: string) => string) {
+export async function useAnswerRestore(sessionId: number, answerStore: any, _i18n: (key: string) => string) {
   const message = useMessage()
   const hasCache =
     answerStore.sessionId === sessionId &&

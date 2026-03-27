@@ -31,6 +31,7 @@ onMounted(() => {
 </script>
 
 <template>
+  <div class="profile-page-root">
   <el-tabs v-model="activeTab" type="card" class="bg-white ml-3" >
     <el-tab-pane label="账户信息" name="account">
       <el-card class="mt--4" shadow="never">
@@ -116,7 +117,7 @@ onMounted(() => {
   </el-tabs>
 
   <UserProfileForm ref="formRef"/>
-
+  </div>
 </template>
 
 <style scoped>

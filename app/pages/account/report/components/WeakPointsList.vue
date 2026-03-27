@@ -11,7 +11,7 @@ interface Props {
   getAccuracyColorClass: (accuracy: number) => string
 }
 
-const props = defineProps<Props>()
+const _props = defineProps<Props>()
 
 /* 获取优先级标签 */
 const getPriorityLabel = (priority: number) => {
@@ -71,7 +71,7 @@ const goPractice = (point: WeakPointVO) => {
     <!-- 列表 -->
     <div v-if="data.length > 0" class="points-list">
       <div
-        v-for="(point, index) in data.slice(0, 4)"
+        v-for="point in data.slice(0, 4)"
         :key="point.id"
         class="point-item"
         :class="{ 'high-priority': point.priority >= 4 }"

@@ -1,35 +1,37 @@
 <template>
-  <Suspense>
-    <template #default>
-      <div class="min-h-screen bg-gray-50 flex flex-col">
-        <!-- 导航栏 -->
-        <Navbar/>
-        <!-- 头部 -->
-        <MainMenu />
-        <!-- 主内容区 -->
-        <div class="container mx-auto py-5 flex-1">
-          <div class="grid grid-cols-1 lg:grid-cols-4 gap-6">
-            <!-- 侧边栏 -->
-            <ToolSidebar :visible="visible"/>
-            <!-- 核心功能区 - 子路由视图 -->
-            <main :class="visible ? 'lg:col-span-3' : 'lg:col-span-4'" >
-              <slot/>
-            </main>
+  <div>
+    <Suspense>
+      <template #default>
+        <div class="min-h-screen bg-gray-50 flex flex-col">
+          <!-- 导航栏 -->
+          <Navbar/>
+          <!-- 头部 -->
+          <MainMenu />
+          <!-- 主内容区 -->
+          <div class="container mx-auto py-5 flex-1">
+            <div class="grid grid-cols-1 lg:grid-cols-4 gap-6">
+              <!-- 侧边栏 -->
+              <ToolSidebar :visible="visible"/>
+              <!-- 核心功能区 - 子路由视图 -->
+              <main :class="visible ? 'lg:col-span-3' : 'lg:col-span-4'" >
+                <slot/>
+              </main>
+            </div>
           </div>
+          <!-- 页脚 -->
+          <Footer/>
         </div>
-        <!-- 页脚 -->
-        <Footer/>
-      </div>
-    </template>
-    <template #fallback>
-      <div class="flex justify-center items-center h-screen">
-        <div>页面加载中。。。</div>
-      </div>
-    </template>
-  </Suspense>
+      </template>
+      <template #fallback>
+        <div class="flex justify-center items-center h-screen">
+          <div>页面加载中。。。</div>
+        </div>
+      </template>
+    </Suspense>
 
-  <CartForm ref="cartRef"/>
-  <FeedbackModal ref="feedbackRef"/>
+    <CartForm ref="cartRef"/>
+    <FeedbackModal ref="feedbackRef"/>
+  </div>
 </template>
 
 <script setup lang="ts">

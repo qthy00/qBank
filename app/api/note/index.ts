@@ -6,7 +6,7 @@ import type {
   NoteStatisticsRespVO,
   NoteTagStatVO,
 } from '~/types/note'
-import { httpGet, httpPost, httpPut, httpDelete } from '~/composables/useHttp'
+import { /* httpGet, httpPost, httpPut, httpDelete */ } from '~/composables/useHttp'
 import {
   getMockNoteList,
   getMockNoteDetail,

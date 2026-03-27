@@ -71,7 +71,7 @@ onMounted(() => {
           // 注意：由于跨域限制，可能无法获取iframe内部高度，需手动适配
           const contentHeight = wechatIframe.value?.contentWindow?.document?.body?.scrollHeight || 500
           iframeHeight.value = `${contentHeight}px`
-        } catch (e) {
+        } catch {
           console.log('跨域限制，无法获取iframe高度，使用默认值')
         }
       }

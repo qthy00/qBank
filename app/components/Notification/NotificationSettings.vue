@@ -173,7 +173,7 @@ const saveSettings = async () => {
 
     await notificationStore.updateSettings(settingData)
     message.success('设置已保存')
-  } catch (error) {
+  } catch {
     message.error('保存失败，请重试')
   } finally {
     saving.value = false

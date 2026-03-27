@@ -72,7 +72,7 @@ const handleDownload = async () => {
     link.click()
 
     message.success('开始下载')
-  } catch (error) {
+  } catch {
     message.error('下载失败')
   }
 }

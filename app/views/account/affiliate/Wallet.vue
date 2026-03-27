@@ -157,7 +157,7 @@ import {
 
 
 const router = useRouter()
-const message = useMessage()
+const _message = useMessage()
 
 const loading = ref(false)
 // 状态管理

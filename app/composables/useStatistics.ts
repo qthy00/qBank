@@ -24,7 +24,8 @@ export const useStatistics = () => {
         }
         try {
             await StatApi.pushVisited(params)
-        } catch (e) {
+        } catch {
+            /* empty */
         }
     }
 
@@ -49,7 +50,8 @@ export const useStatistics = () => {
                 await redirectToPay(qPackage.value, `/t/${qPackage.value.series}`)
             }
             return data.hasAccess
-        } catch (e) {
+        } catch {
+            /* empty */
         }
     }
 

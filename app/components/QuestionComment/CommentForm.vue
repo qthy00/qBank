@@ -101,6 +101,9 @@ const props = withDefaults(defineProps<Props>(), {
   submitText: '发表评论',
   showCancel: false,
   maxLength: 500,
+  commentId: undefined,
+  toUid: undefined,
+  replyToUser: undefined,
 })
 
 const emit = defineEmits<{
@@ -145,7 +148,7 @@ const beforeUpload = (file: File) => {
 }
 
 /* 上传成功 */
-const handleUploadSuccess = (response: any, uploadFile: UploadFile) => {
+const handleUploadSuccess = (response: any, _uploadFile: UploadFile) => {
   if (response.code === 0 && response.data) {
     formData.media.push(response.data)
     message.success('图片上传成功')

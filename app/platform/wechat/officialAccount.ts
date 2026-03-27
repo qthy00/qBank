@@ -20,14 +20,16 @@ async function beforeBind(path, query) {
     let redirectUri = `https://www.gongjua.cn${path}?event=bind&type=${socialType}`
     for (const key in query) {
       // 推荐添加类型检查，避免遍历到原型链上的属性
-      if (query.hasOwnProperty(key)) {
+      if (Object.prototype.hasOwnProperty.call(query, key)) {
         redirectUri += '&' + key + '=' + query[key]
       }
     }
     const data = await LoginApi.socialAuthRedirect(socialType, encodeURIComponent(redirectUri))
     const url = data.split('&redirect_uri')[0]
     return  url + '&redirect_uri=' + encodeURIComponent(redirectUri)
-  } catch (e){}
+  } catch {
+    /* 空块 */
+  }
 }
 
 // 微信公众号绑定

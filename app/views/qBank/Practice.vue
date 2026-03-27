@@ -156,17 +156,17 @@ class="text-gray-800 leading-relaxed flex-1 pt-0.5" @click="handleImageClick"
                     </div>
                   </div>
                 </div>
-                <!-- 填空题（支持解析（　　）并自适应宽度） -->
+                <!-- 填空题（支持解析（）并自适应宽度） -->
                 <div v-if="currentQuestion.type === 4">
                   <div class="space-y-5">
                     <p class="text-slate-700 leading-relaxed">
-                      <!-- 拆分文本和填空位置（使用正则表达式匹配（　　）） -->
+                      <!-- 拆分文本和填空位置（使用正则表达式匹配（）） -->
                       <span
                           v-for="(part, index) in parseFillContent(currentQuestion.content)"
                           :key="index"
                       >
                         <!-- 填空题输入框进一步优化部分 -->
-                        <template v-if="part === '（　　）'">
+                        <template v-if="part === '（）'">
                           <span class="mx-1 inline-block relative">
                             <input
                                 v-model="fillAnswers[index]"
@@ -754,11 +754,11 @@ const showExplanation = computed(() => {
 const parseFillContent = (content: string) => {
   content = stripHtmlTags(content)
   if (!content) return []
-  // 正则表达式匹配（　　）并拆分内容
-  return content.split(/（　　）/g).flatMap((part, i, arr) => {
-    // 除了最后一个元素外，每个拆分后的部分后面都添加一个（　　）标记
+  // 正则表达式匹配（）并拆分内容
+  return content.split(/（）/g).flatMap((part, i, arr) => {
+    // 除了最后一个元素外，每个拆分后的部分后面都添加一个（）标记
     if (i < arr.length - 1) {
-      return [part, '（　　）']
+      return [part, '（）']
     }
     return [part]
   })
@@ -836,7 +836,7 @@ const pointStatistics = computed(() => {
       }
   > = {}
 
-  questions.value.forEach((question: any, index: number) => {
+  questions.value.forEach((question: any) => {
     // 获取当前题目的考点信息（假设point是包含id和name的对象）
     let point = question.point
     if (!point || point.trim() === '') {
@@ -1018,7 +1018,7 @@ const submitAnswer = async () => {
   // 判断答案是否正确
   let isCorrect = false
   const userAnswer: Record<number, string> = {}
-  let {type, questionList, contentId, isRepeat, id, typeName} = currentQuestion.value
+  const {type, questionList, contentId, isRepeat, id} = currentQuestion.value
 
   if (type === 8) {
     questionList.forEach((sub) => {
@@ -1032,7 +1032,7 @@ const submitAnswer = async () => {
   const answerData = {
     contentId,
     userAnswer,
-    typeName,
+    typeName: currentQuestion.value.typeName,
     spendTime: spendTime.value,
     hesitationCount: hesitationCount.value,
     isRepeat: isRepeat || 0,
@@ -1049,9 +1049,11 @@ const submitAnswer = async () => {
     console.log('current', current )
     currentQuestion.value.answer = current.answer
     if (current.type === 3) {
-      return current.answer == '1' ? '正确' : '错误'
+      // eslint-disable-next-line @typescript-eslint/no-unused-expressions
+      current.answer == '1' ? '正确' : '错误'
     } else if (current.type === 4) {
-      return current.answer.split('###').join('；')
+      // eslint-disable-next-line @typescript-eslint/no-unused-expressions
+      current.answer.split('###').join('；')
     }
 
     currentQuestion.value.analysis = current.analysis
@@ -1064,16 +1066,18 @@ const submitAnswer = async () => {
         if (subItem) {
           sub.answer = subItem.answer
           if (subItem.parentSonType === 3) {
-            return sub.answer == '1' ? '正确' : '错误'
+            // eslint-disable-next-line @typescript-eslint/no-unused-expressions
+            sub.answer == '1' ? '正确' : '错误'
           } else if (current.parentSonType === 4) {
-            return sub.answer.split('###').join('；')
+            // eslint-disable-next-line @typescript-eslint/no-unused-expressions
+            sub.answer.split('###').join('；')
           }
           sub.analysis = subItem.analysis
           sub.point = subItem.point
         }
       })
     }
-  } catch (e: string | any) {
+  } catch (e) {
     // 提交失败时回滚缓存状态
     answerCache.value[id].isSubmitted = false
     let errorMsg = '';

@@ -45,7 +45,9 @@ defineExpose({ open }) // 提供 open 方法，用于打开弹窗
 const loadCurrentDevice = async () => {
   try{
     currentDevice.value = await fetchCurrentDevice()
-  }catch (e){}
+  }catch {
+    /* empty */
+  }
 }
 const params = reactive({
   pageNo: 1,
@@ -66,7 +68,9 @@ const loadDevicesList = async () => {
       }
     })
     total.value = data.total
-  }catch (e){}
+  }catch {
+    /* empty */
+  }
 }
 
 

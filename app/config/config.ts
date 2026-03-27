@@ -1,4 +1,4 @@
-import { useRuntimeConfig } from '#imports'
+import type { AxiosHeaders } from 'axios'
 
 const config: {
   base_url: string

@@ -23,7 +23,7 @@ try {
 // 检测是否是斜杠命令
 // 规则：以 / 开头，且后面不包含第二个/ （排除/iot/device这样的路径）
 const prompt = (input.prompt || '').trim();
-const isSlashCommand = /^\/[^\/\s]+$/.test(prompt.split(/\s/)[0]);
+const isSlashCommand = /^\/[^/\s]+$/.test(prompt.split(/\s/)[0]);
 if (isSlashCommand) {
     process.exit(0);
 }

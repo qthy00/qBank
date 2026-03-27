@@ -119,7 +119,7 @@ export const mockChapters: ChapterVO[] = [
 ]
 
 /* 生成单选题 */
-const generateSingleChoice = (id: number, chapterId: number): QuestionVO => {
+const generateSingleChoice = (id: number, _chapterId: number): QuestionVO => {
   const options: Record<string, string> = {
     'A': ['建设单位', '设计单位', '施工单位', '监理单位'][Math.floor(Math.random() * 4)],
     'B': ['施工单位', '建设单位', '监理单位', '设计单位'][Math.floor(Math.random() * 4)],
@@ -146,7 +146,7 @@ const generateSingleChoice = (id: number, chapterId: number): QuestionVO => {
 }
 
 /* 生成多选题 */
-const generateMultipleChoice = (id: number, chapterId: number): QuestionVO => {
+const generateMultipleChoice = (id: number, _chapterId: number): QuestionVO => {
   return {
     id,
     contentId: id,
@@ -172,7 +172,7 @@ const generateMultipleChoice = (id: number, chapterId: number): QuestionVO => {
 }
 
 /* 生成判断题 */
-const generateTrueFalse = (id: number, chapterId: number): QuestionVO => {
+const generateTrueFalse = (id: number, _chapterId: number): QuestionVO => {
   const isTrue = Math.random() > 0.5
   return {
     id,
@@ -256,7 +256,7 @@ export const submitAnswers = (answers: Record<number, string>): {
   const wrongIds: number[] = []
 
   /* 模拟答题结果（70%正确率） */
-  Object.entries(answers).forEach(([questionId, answer]) => {
+  Object.entries(answers).forEach(([questionId, _answer]) => {
     const isCorrect = Math.random() > 0.3
     if (isCorrect) {
       correctCount++

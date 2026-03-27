@@ -522,7 +522,7 @@ onMounted(() => {
 // 组件卸载时移除事件监听
 onUnmounted(() => {})
 
-const downloadReport = () => {}
+const _downloadReport = () => {}
 </script>
 
 <style scoped></style>

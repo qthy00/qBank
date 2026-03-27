@@ -211,7 +211,7 @@ export const getMockSmartPaperConfig = (
 export const generateMockSmartPaper = (
   data: SmartPaperReqVO
 ): SmartPaperRespVO => {
-  const { questionCount, difficulty, knowledgePointIds } = data
+  const { questionCount, difficulty, knowledgePointIds: _knowledgePointIds } = data
 
   /* 生成题目 */
   const questions = generateMockQuestions(questionCount, difficulty || 3)

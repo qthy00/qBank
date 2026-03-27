@@ -40,7 +40,7 @@ const handleViewDetail = (row: any) => {
   detailRef.value!.open(row)
 }
 
-const cancelApply = (id: number) => {
+const cancelApply = (_id: number) => {
   message.success('申请售后')
 }
 

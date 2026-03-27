@@ -60,7 +60,9 @@ export const findNode = <T = any>(
   const list = [...tree]
   for (const node of list) {
     if (func(node)) return node
-    node[children!] && list.push(...node[children!])
+    if (node[children!]) {
+      list.push(...node[children!])
+    }
   }
   return null
 }
@@ -75,8 +77,12 @@ export const findNodeAll = <T = any>(
   const list = [...tree]
   const result: T[] = []
   for (const node of list) {
-    func(node) && result.push(node)
-    node[children!] && list.push(...node[children!])
+    if (func(node)) {
+      result.push(node)
+    }
+    if (node[children!]) {
+      list.push(...node[children!])
+    }
   }
   return result
 }
@@ -98,7 +104,9 @@ export const findPath = <T = any>(
       list.shift()
     } else {
       visitedSet.add(node)
-      node[children!] && list.unshift(...node[children!])
+      if (node[children!]) {
+        list.unshift(...node[children!])
+      }
       path.push(node)
       if (func(node)) {
         return path
@@ -122,9 +130,13 @@ export const findPathAll = (tree: any, func: Fn, config: Partial<TreeHelperConfi
       list.shift()
     } else {
       visitedSet.add(node)
-      node[children!] && list.unshift(...node[children!])
+      if (node[children!]) {
+        list.unshift(...node[children!])
+      }
       path.push(node)
-      func(node) && result.push([...path])
+      if (func(node)) {
+        result.push([...path])
+      }
     }
   }
   return result
@@ -163,7 +175,9 @@ export const forEach = <T = any>(
     if (func(list[i])) {
       return
     }
-    children && list[i][children] && list.splice(i + 1, 0, ...list[i][children])
+    if (children && list[i][children]) {
+      list.splice(i + 1, 0, ...list[i][children])
+    }
   }
 }
 
@@ -282,7 +296,7 @@ export const handleTree = (data: any[], id?: string, parentId?: string, children
  * @param {*} children 孩子节点字段 默认 'children'
  * @param {*} rootId 根Id 默认 0
  */
-// @ts-ignore
+// @ts-expect-error - 用于忽略类型检查
 export const handleTree2 = (data, id, parentId, children, rootId) => {
   id = id || 'id'
   parentId = parentId || 'parentId'
@@ -303,7 +317,9 @@ export const handleTree2 = (data, id, parentId, children, rootId) => {
       // 返回每一项的子级数组
       return father[id] === child[parentId]
     })
-    branchArr.length > 0 ? (father.children = branchArr) : ''
+    if (branchArr.length > 0) {
+      father.children = branchArr
+    }
     // 返回第一层
     return father[parentId] === rootId
   })

@@ -41,10 +41,8 @@ const props = defineProps<{
 
 // 定义组件事件
 const emit = defineEmits<{
-  (e: 'success'): void;
+  (e: 'success' | 'start' | 'end'): void;
   (e: 'error', error: Error): void;
-  (e: 'start'): void;
-  (e: 'end'): void;
 }>();
 
 // 导出状态

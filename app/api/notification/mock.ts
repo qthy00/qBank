@@ -6,7 +6,6 @@ import type {
   NotificationVO,
   NotificationStatsVO,
   NotificationSettingVO,
-  NotificationType,
   NotificationPageVO,
   NotificationQueryVO
 } from '~/types/notification'

@@ -158,7 +158,7 @@ const getMockPracticeStatistics = (): PracticeStatisticsVO => {
   const totalCount = 45
   const completedCount = 32
   const inProgressCount = 10
-  const abandonedCount = 3
+  const _abandonedCount = 3
 
   return {
     totalCount,

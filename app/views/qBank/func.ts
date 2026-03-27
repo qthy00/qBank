@@ -1,6 +1,5 @@
 // 题型数据
 import type { BaseType } from '@/types/question'
-import type { Router } from 'vue-router'
 
 export const questionTypes = [
   { type: 0, name: '单选题', color: '#3b82f6' },

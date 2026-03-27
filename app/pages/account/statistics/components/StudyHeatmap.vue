@@ -98,7 +98,7 @@ const getMonthLabels = computed(() => {
   if (data.length === 0) return labels
 
   let currentMonth = -1
-  data.forEach((item, index) => {
+  data.forEach((item, _index) => {
     const date = new Date(item.date)
     const month = date.getMonth()
     if (month !== currentMonth) {

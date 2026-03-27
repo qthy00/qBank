@@ -198,7 +198,7 @@ const handleSubmit = async () => {
     })
     message.success('反馈提交成功，我们会尽快处理！')
     handleReset()
-  } catch (error) {
+  } catch {
     message.error('提交失败，请稍后重试')
   } finally {
     submitting.value = false

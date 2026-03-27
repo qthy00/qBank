@@ -61,7 +61,7 @@ function isValidBase64(str: string, { makeUrlSafe = false }: { makeUrlSafe?: boo
     }
     return reEncodedBase64 === cleanStr.replace(/\s/g, '');
   }
-  catch (err) {
+  catch {
     return false;
   }
 }

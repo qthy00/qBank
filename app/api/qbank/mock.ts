@@ -4,7 +4,6 @@ import type {
   QbankListRespVO,
   QbankAccessVO,
   ChapterVO,
-  SectionVO,
 } from '~/types/qBank/index'
 
 /**
@@ -445,7 +444,7 @@ export const mockQbankList: QbankInfoVO[] = generateMockQbanks()
 
 /* ==================== 章节模拟数据 ==================== */
 
-const generateMockChapters = (qbankId: number): ChapterVO[] => {
+const generateMockChapters = (_qbankId: number): ChapterVO[] => {
   const chapters: ChapterVO[] = [
     {
       id: 1,

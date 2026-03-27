@@ -9,7 +9,7 @@ interface PosterOptions {
     list?: Array<any>
 }
 
-export function useCanvas(options: PosterOptions, vm?: any) {
+export function useCanvas(options: PosterOptions, _vm?: any) {
     const canvasRef: Ref<HTMLCanvasElement | null> = ref(null)
     const posterImage = ref('')
 

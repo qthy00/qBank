@@ -29,7 +29,7 @@ const discountPrice = computed(() => {
   return (qPackage.value?.price - Number(qPackage.value?.discountPrice)).toFixed(2)
 })
 
-const paymentInfo = computed(() => {
+const _paymentInfo = computed(() => {
   if (!qPackage.value || !qPackage.value?.paymentType) {
     return ''
   }
@@ -39,6 +39,7 @@ const paymentInfo = computed(() => {
   if (qPackage.value.paymentType === 3) {
     return '该工具为按使用次数购买'
   }
+  return ''
 })
 
 const { push } = useRouter()

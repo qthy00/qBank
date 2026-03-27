@@ -329,7 +329,8 @@ const getSchedule = async () => {
     scheduleItems[1].time = formatDate(data.registerTimes[1], 'YYYY年MM月DD日 HH:mm')
     scheduleItems[2].time = formatDate(data.examTimes, 'YYYY年MM月DD日')
     scheduleItems[3].time = formatDate(data.scoreTimes, 'YYYY年MM月DD日')
-  } catch (e) {
+  } catch {
+    /* empty */
   }
 }
 

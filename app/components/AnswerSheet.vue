@@ -18,7 +18,7 @@ const props = defineProps({
   marked: {
     type: Array as PropType<number[]>,
     required: false,
-    default: []
+    default: () => [],
   },
   totalCount: {
     type: Number,
@@ -77,7 +77,7 @@ const questionsByType = computed(() => {
 
     tCounts[type]++
   })
-
+  // eslint-disable-next-line vue/no-side-effects-in-computed-properties
   typeCounts.value = tCounts
   // 将对象转换为数组，保持类型顺序
   return Object.values(groupMap)

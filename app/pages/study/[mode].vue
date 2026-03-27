@@ -36,14 +36,14 @@ const {
   subtitle,
   dailyAmount
 } = storeToRefs(questionStore)
-const {redirectToPay} = usePayWithPopup()
+const {redirectToPay: _redirectToPay} = usePayWithPopup()
 
 const questionId = computed(() => {
   const id = Number(query.qid)
   return isNaN(id) ? undefined : id
 })
 
-const mode = computed(() => String(params.mode || 'practice'))
+const _mode = computed(() => String(params.mode || 'practice'))
 const modeType = computed(() => Number(query.type || 1))
 const modePattern = computed(() => Number(query.pattern || 1))
 const isRestart = computed(() => modePattern.value === 3)
@@ -120,7 +120,11 @@ const restoreCurrentQuestionCache = () => {
   }
 
   // 已提交的题目不再计时
-  cache.isSubmitted ? stopTimer() : startTimer()
+  if (cache.isSubmitted) {
+    stopTimer()
+  } else {
+    startTimer()
+  }
 }
 
 // 计时器控制
@@ -153,16 +157,17 @@ const typeName = computed(() => {
 const isSubmitted = computed(() => answerCache.value[currentQuestion.value.id]?.isSubmitted)
 const showExplanation = computed(() => {
   const cache = answerCache.value[currentQuestion.value.id]
-  switch (showAnswerSetting.value) {
-    case 0:
-      return true
-    case 1:
-      return !!(cache && cache.isSubmitted && !cache.isCorrect)
-    case 2:
-      return false
-    case 3:
-      return !!(cache && cache.isSubmitted)
+  const setting = showAnswerSetting.value
+  if (setting === 0) {
+    return true
+  } else if (setting === 1) {
+    return !!(cache && cache.isSubmitted && !cache.isCorrect)
+  } else if (setting === 2) {
+    return false
+  } else if (setting === 3) {
+    return !!(cache && cache.isSubmitted)
   }
+  return false
 })
 
 // 解析填空题内容，分离文本和填空位置
@@ -170,10 +175,10 @@ const parseFillContent = (content: string) => {
   content = stripHtmlTags(content)
   if (!content) return []
   // 正则表达式匹配括号并拆分内容
-  return content.split(/（　　）/g).flatMap((part, i, arr) => {
+  return content.split(/（）/g).flatMap((part, i, arr) => {
     // 除了最后一个元素外，每个拆分后的部分后面都添加一个括号标记
     if (i < arr.length - 1) {
-      return [part, '（　　）']
+      return [part, '（）']
     }
     return [part]
   })
@@ -243,7 +248,7 @@ const startTime = ref(0)
 const pointStatistics = computed(() => {
   // 存储分组数据：key为考点ID，value为统计信息
   const pointMap: Record<
-      string | number,
+      string,
       {
         name: string // 考点名称
         questionCount: number // 组内题目总数
@@ -251,7 +256,7 @@ const pointStatistics = computed(() => {
       }
   > = {}
 
-  questions.value.forEach((question: any, index: number) => {
+  questions.value.forEach((question: any, _index: number) => {
     // 获取当前题目的考点信息（假设point是包含id和name的对象）
     let point = question.point
     if (!point || point.trim() === '') {
@@ -454,7 +459,8 @@ const submitAnswer = async () => {
   // 判断答案是否正确
   let isCorrect = false
   const userAnswer: Record<number, string> = {}
-  let {type, questionList, contentId, isRepeat, id, typeName} = currentQuestion.value
+  const {type, contentId, isRepeat, id, typeName} = currentQuestion.value
+  let {questionList} = currentQuestion.value
 
   if (type === 8) {
     questionList.forEach((sub) => {
@@ -531,10 +537,11 @@ const submitAnswer = async () => {
   questionList = currentQuestion.value.questionList
   switch (type) {
     case 1:
-    case 2:
+    case 2: {
       const correctAnswers = answer?.split(',')
       isCorrect = isArrayValueEqual(correctAnswers, currentAnswer.value)
       break
+    }
     case 0:
     case 3:
     case 4:
@@ -820,7 +827,8 @@ onUnmounted(() => {
 </script>
 
 <template>
-  <el-card v-loading="loading" element-loading-text="加载题目中..." class="mt-12">
+  <div>
+    <el-card v-loading="loading" element-loading-text="加载题目中..." class="mt-12">
     <!-- 抬头标题区域 -->
     <div
         class="bg-white shadow-sm sticky top-0 z-30 transition-all duration-300 border-b border-gray-100"
@@ -977,17 +985,17 @@ class="text-gray-800 leading-relaxed flex-1 pt-0.5" @click="handleImageClick"
                     </div>
                   </div>
                 </div>
-                <!-- 填空题（支持解析（　　）并自适应宽度） -->
+                <!-- 填空题（支持解析（）并自适应宽度） -->
                 <div v-if="currentQuestion.type === 4">
                   <div class="space-y-5">
                     <p class="text-slate-700 leading-relaxed">
-                      <!-- 拆分文本和填空位置（使用正则表达式匹配（　　）） -->
+                      <!-- 拆分文本和填空位置（使用正则表达式匹配（）） -->
                       <span
                           v-for="(part, index) in parseFillContent(currentQuestion.content)"
                           :key="index"
                       >
                         <!-- 填空题输入框进一步优化部分 -->
-                        <template v-if="part === '（　　）'">
+                        <template v-if="part === '（）'">
                           <span class="mx-1 inline-block relative">
                             <input
                                 v-model="fillAnswers[index]"
@@ -1418,7 +1426,8 @@ class="text-gray-800 leading-relaxed flex-1 pt-0.5" @click="handleImageClick"
     </main>
   </el-card>
 
-  <QuestionSetting ref="settingRef"/>
+    <QuestionSetting ref="settingRef"/>
+  </div>
 </template>
 
 <style scoped>

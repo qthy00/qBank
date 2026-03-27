@@ -361,7 +361,7 @@ import type { ExamReportVO, QuestionAnswerVO } from '~/types/exam'
 import { getExamReport } from '~/api/exam'
 
 const route = useRoute()
-const router = useRouter()
+const _router = useRouter()
 
 const paperId = computed(() => Number(route.params.id))
 const userPaperId = computed(() => Number(route.query.userPaperId) || 0)

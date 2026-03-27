@@ -1,4 +1,4 @@
-import type { UserVO, LevelVO } from '~/types/user'
+import type { UserVO } from '~/types/user'
 
 /**
  * 用户模块 Mock 数据

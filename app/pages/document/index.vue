@@ -11,7 +11,7 @@ useHead({
   title: '文档下载'
 })
 
-const route = useRoute()
+const _route = useRoute()
 const router = useRouter()
 
 /* 当前文档类型 */

@@ -1,13 +1,8 @@
 import type {
-  MemberLevelVO,
-  ExperienceRecordVO,
-  ExperienceRecordPageRespVO,
-  ExperienceRecordPageReqVO
+  MemberLevelVO
 } from '~/types/level'
 import { httpGet } from '~/composables/useHttp'
 import {
-  mockLevelList,
-  mockExperienceRecords,
   getMockLevelList,
   getMockExperienceRecordPage
 } from './mock'

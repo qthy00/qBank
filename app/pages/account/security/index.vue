@@ -1,5 +1,5 @@
 <template>
-  <div class="ml-3 p-6 bg-white rounded-xl space-y-6">
+  <div class="ml-3 p-6 bg-white rounded-xl space-y-6 security-page-root">
     <!-- 安全概览 -->
     <el-card shadow="never" class="border border-gray-200">
       <template #header>
@@ -165,12 +165,6 @@
         </el-card>
 
   </div>
-  <ChangePasswordForm ref="changePasswordForm" />
-  <ChangeEmailForm ref="changeEmailForm" @success="handleEmailSuccess" />
-  <ChangePhoneForm ref="changeMobileForm" @success="handleMobileSuccess" />
-  <CertificationForm ref="certificationForm" @success="handleRealNameSuccess" />
-  <DeviceList ref="deviceListRef" @close="handleDeviceClose"/>
-  <WechatBindForm ref="wechatBindRef" />
 </template>
 
 <script setup lang="ts">
@@ -178,15 +172,13 @@ import {
   fetchSecurityScore,
   updateUserSetting,
 } from '@/api/user'
-import ChangePasswordForm from '@/views/account/security/ChangePasswordForm.vue'
-import CertificationForm from '@/views/account/security/CertificationForm.vue'
-import ChangeEmailForm from '@/views/account/security/ChangeEmailForm.vue'
-import ChangePhoneForm from '@/views/account/security/ChangePhoneForm.vue'
+import _ChangePasswordForm from '@/views/account/security/ChangePasswordForm.vue'
+import _CertificationForm from '@/views/account/security/CertificationForm.vue'
+import _ChangeEmailForm from '@/views/account/security/ChangeEmailForm.vue'
+import _ChangePhoneForm from '@/views/account/security/ChangePhoneForm.vue'
 import SettingRow from '@/views/account/security/SettingRow.vue'
-import DeviceList from '@/views/account/security/DeviceList.vue'
-import WechatBindForm from '@/components/WechatBindForm.vue'
-import { SocialApi } from '@/api/user/social.ts'
-import { maskEmail, maskPhone } from '@/utils'
+import _DeviceList from '@/views/account/security/DeviceList.vue'
+import _WechatBindForm from '@/components/WechatBindForm.vue'
 
 definePageMeta({
   layout: 'member'
@@ -197,7 +189,7 @@ useHead({
 
 const message = useMessage()
 const authStore = useAuthStore()
-const router = useRouter()
+const _router = useRouter()
 
 const securityData = ref<SecurityDataVO>()
 const levelColor = ref('')
@@ -249,7 +241,7 @@ const loadSecurityScore = async () => {
           break
       }
     })
-  } catch (error) {
+  } catch {
     message.error('加载安全分数失败')
   }
 }
@@ -263,15 +255,15 @@ const changeEmailForm = ref()
 const handleEmailChange = () => {
   changeEmailForm.value!.open()
 }
-const handleEmailSuccess = (e: string) => {
+const _handleEmailSuccess = (_e: string) => {
   email.value = maskEmail(e)
 }
 // 绑定手机
 const changeMobileForm = ref()
-const handleMobileChange = () => {
+const _handleMobileChange = () => {
   changeMobileForm.value!.open()
 }
-const handleMobileSuccess = (e: string) => {
+const _handleMobileSuccess = (_e: string) => {
   mobile.value = maskPhone(e)
 }
 // 实名认证
@@ -279,7 +271,7 @@ const certificationForm = ref()
 const handleRealName = () => {
   certificationForm.value!.open()
 }
-const handleRealNameSuccess = () => {
+const _handleRealNameSuccess = () => {
   realName.value = '已完成'
   isRealName.value = true
 }
@@ -300,10 +292,10 @@ const handleSettingChange = async (type: string) => {
 
 // 设备管理
 const deviceListRef = ref()
-const viewDevices = () => {
+const _viewDevices = () => {
   deviceListRef.value!.open()
 }
-const handleDeviceClose = () => {
+const _handleDeviceClose = () => {
 
 }
 
@@ -340,7 +332,7 @@ const handleClearCache = () => {
     if (result) {
       /* 清空后跳转到登录页 */
       setTimeout(() => {
-        router.push('/login')
+        _router.push('/login')
       }, 1500)
     }
   }).catch(() => {

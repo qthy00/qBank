@@ -17,14 +17,14 @@
       <template #dropdown>
         <el-dropdown-menu class="p-1 rounded-lg shadow-lg">
           <el-dropdown-item
-            v-for="locale in availableLocales"
-            :key="locale.code"
-            :command="locale.code"
+            v-for="loc in availableLocales"
+            :key="loc.code"
+            :command="loc.code"
             class="px-3 py-2 rounded-md hover:bg-blue-50 flex items-center"
           >
             <i class="i-fa:language text-blue-500 mr-2"/>
-            <span>{{ locale.name }}</span>
-            <i v-if="locale.code === currentLocale" class="el-icon-check ml-auto text-blue-500"/>
+            <span>{{ loc.name }}</span>
+            <i v-if="loc.code === currentLocale" class="el-icon-check ml-auto text-blue-500"/>
           </el-dropdown-item>
         </el-dropdown-menu>
       </template>
@@ -34,10 +34,10 @@
 </template>
 
 <script setup lang="ts">
-import { ref, computed } from 'vue'
+import { computed } from 'vue'
 import { useI18n } from 'vue-i18n'
 
-const props = defineProps({
+defineProps({
   isScrolled: {
     type: Boolean,
     default: false

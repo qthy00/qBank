@@ -2,7 +2,7 @@
  * 模拟考试相关类型定义
  */
 
-import type { QuestionVO, Paper, PaperReport, QuestionItem } from '../qBank/index'
+import type { QuestionVO, PaperReport, QuestionItem } from '../qBank/index'
 
 /**
  * 模拟考试配置请求

@@ -93,7 +93,7 @@
 </template>
 
 <script setup lang="ts">
-import type { QuestionCommentItem, CommentReplyItem } from '~/types/question-comment'
+import type { QuestionCommentItem } from '~/types/question-comment'
 import {
   getQuestionCommentPage,
   submitQuestionComment,
@@ -153,7 +153,7 @@ const loadComments = async () => {
       commentList.value.push(...list)
       total.value = t
     }
-  } catch (error) {
+  } catch {
     message.error('加载评论失败')
   } finally {
     loading.value = false
@@ -191,7 +191,7 @@ const handleSubmitComment = async (content: string, media: string[]) => {
     } else {
       message.error(res.msg || '评论发表失败')
     }
-  } catch (error) {
+  } catch {
     message.error('评论发表失败')
   }
 }
@@ -219,7 +219,7 @@ const handleLike = async (commentId: number, isLiked: boolean) => {
     } else {
       message.error(res.msg || '操作失败')
     }
-  } catch (error) {
+  } catch {
     message.error('操作失败')
   }
 }
@@ -250,7 +250,7 @@ const handleSubmitReply = async (content: string, toUid: number) => {
     } else {
       message.error(res.msg || '回复失败')
     }
-  } catch (error) {
+  } catch {
     message.error('回复失败')
   }
 }
@@ -265,7 +265,7 @@ const handleReplyLike = async (replyId: number, isLiked: boolean) => {
       commentId: replyId,
       type,
     })
-  } catch (error) {
+  } catch {
     message.error('操作失败')
   }
 }

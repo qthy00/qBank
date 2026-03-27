@@ -190,7 +190,7 @@ const loadReplies = async () => {
     } else {
       message.error(res.msg || '获取回复列表失败')
     }
-  } catch (error) {
+  } catch {
     message.error('获取回复列表失败')
   } finally {
     loading.value = false

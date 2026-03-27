@@ -1,6 +1,6 @@
 import { defineStore } from 'pinia'
 
-interface AnswerState {
+interface _AnswerState {
   sessionId?: number
   answers: Record<number, string>
   currentIndex: number

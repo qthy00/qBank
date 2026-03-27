@@ -1,6 +1,6 @@
 import { useRouter } from '#imports'
 
-export const useWindow = (path: string) => {
+export const useWindow = (_path: string) => {
 
     const reloadPage = () => {
         if (import.meta.client) {

@@ -22,7 +22,8 @@ const props = defineProps({
 })
 
 const options = computed(() => {
-  return Object.assign(props.options, {})
+  // 使用深拷贝返回新对象
+  return Object.assign({}, props.options)
 })
 
 const elRef = ref<ElRef>()
@@ -76,14 +77,18 @@ onMounted(() => {
   initChart()
   window.addEventListener('resize', resizeHandler)
   contentEl.value = document.getElementsByClassName(`${variables.namespace}-layout-content`)[0]
-  unref(contentEl) &&
-    (unref(contentEl) as Element).addEventListener('transitionend', contentResizeHandler)
+  const _el = unref(contentEl)
+  if (_el) {
+    (_el as Element).addEventListener('transitionend', contentResizeHandler)
+  }
 })
 
 onBeforeUnmount(() => {
   window.removeEventListener('resize', resizeHandler)
-  unref(contentEl) &&
-    (unref(contentEl) as Element).removeEventListener('transitionend', contentResizeHandler)
+  const _el = unref(contentEl)
+  if (_el) {
+    (_el as Element).removeEventListener('transitionend', contentResizeHandler)
+  }
 })
 
 onActivated(() => {

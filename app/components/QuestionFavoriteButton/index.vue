@@ -24,7 +24,8 @@ interface Props {
 }
 
 const props = withDefaults(defineProps<Props>(), {
-  size: 'medium'
+  size: 'medium',
+  qbankId: undefined
 })
 
 /* 状态 */
@@ -50,7 +51,7 @@ const handleToggle = async () => {
       message.success('收藏成功')
       isFavorite.value = true
     }
-  } catch (error) {
+  } catch {
     message.error('操作失败，请重试')
   } finally {
     loading.value = false
@@ -62,7 +63,7 @@ onMounted(async () => {
   try {
     const status = await getQuestionFavoriteStatus(props.questionId)
     isFavorite.value = status
-  } catch (e) {
+  } catch {
     /* 忽略错误 */
   }
 })

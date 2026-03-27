@@ -133,11 +133,10 @@ export default class HyPay {
     })
   }
 
-  // 浏览器微信 H5 支付 TODO 待接入（虚拟产品不让申请）
   async wechatWapPay() {
     try {
-      const data = await this.prepay('wx_wap')
-    } catch (e: any) {
+      await this.prepay('wx_wap')
+    } catch {
       // const redirect_url = `${getRootUrl()}pages/pay/result?id=${this.id}&payment=${this.payment}&orderType=${this.orderType}`
       // location.href = `${data.pay_data.h5_url}&redirect_url=${encodeURIComponent(redirect_url)}`
     }

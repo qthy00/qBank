@@ -191,11 +191,11 @@ import { formatDate } from '~/utils/formatTime.ts'
 
 const {push} = useRouter()
 const appStore = useAppStore()
-const isMobile = computed(() => appStore.platform.isMobile)
+const _isMobile = computed(() => appStore.platform.isMobile)
 
 // 团队数据
 const totalMembers = ref(0) // 团队总人数
-const monthGrowthRate = ref(18.5) // 月增长率
+const _monthGrowthRate = ref(18.5) // 月增长率
 
 // 成员列表数据
 const loading = ref(false)

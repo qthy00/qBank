@@ -144,7 +144,7 @@ async function handleAuthorized() {
 }
 
 // 处理错误
-const handleError = (error: any, url: string, options: any) => {
+const handleError = (error: any, _url: string, _options: any) => {
     let msg = error.message || ''
 
     if (error.name === 'AbortError') {
@@ -182,7 +182,7 @@ async function handleResponse(data: any, originalRequest?: any) {
 
     if (ignoreMsgs.indexOf(msg) !== -1) {
         console.log('请求出错啦！!', msg)
-        import.meta.client && message.error(msg)
+        void (import.meta.client && message.error(msg))
     } else if (code === 401) {
         // 如果没有刷新令牌，删除现有用户信息等缓存
         const {getRefreshToken} = useToken()
@@ -219,7 +219,7 @@ async function handleResponse(data: any, originalRequest?: any) {
                 // 刷新失败：引导登录
                 return handleAuthorized()
             }
-        } catch (e) {
+        } catch {
             return handleAuthorized()
         } finally {
             isRefreshing = false
@@ -242,19 +242,15 @@ async function handleResponse(data: any, originalRequest?: any) {
  * @param requestConfig 原请求配置
  */
 async function retryOriginalRequest(requestConfig: any) {
-    try {
-        const res = await $fetch(requestConfig.url, {
-            method: requestConfig.method,
-            headers: requestConfig.headers,
-            body: requestConfig.body,
-            query: requestConfig.query,
-            baseURL: requestConfig.baseURL
-        }) // 直接返回重试结果（已通过业务校验）
-        if (res.code === 0) return res.data
-        throw new Error(res.msg)
-    } catch (error) {
-        throw error
-    }
+    const res = await $fetch(requestConfig.url, {
+        method: requestConfig.method,
+        headers: requestConfig.headers,
+        body: requestConfig.body,
+        query: requestConfig.query,
+        baseURL: requestConfig.baseURL
+    }) // 直接返回重试结果（已通过业务校验）
+    if (res.code === 0) return res.data
+    throw new Error(res.msg)
 }
 
 
@@ -320,8 +316,9 @@ export async function useHttp(key: string | undefined,
                     return await handleResponse(response, originalRequest)
                 }
             } catch (err: any) {
+                clearTimeout(timeoutId)
                 // import.meta.client && message.error(err.msg || '请求失败')
-                throw err
+                return handleError(err, url, options)
             }
         } else {
             console.log('使用useFetch请求的情况', url)
@@ -332,8 +329,9 @@ export async function useHttp(key: string | undefined,
                     response._data = await handleResponse(response._data, originalRequest)
                 },
                 async onResponseError({response}) {
+                    clearTimeout(timeoutId)
                     console.log('HTTP错误=====', response)
-                    import.meta.client && message.error(`HTTP错误：${response.status}`)
+                    void (import.meta.client && message.error(`HTTP错误：${response.status}`))
                     throw new Error(`HTTP错误：${response.status}`)
                 }
             })

@@ -124,13 +124,19 @@ export default {
         signType: data.signType, // 签名方式，默认为'SHA1'，使用新版支付需传入'MD5'
         paySign: data.paySign, // 支付签名
         success: function (res) {
-          callback.success && callback.success(res);
+          if (callback.success) {
+            callback.success(res)
+          }
         },
         fail: function (err) {
-          callback.fail && callback.fail(err);
+          if (callback.fail) {
+            callback.fail(err)
+          }
         },
         cancel: function (err) {
-          callback.cancel && callback.cancel(err);
+          if (callback.cancel) {
+            callback.cancel(err)
+          }
         },
       });
     });

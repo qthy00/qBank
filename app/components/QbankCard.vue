@@ -15,7 +15,7 @@ interface Props {
   showPractice?: boolean
 }
 
-const props = withDefaults(defineProps<Props>(), {
+const _props = withDefaults(defineProps<Props>(), {
   showBuy: true,
   showPractice: true
 })

@@ -1,12 +1,9 @@
 import type {
-  PointRecordVO,
   PointRecordPageRespVO,
   PointRecordPageReqVO
 } from '~/types/point'
 import { httpGet } from '~/composables/useHttp'
 import {
-  mockPointRecords,
-  mockPointRules,
   getMockPointRecordPage,
   getMockPointRules,
   getMockPointStatistics

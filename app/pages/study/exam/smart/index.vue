@@ -308,7 +308,7 @@ import type { SmartPaperReqVO, WeakKnowledgePoint } from '~/types/exam/smart'
 import { getWeakPoints, getSmartPaperConfig, generateSmartPaper, getSmartPaperHistory } from '~/api/exam/smart'
 import type { SubjectVO } from '~/types/exam'
 
-const router = useRouter()
+const _router = useRouter()
 const message = useMessage()
 
 /* ==================== 状态定义 ==================== */

@@ -70,7 +70,7 @@ const handlePageChange = (page: number) => {
   loadCoupons()
 }
 
-const handleUse = (coupon: UserCouponVO) => {
+const handleUse = (_coupon: UserCouponVO) => {
   /* 跳转到题库列表页面 */
   navigateTo('/qbank')
 }

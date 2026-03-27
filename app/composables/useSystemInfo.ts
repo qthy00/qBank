@@ -1,5 +1,5 @@
 // 定义系统配置类型接口
-interface SystemConfig {
+interface _SystemConfig {
 	title?: string;
 	title_abbr?: string;
 	platform?: string;

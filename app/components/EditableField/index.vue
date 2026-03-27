@@ -15,7 +15,10 @@
 import { computed } from 'vue'
 
 const props = defineProps({
-  modelValue: [String, Number, Array, Object, Date],
+  modelValue: {
+    type: [String, Number, Array, Object, Date],
+    default: undefined
+  },
   editable: Boolean,
   component: {
     type: String,
@@ -25,7 +28,10 @@ const props = defineProps({
     type: Object,
     default: () => ({})
   },
-  formatter: Function // 可选：自定义展示格式函数
+  formatter: {
+    type: Function,
+    default: undefined
+  } // 可选：自定义展示格式函数
 })
 const emit = defineEmits(['update:modelValue'])
 const innerValue = ref(props.modelValue)

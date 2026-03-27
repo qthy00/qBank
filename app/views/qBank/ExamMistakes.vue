@@ -173,7 +173,7 @@
                 </div>
               </div>
 
-              <!-- 题目内容 - 固定2行显示，确保一致性 -->
+              <!-- eslint-disable-next-line vue/no-v-html -->
               <div class="text-sm text-slate-700 line-clamp-2 mb-2" v-html="question.content" />
 
               <!-- 错误信息 - 紧凑布局 -->
@@ -321,7 +321,8 @@ const loadWrongQuestion = async () => {
     const data = await questionApi.getWrongQuestionList(params)
     total.value = data.total
     wrongQuestions.value = data.list
-  } catch (e) {
+  } catch {
+    /* empty */
   } finally {
     loading.value = false
   }
@@ -352,8 +353,8 @@ const loadSummary = async () => {
         percentage: Math.round(item.percentage),
       }
     })
-  }catch (e){
-
+  }catch {
+    /* empty */
   }
 
 }

@@ -1,7 +1,6 @@
 <script setup lang="ts">
 import { useLevelStore } from '~/stores/level'
 import { useUserStore } from '~/stores/user'
-import type { MemberLevelVO } from '~/types/level'
 
 /**
  * 会员等级页面

@@ -52,20 +52,24 @@ export default {
       required: true
     },
     figure: {
-      type: Number
+      type: Number,
+      default: undefined
     },
     arith: {
-      type: Number
+      type: Number,
+      default: undefined
     },
     mode: {
       type: String,
       default: 'pop'
     },
     vSpace: {
-      type: Number
+      type: Number,
+      default: undefined
     },
     explain: {
-      type: String
+      type: String,
+      default: undefined
     },
     imgSize: {
       type: Object,
@@ -77,10 +81,12 @@ export default {
       }
     },
     blockSize: {
-      type: Object
+      type: Object,
+      default: undefined
     },
     barSize: {
-      type: Object
+      type: Object,
+      default: undefined
     }
   },
   setup(props) {

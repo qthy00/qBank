@@ -182,6 +182,9 @@
 </template>
 
 <script setup lang="ts">
+defineOptions({
+  name: 'AppFooter'
+})
 // 页脚组件 - 包含网站导航、联系信息和版权声明
 // 使用说明: 直接在App.vue或布局组件中引入使用即可
 </script>

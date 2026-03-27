@@ -59,7 +59,7 @@
             class="absolute right-0 top-0 bottom-0 bg-gradient-to-r from-blue-500 to-indigo-600 text-white font-semibold px-8 rounded-r-full hover:from-blue-600 hover:to-indigo-700 transition-all duration-300 flex items-center justify-center space-x-2"
             @click="handleSearch"
         >
-          <span :class="isMobile ? '' : 'text-xl'">搜　索</span>
+          <span :class="isMobile ? '' : 'text-xl'">搜索</span>
         </button>
       </div>
     </div>
@@ -232,7 +232,7 @@ interface ToolVO {
 
 // 临时API，避免构建失败
 const ToolsApi = {
-  getToolsPage: async (params: any) => {
+  getToolsPage: async (_params: any) => {
     return { list: [], total: 0 }
   }
 }

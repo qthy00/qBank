@@ -193,7 +193,7 @@ const parseFillContent = (content: string) => {
   content = stripHtmlTags(content)
   if (!content) return []
   // 拆分内容并关联答案
-  const parts = content.split(/（　　）/g)
+  const parts = content.split(/（）/g)
   const result: FillIn[] = []
   const userAnswers = props.question.userAnswer?.split('###')
   const correctAnswers = props.question.answer.split('###')

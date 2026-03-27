@@ -25,9 +25,8 @@ try {
     process.exit(0)
 }
 
-let input;
 try {
-    input = JSON.parse(inputData);
+    JSON.parse(inputData);
 } catch {
     process.exit(0)
 }

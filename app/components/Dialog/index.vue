@@ -2,7 +2,7 @@
 import {propTypes} from '~/utils/propTypes'
 import {isNumber} from '~/utils/is'
 
-defineOptions({name: 'Dialog'})
+defineOptions({name: 'AppDialog'})
 
 const appStore = useAppStore()
 const {isMobile} = storeToRefs(appStore)
@@ -52,6 +52,7 @@ const getBindValue = computed(() => {
   const obj = {...attrs, ...props}
   for (const key in obj) {
     if (delArr.indexOf(key) !== -1) {
+      // eslint-disable-next-line @typescript-eslint/no-dynamic-delete
       delete obj[key]
     }
   }
