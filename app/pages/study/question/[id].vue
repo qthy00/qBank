@@ -6,6 +6,8 @@ import type {NoteVO, NoteFormVO} from '~/types/note'
 import {createImageViewer} from '~/components/ImageViewer'
 import {typeNames} from '~/api/qbank'
 import QuestionNote from '~/components/Note/QuestionNote.vue'
+import {QuestionComment} from '~/components/QuestionComment/export'
+import {useUserStore} from '~/stores/user'
 
 /**
  * 题目详情页（带笔记功能）
@@ -17,6 +19,11 @@ const route = useRoute()
 const router = useRouter()
 const questionId = computed(() => Number(route.params.id))
 const noteId = computed(() => Number(route.query.noteId) || undefined)
+const currentUserId = computed(() => {
+  /* 从user store获取当前用户ID */
+  const userStore = useUserStore()
+  return userStore.userInfo?.id
+})
 
 /* ==================== 状态定义 ==================== */
 const loading = ref(false)
@@ -411,7 +418,7 @@ useHead({
         </div>
 
         <!-- 右侧笔记区域 -->
-        <div v-if="showNotePanel" class="lg:col-span-1">
+        <div v-if="showNotePanel" class="lg:col-span-1 space-y-6">
           <QuestionNote
               :question-id="questionId"
               :qbank-id="question?.packageId || note?.qbankId"
@@ -422,6 +429,14 @@ useHead({
               @deleted="handleNoteDeleted"
           />
         </div>
+      </div>
+
+      <!-- 评论区域 -->
+      <div class="mt-6">
+        <QuestionComment
+          :question-id="questionId"
+          :current-user-id="currentUserId"
+        />
       </div>
     </div>
   </div>

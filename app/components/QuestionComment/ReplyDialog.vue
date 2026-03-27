@@ -101,6 +101,7 @@
 
 <script setup lang="ts">
 import type { CommentReplyItem } from '~/types/question-comment'
+import { getCommentReplyList } from '~/api/question-comment'
 import CommentForm from './CommentForm.vue'
 
 interface Props {
@@ -176,40 +177,21 @@ const loadReplies = async () => {
   loading.value = true
 
   try {
-    /* TODO: 调用API获取回复列表 */
-    /* const res = await getCommentReplyList(props.commentId, {
+    /* 调用API获取回复列表 */
+    const res = await getCommentReplyList(props.commentId, {
       pageNum: pageNum.value,
       pageSize,
-    }) */
+    })
 
-    /* Mock数据演示 */
-    await new Promise((resolve) => setTimeout(resolve, 500))
-    const mockReplies: CommentReplyItem[] = []
-    for (let i = 0; i < 5; i++) {
-      mockReplies.push({
-        id: 5000 + i + (pageNum.value - 1) * pageSize,
-        commentId: props.commentId,
-        uid: 2002 + i,
-        nickname: ['题库管理员', '学霸小明', '考试达人', '学习小能手', '知识探索者'][i],
-        avatar: `https://picsum.photos/100/100?random=${i + 10}`,
-        toUid: 2001,
-        toNickname: '学习小王子',
-        content: [
-          '答案已核实无误，请仔细审题',
-          '我觉得解析已经挺清楚了，你再仔细看看',
-          '这道题确实有点难度，建议多练习',
-          '可以参考一下教材第3章的内容',
-          '感谢反馈，我们会持续改进',
-        ][i],
-        area: ['北京', '上海', '广州', '深圳', '杭州'][i],
-        likeCount: Math.floor(Math.random() * 20),
-        likedByCurrentUser: false,
-        createTime: new Date(Date.now() - i * 3600000).toISOString(),
-      })
+    if (res.code === 0 && res.data) {
+      const { list, total: t } = res.data
+      replyList.value.push(...list)
+      total.value = t
+    } else {
+      message.error(res.msg || '获取回复列表失败')
     }
-
-    replyList.value.push(...mockReplies)
-    total.value = 15
+  } catch (error) {
+    message.error('获取回复列表失败')
   } finally {
     loading.value = false
   }
