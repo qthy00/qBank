@@ -15,7 +15,7 @@
         <!-- 头部 -->
         <div class="flex justify-between items-center mb-6">
           <h2 class="text-xl font-bold text-gray-900">创建新账户</h2>
-          <button @click="closeModal('register')" class="text-gray-500 hover:text-gray-700">
+          <button class="text-gray-500 hover:text-gray-700" @click="closeModal('register')">
             <Icon name="fa-times"/>
           </button>
         </div>
@@ -31,8 +31,8 @@
         >
           <el-form-item prop="username" label="用户名" class="!mt-3">
             <el-input
-                placeholder="请输入用户名"
                 v-model="registerData.username"
+                placeholder="请输入用户名"
                 :prefix-icon="Avatar"
             >
               <template #suffix>
@@ -93,8 +93,8 @@
           <span class="text-gray-600">已有账户？</span>
           <button
               link
-              @click="handleOpenLoginModal"
               class="text-blue-600 font-medium hover:underline"
+              @click="handleOpenLoginModal"
           >
             立即登录
           </button>

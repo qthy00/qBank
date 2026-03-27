@@ -29,8 +29,8 @@
       >
       <button
         v-if="keyword"
-        @click="clearSearch"
         class="p-1 rounded-full hover:bg-gray-200/50 transition-colors"
+        @click="clearSearch"
       >
         <Icon
           name="ep:close"
@@ -94,8 +94,8 @@
               搜索历史
             </div>
             <button
-              @click="clearHistory"
               class="text-xs text-gray-400 hover:text-gray-600 flex items-center gap-1"
+              @click="clearHistory"
             >
               <Icon name="ep:delete"/>
               清空

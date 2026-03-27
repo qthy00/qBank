@@ -93,14 +93,14 @@
               class="border-b border-blue-100 bg-gradient-to-r from-blue-50 to-blue-100 px-6 py-4 flex items-center justify-between relative overflow-hidden"
             >
               <!-- 装饰元素 - 左右侧主色条 -->
-              <div class="absolute left-0 top-0 bottom-0 w-1.5 bg-blue-600"></div>
-              <div class="absolute right-0 top-0 bottom-0 w-1.5 bg-blue-600"></div>
+              <div class="absolute left-0 top-0 bottom-0 w-1.5 bg-blue-600"/>
+              <div class="absolute right-0 top-0 bottom-0 w-1.5 bg-blue-600"/>
 
               <!-- 题型标签 -->
               <div
                 class="bg-white/90 border border-blue-100 px-4 py-1.5 rounded-full text-xs font-medium flex items-center z-10"
               >
-                <span class="w-2.5 h-2.5 rounded-full bg-blue-600 mr-2"></span>
+                <span class="w-2.5 h-2.5 rounded-full bg-blue-600 mr-2"/>
                 {{ currentQuestion.typeName || typeName }}
               </div>
               <!-- 分值标签 -->
@@ -128,7 +128,7 @@
                   class="bg-blue-50 p-5 rounded-lg border border-blue-100 mb-6 relative overflow-hidden"
                 >
                   <!-- 装饰元素 -->
-                  <div class="absolute top-0 left-0 w-1 h-full bg-blue-600"></div>
+                  <div class="absolute top-0 left-0 w-1 h-full bg-blue-600"/>
                   <div class="ml-4">
                     <h3 class="font-medium text-blue-800 mb-3 flex items-center">
                       {{ currentQuestion.type == 6 ? '案例描述' : '通用题干/选项' }}
@@ -205,7 +205,7 @@
                         <div
                           v-if="isOptionSelected(key)"
                           class="absolute top-0 left-0 w-full h-full bg-blue-600 opacity-5 -z-10"
-                        ></div>
+                        />
                       </div>
                     </div>
                   </div>
@@ -242,7 +242,7 @@
                         <div
                           v-if="isOptionSelected(item.value)"
                           class="absolute top-0 left-0 w-full h-full bg-blue-600 opacity-5 -z-10"
-                        ></div>
+                        />
                       </div>
                     </div>
                   </div>
@@ -266,9 +266,9 @@
                                 v-model="fillAnswers[index]"
                                 placeholder="请输入"
                                 class="border border-slate-300 rounded-md px-3 py-1.5 text-slate-700 text-center transition-all duration-200 focus:outline-none focus:ring-2 focus:ring-blue-500/30 focus:border-blue-500"
-                                @input="adjustInputWidth(index)"
                                 :style="{ width: fillInputWidths[index] }"
-                              />
+                                @input="adjustInputWidth(index)"
+                              >
                             </span>
                           </template>
 
@@ -287,7 +287,7 @@
                     class="bg-red-50 p-5 rounded-lg border border-red-100 mb-6 relative overflow-hidden"
                   >
                     <!-- 红色装饰元素 -->
-                    <div class="absolute top-0 left-0 w-1 h-full bg-red-600"></div>
+                    <div class="absolute top-0 left-0 w-1 h-full bg-red-600"/>
                     <div class="ml-4">
                       <h3 class="font-medium text-red-800 mb-3 flex items-center">问题</h3>
                       <div
@@ -368,7 +368,7 @@
                         <div v-if="[5, 7].includes(subQuestion.parentSonType)">
                           <div>
                             <div class="flex justify-between items-center mb-2">
-                              <label class="block text-sm font-medium text-slate-700"> </label>
+                              <label class="block text-sm font-medium text-slate-700"/>
                               <span class="text-xs text-slate-500 italic">
                                 案例题由AI进行解析和判分
                               </span>
@@ -377,8 +377,8 @@
                               v-model="caseAnswer[subQuestion.id]"
                               :rows="8"
                               placeholder="请在此输入您的答案..."
-                              @input="handleCaseInput(subQuestion.id, 'composite')"
                               class="w-full border border-slate-300 rounded-lg px-4 py-3 text-slate-700 focus:outline-none focus:ring-2 focus:ring-blue-500/30 focus:border-blue-500 transition-all duration-200 resize-y"
+                              @input="handleCaseInput(subQuestion.id, 'composite')"
                             />
                           </div>
                         </div>
@@ -393,8 +393,8 @@
                 <el-button
                   type="info"
                   plain
-                  @click="prevQuestion"
                   :disabled="currentQuestionIndex === 0"
+                  @click="prevQuestion"
                 >
                   <Icon name="ep:back" class="mr-2" />
                   上一题
@@ -402,13 +402,13 @@
 
                 <!-- 标记按钮 -->
                 <button
-                  @click="toggleMark"
                   :class="[
                     'px-5 py-2.5 rounded-lg text-sm font-medium transition-all',
                     isMarked
                       ? 'bg-amber-100 text-amber-700 border border-amber-200 hover:bg-amber-200'
                       : 'bg-slate-100 text-slate-700 hover:bg-slate-200',
                   ]"
+                  @click="toggleMark"
                 >
                   <span class="w-4 h-4 inline-block mr-1.5">
                     {{ isMarked ? '★' : '☆' }}
@@ -417,13 +417,13 @@
                 </button>
 
                 <el-button
-                  @click="nextQuestion"
                   :disabled="currentQuestionIndex === totalQuestions - 1"
                   :class="[
                     currentQuestionIndex === totalQuestions - 1
                       ? 'bg-slate-100 text-slate-400 cursor-not-allowed'
                       : 'bg-indigo-600 text-white hover:bg-indigo-700 shadow-sm',
                   ]"
+                  @click="nextQuestion"
                 >
                   下一题
                 </el-button>
@@ -438,7 +438,7 @@
             :total-count="totalQuestions"
             :marked="markedQuestions"
             :answered="answeredQuestions"
-            :answerCache="answerCache"
+            :answer-cache="answerCache"
             @redirect="goToQuestion"
           />
         </div>
@@ -667,7 +667,7 @@ const isMarked = computed(() => markedQuestions.value.includes(currentQuestionIn
 
 const saveAnswerCache = () => {
   stopTimer()
-  let userAnswer: Record<number, string> = {}
+  const userAnswer: Record<number, string> = {}
   const { type, questionList, contentId, id, score, typeName } = currentQuestion.value
 
   let isSubmitted = false

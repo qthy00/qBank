@@ -95,9 +95,9 @@ onMounted(() => {
         </div>
         <el-button
           class="refresh-btn"
-          @click="handleRefresh"
           :loading="loading"
           circle
+          @click="handleRefresh"
         >
           <Icon name="ep:refresh" />
         </el-button>

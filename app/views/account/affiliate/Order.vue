@@ -66,7 +66,7 @@ onMounted(() => {
       />
 
       <el-empty v-if="orderList.length <= 0" description="暂无数据"/>
-      <el-card class="mt-3" shadow="never" v-for="item in  orderList" :key="item.id">
+      <el-card v-for="item in  orderList" :key="item.id" class="mt-3" shadow="never">
         <div class="flex justify-between items-center my-1">
           <div class="font-500 text-#999">订单编号：{{ item.bizId }}</div>
           <div class="text-blue-600">

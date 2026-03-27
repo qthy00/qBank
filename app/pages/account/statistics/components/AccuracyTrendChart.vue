@@ -144,19 +144,19 @@ const handleTypeChange = (type: 'week' | 'month') => {
     <!-- 图例 -->
     <div class="chart-legend">
       <div class="legend-item">
-        <span class="legend-dot" style="background-color: #22c55e"></span>
+        <span class="legend-dot" style="background-color: #22c55e"/>
         <span>优秀 (80%+)</span>
       </div>
       <div class="legend-item">
-        <span class="legend-dot" style="background-color: #3b82f6"></span>
+        <span class="legend-dot" style="background-color: #3b82f6"/>
         <span>良好 (60-79%)</span>
       </div>
       <div class="legend-item">
-        <span class="legend-dot" style="background-color: #f59e0b"></span>
+        <span class="legend-dot" style="background-color: #f59e0b"/>
         <span>一般 (40-59%)</span>
       </div>
       <div class="legend-item">
-        <span class="legend-dot" style="background-color: #ef4444"></span>
+        <span class="legend-dot" style="background-color: #ef4444"/>
         <span>需加强 (&lt;40%)</span>
       </div>
     </div>

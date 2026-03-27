@@ -2,8 +2,8 @@
   <el-button
     :type="isFavorite ? 'warning' : 'default'"
     :loading="loading"
-    @click="handleToggle"
     class="favorite-btn"
+    @click="handleToggle"
   >
     <Icon :name="isFavorite ? 'ep:star-filled' : 'ep:star'" />
     <span class="ml-1">{{ isFavorite ? '已收藏' : '收藏' }}</span>

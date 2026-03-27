@@ -237,7 +237,7 @@ const handleSetting = () => {
   settingRef.value!.open()
 }
 
-let startTime = ref(0)
+const startTime = ref(0)
 
 // 按考点分组的统计数据：包含考点名称、题目数量、正确率
 const pointStatistics = computed(() => {
@@ -453,7 +453,7 @@ const submitAnswer = async () => {
   stopTimer()
   // 判断答案是否正确
   let isCorrect = false
-  let userAnswer: Record<number, string> = {}
+  const userAnswer: Record<number, string> = {}
   let {type, questionList, contentId, isRepeat, id, typeName} = currentQuestion.value
 
   if (type === 8) {
@@ -878,13 +878,13 @@ onUnmounted(() => {
             <!-- 题型标识 -->
             <div class="bg-blue-50 border-b border-gray-200 px-6 py-3 relative overflow-hidden">
               <!-- 背景装饰元素 -->
-              <div class="absolute -left-8 -top-8 w-16 h-16 bg-blue/5 rounded-full"></div>
-              <div class="absolute right-20 bottom-0 w-10 h-10 bg-blue/5 rounded-full"></div>
+              <div class="absolute -left-8 -top-8 w-16 h-16 bg-blue/5 rounded-full"/>
+              <div class="absolute right-20 bottom-0 w-10 h-10 bg-blue/5 rounded-full"/>
               <span
                   class="inline-flex items-center px-4 py-2 rounded-full text-xs font-medium bg-white border border-gray-200 text-gray-700 shadow-sm transition-all duration-200 relative z-10"
               >
                 <!-- 前缀装饰 -->
-                <span class="w-2 h-2 rounded-full bg-primary mr-2"></span>
+                <span class="w-2 h-2 rounded-full bg-primary mr-2"/>
                 {{ typeName }}
               </span>
             </div>
@@ -912,13 +912,13 @@ onUnmounted(() => {
               <!-- 不同题型的答题区域 -->
               <div class="space-y-4 mb-6 mt-2">
                 <!-- 单选/多选题选项 -->
-                <div class="flex flex-col gap-2" v-if="[0, 1, 2].includes(currentQuestion.type)">
+                <div v-if="[0, 1, 2].includes(currentQuestion.type)" class="flex flex-col gap-2">
                   <div
                       v-for="(value, key) in currentQuestion.options"
                       :key="key"
-                      @click="handleOptionSelect(key)"
                       class="px-6 py-4 border transition-all duration-300 cursor-pointer rounded-xl"
                       :class="getOptionStyles(key).containerClass"
+                      @click="handleOptionSelect(key)"
                   >
                     <div class="flex items-center">
                       <!-- 选项标识 -->
@@ -930,13 +930,14 @@ onUnmounted(() => {
                       </div>
 
                       <!-- 选项内容 -->
-                      <div class="text-gray-800 leading-relaxed flex-1 pt-0.5" v-html="value"
-                           @click="handleImageClick"/>
+                      <div
+class="text-gray-800 leading-relaxed flex-1 pt-0.5" @click="handleImageClick"
+                           v-html="value"/>
 
                       <!-- 正确/错误图标 -->
                       <div
-                          class="ml-auto flex-shrink-0 flex items-center justify-center w-8 h-8"
                           v-if="isSubmitted"
+                          class="ml-auto flex-shrink-0 flex items-center justify-center w-8 h-8"
                       >
                         <Icon
                             v-if="isOptionCorrect(key)"
@@ -953,13 +954,13 @@ onUnmounted(() => {
                   </div>
                 </div>
                 <!-- 判断题选项 -->
-                <div class="grid grid-cols-2 gap-4" v-if="currentQuestion.type === 3">
+                <div v-if="currentQuestion.type === 3" class="grid grid-cols-2 gap-4">
                   <div
                       v-for="(item, index) in judgeOptions"
                       :key="index"
-                      @click="handleOptionSelect(item.value)"
                       class="p-6 rounded-xl border transition-all duration-300 cursor-pointer text-center shadow-md"
                       :class="getOptionStyles(item.value).containerClass"
+                      @click="handleOptionSelect(item.value)"
                   >
                     <div class="flex items-center justify-center">
                       <span class="text-base font-medium text-gray-800">{{ item.label }}</span>
@@ -992,9 +993,9 @@ onUnmounted(() => {
                                 v-model="fillAnswers[index]"
                                 placeholder="请输入"
                                 class="border border-slate-300 rounded-md px-3 py-1.5 text-slate-700 text-center transition-all duration-200 focus:outline-none focus:ring-2 focus:ring-blue-500/30 focus:border-blue-500"
-                                @input="adjustInputWidth(index)"
                                 :style="{ width: fillInputWidths[index] }"
-                            />
+                                @input="adjustInputWidth(index)"
+                            >
                           </span>
                         </template>
                         <template v-else>{{ part }}</template>
@@ -1009,7 +1010,7 @@ onUnmounted(() => {
                       class="bg-red-50 p-5 rounded-lg border border-red-100 mb-6 relative overflow-hidden"
                   >
                     <!-- 红色装饰元素 -->
-                    <div class="absolute top-0 left-0 w-1 h-full bg-red-600"></div>
+                    <div class="absolute top-0 left-0 w-1 h-full bg-red-600"/>
                     <div class="ml-4">
                       <h3 class="font-medium text-red-800 mb-3 flex items-center">问题</h3>
                       <div
@@ -1029,9 +1030,9 @@ onUnmounted(() => {
                         v-model="fillAnswers[0]"
                         :rows="8"
                         placeholder="请在此输入您的答案..."
-                        @input="handleCaseInput"
                         class="w-full border border-slate-300 rounded-lg px-4 py-3 text-slate-700 focus:outline-none focus:ring-2 focus:ring-blue-500/30 focus:border-blue-500 transition-all duration-200 resize-y"
-                    ></textarea>
+                        @input="handleCaseInput"
+                    />
                   </div>
                 </div>
                 <!-- 复合题（一题多问，使用数字序号） -->
@@ -1047,8 +1048,9 @@ onUnmounted(() => {
                       >
                         <div class="flex items-start justify-between mb-3">
                           <div class="flex items-start">
-                            <span class="font-bold text-slate-800" v-html="subQuestion.content"
-                                  @click="handleImageClick"/>
+                            <span
+class="font-bold text-slate-800" @click="handleImageClick"
+                                  v-html="subQuestion.content"/>
                           </div>
                           <div
                               :class="getSubQuestionTypeClass(subQuestion.parentSonType)"
@@ -1064,7 +1066,6 @@ onUnmounted(() => {
                             <div
                                 v-for="(value, key) in subQuestion.options"
                                 :key="key"
-                                @click="handleOptionSelect(key, subQuestion.id)"
                                 class="px-6 py-4 border transition-all duration-300 cursor-pointer rounded-xl"
                                 :class="{
                                 // 选中状态 - 未提交
@@ -1080,6 +1081,7 @@ onUnmounted(() => {
                                 'border-gray-200 hover:border-blue-300 hover:bg-blue-200':
                                   !isOptionSelected(key, subQuestion.id) && !isSubmitted,
                               }"
+                                @click="handleOptionSelect(key, subQuestion.id)"
                             >
                               <div class="flex items-center">
                                 <!-- 选项标识 -->
@@ -1105,13 +1107,14 @@ onUnmounted(() => {
                                 </div>
 
                                 <!-- 选项内容 -->
-                                <div class="text-gray-800 leading-relaxed flex-1 pt-0.5" v-html="value"
-                                     @click="handleImageClick"/>
+                                <div
+class="text-gray-800 leading-relaxed flex-1 pt-0.5" @click="handleImageClick"
+                                     v-html="value"/>
 
                                 <!-- 正确/错误图标 -->
                                 <div
-                                    class="ml-auto flex-shrink-0 flex items-center justify-center w-8 h-8"
                                     v-if="isSubmitted"
+                                    class="ml-auto flex-shrink-0 flex items-center justify-center w-8 h-8"
                                 >
                                   <Icon
                                       v-if="isOptionCorrect(key, subQuestion.id)"
@@ -1128,11 +1131,10 @@ onUnmounted(() => {
                             </div>
                           </div>
                         </div>
-                        <div class="grid grid-cols-2 gap-4" v-if="subQuestion.parentSonType === 3">
+                        <div v-if="subQuestion.parentSonType === 3" class="grid grid-cols-2 gap-4">
                           <div
                               v-for="(item, index) in judgeOptions"
                               :key="index"
-                              @click="handleOptionSelect(item.value, subQuestion.id)"
                               class="p-6 rounded-xl border transition-all duration-300 cursor-pointer text-center shadow-md"
                               :class="{
                               // 选中状态 - 未提交
@@ -1149,6 +1151,7 @@ onUnmounted(() => {
                               'border-gray-200 hover:border-blue-300 hover:bg-blue-200':
                                 !isOptionSelected(item.value, subQuestion.id) && !isSubmitted,
                             }"
+                              @click="handleOptionSelect(item.value, subQuestion.id)"
                           >
                             <div class="flex items-center justify-center">
                               <span class="text-base font-medium text-gray-800">{{
@@ -1170,7 +1173,7 @@ onUnmounted(() => {
                         <div v-if="[5, 7].includes(subQuestion.parentSonType)">
                           <div>
                             <div class="flex justify-between items-center mb-2">
-                              <label class="block text-sm font-medium text-slate-700"> </label>
+                              <label class="block text-sm font-medium text-slate-700"/>
                               <span class="text-xs text-slate-500 italic">
                                 案例题由AI进行解析和判分
                               </span>
@@ -1179,9 +1182,9 @@ onUnmounted(() => {
                                 v-model="fillAnswers[subQuestion.id]"
                                 :rows="8"
                                 placeholder="请在此输入您的答案..."
-                                @input="() => handleSubCaseInput(subQuestion.id)"
                                 class="w-full border border-slate-300 rounded-lg px-4 py-3 text-slate-700 focus:outline-none focus:ring-2 focus:ring-blue-500/30 focus:border-blue-500 transition-all duration-200 resize-y"
-                            ></textarea>
+                                @input="() => handleSubCaseInput(subQuestion.id)"
+                            />
                           </div>
                         </div>
                       </div>
@@ -1197,8 +1200,8 @@ onUnmounted(() => {
                 <el-button
                     type="info"
                     plain
-                    @click="prevQuestion"
                     :disabled="currentQuestionIndex === 0"
+                    @click="prevQuestion"
                 >
                   <Icon name="ep:back" class="mr-2"/>
                   上一题
@@ -1211,32 +1214,32 @@ onUnmounted(() => {
 
                 <div class="flex gap-3">
                   <el-button
+                      v-if="!isSubmitted"
                       type="primary"
                       plain
-                      v-if="!isSubmitted"
-                      @click="submitAnswer"
                       :disabled="currentAnswer === null"
+                      @click="submitAnswer"
                   >
                     <Icon name="ep:finished" class="mr-2"/>
                     提交答案
                   </el-button>
 
                   <el-button
+                      v-if="isSubmitted && currentQuestionIndex + 1 < total"
                       type="success"
                       plain
-                      v-if="isSubmitted && currentQuestionIndex + 1 < total"
-                      @click="nextQuestion"
                       class="px-4 py-2 rounded-md text-sm font-medium transition-colors flex items-center bg-green-600 hover:bg-green-700 text-white"
+                      @click="nextQuestion"
                   >
                     下一题
                     <Icon name="ep:right" class="ml-2"/>
                   </el-button>
                   <el-button
+                      v-if="isSubmitted && (answeredQuestions.value.length === total || currentQuestionIndex + 1 === total)"
                       type="success"
                       plain
-                      v-if="isSubmitted && (answeredQuestions.value.length === total || currentQuestionIndex + 1 === total)"
-                      @click="handleFinish"
                       class="px-4 py-2 rounded-md text-sm font-medium transition-colors flex items-center bg-green-600 hover:bg-green-700 text-white"
+                      @click="handleFinish"
                   >
                     完成练习
                     <Icon name="ep:right" class="ml-2"/>
@@ -1251,8 +1254,8 @@ onUnmounted(() => {
             <!-- 题型标识 - UnoCSS样式 + 装饰元素 -->
             <div class="bg-blue-50 border-b border-gray-200 px-6 py-3 relative overflow-hidden">
               <!-- 背景装饰元素 -->
-              <div class="absolute -left-8 -top-8 w-16 h-16 bg-blue/5 rounded-full"></div>
-              <div class="absolute right-20 bottom-0 w-10 h-10 bg-blue/5 rounded-full"></div>
+              <div class="absolute -left-8 -top-8 w-16 h-16 bg-blue/5 rounded-full"/>
+              <div class="absolute right-20 bottom-0 w-10 h-10 bg-blue/5 rounded-full"/>
 
               <div class="flex items-center">
                 <div
@@ -1265,8 +1268,8 @@ onUnmounted(() => {
             </div>
 
             <template v-if="currentQuestion.type === 8">
-              <div class="p-5 bg-gray-50 space-y-4" v-for="sub in currentQuestion.questionList" :key="sub.id">
-                <div v-html="sub.content" @click="handleImageClick"/>
+              <div v-for="sub in currentQuestion.questionList" :key="sub.id" class="p-5 bg-gray-50 space-y-4">
+                <div @click="handleImageClick" v-html="sub.content"/>
                 <!-- 正确答案 -->
                 <div class="bg-green-100 rounded-lg px-5 py-3 border border-green-100">
                   <div class="flex items-center">
@@ -1407,7 +1410,7 @@ onUnmounted(() => {
             :current-index="currentQuestionIndex"
             :total-count="total"
             :answered="answeredQuestions"
-            :answerCache="answerCache"
+            :answer-cache="answerCache"
             mode="practice"
             @redirect="handleToQuestion"
         />

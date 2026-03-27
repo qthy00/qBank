@@ -15,8 +15,8 @@
         <!-- 新增右上角关闭按钮 -->
         <div class="absolute top-4 right-4 z-12">
           <button
-              @click="closeModal('login')"
               class="w-8 h-8 rounded-full bg-white/80 flex items-center justify-center text-gray-600 hover:bg-white hover:text-gray-900 transition-colors"
+              @click="closeModal('login')"
           >
             <Icon name="fa-times"/>
           </button>
@@ -31,10 +31,10 @@
           <!-- 装饰元素 -->
           <div
               class="absolute top-0 right-0 w-64 h-64 bg-white/10 rounded-full -translate-x-1/4 -translate-y-1/4"
-          ></div>
+          />
           <div
               class="absolute bottom-0 left-0 w-80 h-80 bg-white/5 rounded-full translate-x-1/4 translate-y-1/4"
-          ></div>
+          />
 
           <!-- 品牌标志 -->
           <div class="relative z-10">

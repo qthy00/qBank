@@ -29,9 +29,9 @@ const confirm = () => {
 
     <el-button
       type="primary"
-      @click="confirm()"
       class="float-end m-4 bg-gradient-to-r from-blue-600 to-blue-400 border-none text-white rounded-full shadow-md hover:opacity-90"
       size="large"
+      @click="confirm()"
     >
       确 定
     </el-button>

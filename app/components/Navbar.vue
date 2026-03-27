@@ -144,10 +144,10 @@
     </div>
   </nav>
   <!-- 透明遮罩层（覆盖整个页面） -->
-  <div v-if="showMenu" class="fixed inset-0 z-30 bg-transparent" @click="showMenu = false"></div>
+  <div v-if="showMenu" class="fixed inset-0 z-30 bg-transparent" @click="showMenu = false"/>
 
   <!-- 产品菜单组件，临时使用返回首页的组件 -->
-  <ProductMenu2 :showMenu="showMenu"/>
+  <ProductMenu2 :show-menu="showMenu"/>
   <!-- 登录模态框 -->
   <LoginModal/>
   <!-- 注册模态框 -->

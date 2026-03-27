@@ -10,9 +10,9 @@
           :src="'data:image/png;base64,' + backImgBase"
           alt=""
           style="display: block; width: 100%; height: 100%"
-        />
+        >
         <div v-show="showRefresh" class="verify-refresh" @click="refresh">
-          <i class="iconfont icon-refresh"></i>
+          <i class="iconfont icon-refresh"/>
         </div>
         <transition name="tips">
           <span v-if="tipWords" :class="passFlag ? 'suc-bg' : 'err-bg'" class="verify-tips">
@@ -26,7 +26,7 @@
       :style="{ width: setSize.imgWidth, height: barSize.height, 'line-height': barSize.height }"
       class="verify-bar-area"
     >
-      <span class="verify-msg" v-text="text"></span>
+      <span class="verify-msg" v-text="text"/>
       <div
         :style="{
           width: leftBarWidth !== undefined ? leftBarWidth : barSize.height,
@@ -36,7 +36,7 @@
         }"
         class="verify-left-bar"
       >
-        <span class="verify-msg" v-text="finishText"></span>
+        <span class="verify-msg" v-text="finishText"/>
         <div
           :style="{
             width: barSize.height,
@@ -49,7 +49,7 @@
           @mousedown="start"
           @touchstart="start"
         >
-          <i :class="['verify-icon iconfont', iconClass]" :style="{ color: iconColor }"></i>
+          <i :class="['verify-icon iconfont', iconClass]" :style="{ color: iconColor }"/>
           <div
             v-if="type === '2'"
             :style="{
@@ -64,7 +64,7 @@
               :src="'data:image/png;base64,' + blockBackImgBase"
               alt=""
               style="display: block; width: 100%; height: 100%; -webkit-user-drag: none"
-            />
+            >
           </div>
         </div>
       </div>
@@ -133,7 +133,7 @@ const props = defineProps({
 const { t } = useI18n()
 const { mode, captchaType, type, blockSize, explain } = toRefs(props)
 const { proxy } = getCurrentInstance()
-let secretKey = ref(''), //后端返回的ase加密秘钥
+const secretKey = ref(''), //后端返回的ase加密秘钥
   passFlag = ref(''), //是否通过的标识
   backImgBase = ref(''), //验证码背景图片
   blockBackImgBase = ref(''), //验证滑块的背景图片
@@ -174,7 +174,7 @@ const init = () => {
   }
   getPictrue()
   nextTick(() => {
-    let { imgHeight, imgWidth, barHeight, barWidth } = resetSize(proxy)
+    const { imgHeight, imgWidth, barHeight, barWidth } = resetSize(proxy)
     setSize.imgHeight = imgHeight
     setSize.imgWidth = imgWidth
     setSize.barHeight = barHeight
@@ -254,8 +254,8 @@ const move = (e) => {
       //兼容移动端
       var x = e.touches[0].pageX
     }
-    var bar_area_left = barArea.value.getBoundingClientRect().left
-    var move_block_left = x - bar_area_left //小方块相对于父元素的left值
+    const bar_area_left = barArea.value.getBoundingClientRect().left
+    let move_block_left = x - bar_area_left //小方块相对于父元素的left值
     if (
       move_block_left >=
       barArea.value.offsetWidth - parseInt(parseInt(blockSize.value.width) / 2) - 2
@@ -279,7 +279,7 @@ const end = () => {
   if (status.value && isEnd.value === false) {
     let moveLeftDistance = parseInt((moveBlockLeft.value || '0').replace('px', ''));
     moveLeftDistance = (moveLeftDistance * 310) / parseInt(setSize.imgWidth)
-    let data = {
+    const data = {
       captchaType: captchaType.value,
       pointJson: secretKey.value
         ? aesEncrypt(JSON.stringify({ x: moveLeftDistance, y: 5.0 }), secretKey.value)
@@ -303,7 +303,7 @@ const end = () => {
         passFlag.value = true
         tipWords.value = `${((endMovetime.value - startMoveTime.value) / 1000).toFixed(2)}s
             ${t('captcha.success')}`
-        var captchaVerification = secretKey.value
+        const captchaVerification = secretKey.value
           ? aesEncrypt(
               backToken.value + '---' + JSON.stringify({ x: moveLeftDistance, y: 5.0 }),
               secretKey.value
@@ -360,7 +360,7 @@ const refresh = async () => {
 
 // 请求背景图片和验证图片
 const getPictrue = async () => {
-  let data = {
+  const data = {
     captchaType: captchaType.value
   }
   const res = await getCode(data)

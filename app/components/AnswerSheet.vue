@@ -156,7 +156,7 @@ const getQuestionStatusClass = (index: number, id: number) => {
               <div
                 :class="getQuestionTypeIndicatorClass(item.type)"
                 class="w-3 h-3 rounded-full mr-2"
-              ></div>
+              />
               <h4 class="text-sm font-medium text-slate-700">
                 {{ item.typeName || typeNames[item.type] }} （{{ item.list.length }}）
               </h4>
@@ -166,12 +166,12 @@ const getQuestionStatusClass = (index: number, id: number) => {
               <button
                 v-for="question in item.list"
                 :key="question.id"
-                @click="goToQuestion(question.index)"
                 class="w-8 h-8 rounded-md flex items-center justify-center text-xs transition-all duration-200 hover:scale-110 relative font-medium border border-solid"
                 :class="getQuestionStatusClass(question.index, question.id)"
                 :title="
                   `第${question.index + 1}题` + (marked.includes(question.index) ? ' (已标记)' : '')
                 "
+                @click="goToQuestion(question.index)"
               >
                 {{ question.index + 1 }}
                 <!-- 标记指示器 -->
@@ -189,18 +189,18 @@ const getQuestionStatusClass = (index: number, id: number) => {
           <div class="flex items-center">
             <div
               class="w-4 h-4 rounded-md bg-blue-200 border border-solid border-blue-400 mr-1.5"
-            ></div>
+            />
             <span class="text-xs text-slate-600">已答题</span>
           </div>
           <div class="flex items-center">
             <div
               class="w-4 h-4 rounded-md bg-slate-100 border border-solid border-slate-300 mr-1.5"
-            ></div>
+            />
             <span class="text-xs text-slate-600">未答题</span>
           </div>
           <template v-if="mode === 'mock'">
             <div class="flex items-center">
-              <div class="w-4 h-4 rounded-md bg-indigo-600 mr-1.5"></div>
+              <div class="w-4 h-4 rounded-md bg-indigo-600 mr-1.5"/>
               <span class="text-xs text-slate-600">当前题</span>
             </div>
             <div class="flex items-center">
@@ -214,11 +214,11 @@ const getQuestionStatusClass = (index: number, id: number) => {
           </template>
           <template v-if="mode === 'practice'">
             <div class="flex items-center">
-              <div class="w-4 h-4 rounded-md bg-green-500 mr-1.5"></div>
+              <div class="w-4 h-4 rounded-md bg-green-500 mr-1.5"/>
               <span class="text-xs text-slate-600">正确题</span>
             </div>
             <div class="flex items-center">
-              <div class="w-4 h-4 rounded-md bg-red-500 mr-1.5"></div>
+              <div class="w-4 h-4 rounded-md bg-red-500 mr-1.5"/>
               <span class="text-xs text-slate-600">错误题</span>
             </div>
           </template>
@@ -230,8 +230,8 @@ const getQuestionStatusClass = (index: number, id: number) => {
   <button
     v-if="isMobile"
     class="fixed bottom-6 right-6 w-14 h-14 bg-blue-600 text-white rounded-full shadow-lg flex items-center justify-center z-20 lg:hidden hover:bg-blue-700 transition-all duration-300 transform hover:scale-105"
-    @click="showMobileAnswerCard = true"
     aria-label="打开答题卡"
+    @click="showMobileAnswerCard = true"
   >
     <Icon name="mingcute:grid-2-line" :size="25" />
   </button>
@@ -249,16 +249,16 @@ const getQuestionStatusClass = (index: number, id: number) => {
         <!-- 移动端图例 -->
         <div class="flex flex-wrap gap-x-6 gap-y-3 text-sm text-gray-600">
           <div class="flex items-center">
-            <div class="w-4 h-4 rounded-md bg-blue-500 mr-1.5"></div>
+            <div class="w-4 h-4 rounded-md bg-blue-500 mr-1.5"/>
             <span class="text-xs text-slate-600">已答题</span>
           </div>
           <div class="flex items-center">
-            <div class="w-4 h-4 rounded-md bg-slate-200 mr-1.5"></div>
+            <div class="w-4 h-4 rounded-md bg-slate-200 mr-1.5"/>
             <span class="text-xs text-slate-600">未答题</span>
           </div>
           <template v-if="mode === 'mock'">
             <div class="flex items-center">
-              <div class="w-4 h-4 rounded-md bg-indigo-600 mr-1.5"></div>
+              <div class="w-4 h-4 rounded-md bg-indigo-600 mr-1.5"/>
               <span class="text-xs text-slate-600">当前题</span>
             </div>
             <div class="flex items-center">
@@ -272,11 +272,11 @@ const getQuestionStatusClass = (index: number, id: number) => {
           </template>
           <template v-if="mode === 'practice'">
             <div class="flex items-center">
-              <div class="w-4 h-4 rounded-md bg-green-500 mr-1.5"></div>
+              <div class="w-4 h-4 rounded-md bg-green-500 mr-1.5"/>
               <span class="text-xs text-slate-600">正确题</span>
             </div>
             <div class="flex items-center">
-              <div class="w-4 h-4 rounded-md bg-red-500 mr-1.5"></div>
+              <div class="w-4 h-4 rounded-md bg-red-500 mr-1.5"/>
               <span class="text-xs text-slate-600">错误题</span>
             </div>
           </template>
@@ -298,9 +298,9 @@ const getQuestionStatusClass = (index: number, id: number) => {
           <button
             v-for="question in item.list"
             :key="question.id"
-            @click="goToQuestion(question.index)"
             class="w-10 h-10 rounded-md text-sm font-medium transition-all hover:shadow-md flex items-center justify-center border border-solid relative"
             :class="getQuestionStatusClass(question.index, question.id)"
+            @click="goToQuestion(question.index)"
           >
             {{ question.index + 1 }}
             <!-- 标记指示器 -->
@@ -322,8 +322,8 @@ const getQuestionStatusClass = (index: number, id: number) => {
           <span>已完成: {{ answered.length }}</span>
         </div>
         <button
-          @click="showMobileAnswerCard = false"
           class="px-4 py-2 bg-blue-600 text-white rounded-lg text-sm font-medium transition-colors"
+          @click="showMobileAnswerCard = false"
         >
           继续答题
         </button>

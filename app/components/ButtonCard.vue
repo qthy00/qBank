@@ -1,10 +1,10 @@
 <template>
   <button
-    @click="handleClick"
     class="group relative block bg-white rounded-lg overflow-hidden transition-all duration-300 hover:shadow-xl hover:-translate-y-1"
+    @click="handleClick"
   >
     <!-- 顶部装饰条 -->
-    <div class="absolute h-1.5 w-full rounded-t-lg top-0" :class="`bg-${color}-500`"></div>
+    <div class="absolute h-1.5 w-full rounded-t-lg top-0" :class="`bg-${color}-500`"/>
 
     <!-- 自定义标签（按需显示） -->
     <div v-if="badgeText" class="absolute top-3 right-3 z-10">
@@ -58,7 +58,7 @@
     </div>
 
     <!-- 底部装饰条 -->
-    <div class="absolute h-1.5 w-full bottom-0" :class="`bg-${color}-100`"></div>
+    <div class="absolute h-1.5 w-full bottom-0" :class="`bg-${color}-100`"/>
   </button>
 </template>
 

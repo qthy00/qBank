@@ -21,7 +21,7 @@
               :src="reply.avatar || '/images/default-avatar.png'"
               class="w-8 h-8 rounded-full object-cover"
               alt="avatar"
-            />
+            >
           </div>
 
           <!-- 内容 -->

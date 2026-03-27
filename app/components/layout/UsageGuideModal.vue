@@ -1,7 +1,7 @@
 <!-- 使用说明弹窗 -->
   <template>
     <Dialog v-model="dialogVisible" title="使用说明" >
-      <div v-html="content" class="mt-3 mb-10"/>
+      <div class="mt-3 mb-10" v-html="content"/>
     </Dialog>
   </template>
 

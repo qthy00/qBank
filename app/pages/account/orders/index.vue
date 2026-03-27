@@ -133,8 +133,7 @@ onMounted(() => {
             start-placeholder="开始日期"
             type="daterange"
             value-format="YYYY-MM-DD HH:mm:ss"
-          >
-          </el-date-picker>
+          />
         </el-form-item>
       </el-form>
       <div class="ml-20px">
@@ -159,9 +158,9 @@ onMounted(() => {
       <div class="bg-white rounded-xl shadow-sm overflow-hidden p-4">
         <div v-loading="loading" class="space-y-4">
           <el-card
-            shadow="hover"
             v-for="(order, index) in orderList"
             :key="index"
+            shadow="hover"
             @click="handleViewDetail(order)"
           >
 
@@ -172,14 +171,14 @@ onMounted(() => {
                   :src="order.itemLogo"
                   alt="商品图片"
                   class="w-20 h-20 rounded-md object-cover"
-                />
+                >
                 <div class="flex-1">
                   <div class="flex justify-between items-center">
                     <div class="font-bold text-gray-800 line-clamp-2">{{ order.itemName }}</div>
-                    <el-tag type="danger" v-if="order.status === 0">待支付</el-tag>
-                    <el-tag type="warning" v-else-if="order.status === 10">已支付</el-tag>
-                    <el-tag type="success" v-else-if="order.status === 30">已完成</el-tag>
-                    <el-tag type="info" v-else-if="order.status === 40">已取消</el-tag>
+                    <el-tag v-if="order.status === 0" type="danger">待支付</el-tag>
+                    <el-tag v-else-if="order.status === 10" type="warning">已支付</el-tag>
+                    <el-tag v-else-if="order.status === 30" type="success">已完成</el-tag>
+                    <el-tag v-else-if="order.status === 40" type="info">已取消</el-tag>
                     <el-tag v-else>未知状态</el-tag>
                   </div>
 

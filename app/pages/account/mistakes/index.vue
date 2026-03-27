@@ -140,12 +140,12 @@ const handleExportSuccess = () => {
       :list="mistakeList"
       :loading="loading"
       :selected-ids="selectedIds"
+      class="list-section"
       @update:selected-ids="selectedIds = $event"
       @retry="handleRetry"
       @master="markMastered"
       @unmaster="markUnMastered"
       @remove="removeMistakeItem"
-      class="list-section"
     />
 
     <!-- 分页 -->

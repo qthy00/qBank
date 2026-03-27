@@ -5,10 +5,10 @@
       <div
         class="relative overflow-hidden rounded-2xl bg-gradient-to-r from-indigo-600 to-blue-500 p-4 sm:p-6 shadow-md"
       >
-        <div class="absolute top-0 right-0 w-40 h-40 bg-white/10 rounded-full -mr-20 -mt-20"></div>
+        <div class="absolute top-0 right-0 w-40 h-40 bg-white/10 rounded-full -mr-20 -mt-20"/>
         <div
           class="absolute bottom-0 left-0 w-24 h-24 bg-white/10 rounded-full -ml-12 -mb-12"
-        ></div>
+        />
         <div class="relative z-10">
           <h1 class="text-2xl sm:text-3xl font-bold text-white mb-2">针对性错题训练</h1>
           <p class="text-indigo-50 max-w-2xl text-center">
@@ -94,8 +94,8 @@
           size="large"
           type="primary"
           :disabled="!wrongQuestions || wrongQuestions.length === 0"
-          @click="handlePractice()"
           class="gap-3 bg-gradient-to-r from-indigo-600 to-blue-500 hover:from-indigo-700 hover:to-blue-600 transition-all duration-300 shadow-lg hover:shadow-xl text-white px-12 py-6 rounded-full text-lg font-medium transform hover:scale-105 active:scale-98"
+          @click="handlePractice()"
         >
           <Icon name="mage:play-circle-fill" :size="24" class="mr-1" />
           <span class="">开始智能错题训练</span>
@@ -103,7 +103,7 @@
       </div>
 
       <!-- 错题列表区域 -->
-      <div class="bg-blue-50 shadow-sm overflow-hidden mb-8" v-loading="loading">
+      <div v-loading="loading" class="bg-blue-50 shadow-sm overflow-hidden mb-8">
         <!-- 优化的筛选区域 -->
         <div class="p-5">
           <!-- 优化后的列表标题栏 -->
@@ -113,7 +113,7 @@
               <span
                 class="px-2.5 py-0.5 bg-slate-100 text-slate-600 text-xs rounded-full flex items-center"
               >
-                <span class="w-1.5 h-1.5 bg-indigo-500 rounded-full mr-1.5"></span>
+                <span class="w-1.5 h-1.5 bg-indigo-500 rounded-full mr-1.5"/>
                 共 {{ total }} 题
               </span>
             </div>
@@ -123,8 +123,8 @@
               v-model="queryParams.subjectId"
               placeholder="选择科目"
               size="small"
-              @change="loadWrongQuestion"
               class="w-full border-slate-200 focus:border-indigo-500 focus:ring-1 focus:ring-indigo-500"
+              @change="loadWrongQuestion"
             >
               <el-option label="全部科目" value="" />
               <el-option
@@ -138,8 +138,8 @@
               v-model="queryParams.type"
               placeholder="题目类型"
               size="small"
-              @change="loadWrongQuestion"
               class="w-full border-slate-200 focus:border-indigo-500 focus:ring-1 focus:ring-indigo-500"
+              @change="loadWrongQuestion"
             >
               <el-option label="全部类型" :value="-1"/>
               <el-option

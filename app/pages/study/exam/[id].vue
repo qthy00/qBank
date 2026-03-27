@@ -81,7 +81,7 @@
               <div class="border-b border-gray-100 px-6 py-4 flex items-center justify-between bg-gradient-to-r from-blue-50 to-blue-100">
                 <!-- 题型标签 -->
                 <div class="flex items-center gap-2 px-4 py-1.5 bg-white rounded-full border border-blue-100">
-                  <span class="w-2 h-2 rounded-full bg-blue-600"></span>
+                  <span class="w-2 h-2 rounded-full bg-blue-600"/>
                   <span class="text-sm font-medium">{{ currentQuestion.typeName || '单选题' }}</span>
                 </div>
                 <!-- 分值 -->
@@ -100,7 +100,7 @@
                 <!-- 案例/材料题 -->
                 <template v-if="[6, 8].includes(currentQuestion.type)">
                   <div class="bg-blue-50 p-5 rounded-lg border border-blue-100 mb-6 relative overflow-hidden">
-                    <div class="absolute top-0 left-0 w-1 h-full bg-blue-600"></div>
+                    <div class="absolute top-0 left-0 w-1 h-full bg-blue-600"/>
                     <div class="ml-4">
                       <h3 class="font-medium text-blue-800 mb-3">
                         {{ currentQuestion.type === 6 ? '案例描述' : '通用题干/选项' }}
@@ -201,7 +201,7 @@
                               class="mx-1 border border-gray-300 rounded px-3 py-1 text-center focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
                               style="width: 120px"
                               @input="handleFillInput"
-                            />
+                            >
                           </template>
                           <template v-else>{{ part }}</template>
                         </template>
@@ -365,19 +365,19 @@
               <!-- 图例 -->
               <div class="mt-4 pt-4 border-t border-gray-100 space-y-2 text-xs">
                 <div class="flex items-center gap-2">
-                  <span class="w-4 h-4 rounded bg-green-100 border border-green-300"></span>
+                  <span class="w-4 h-4 rounded bg-green-100 border border-green-300"/>
                   <span class="text-gray-600">已答题</span>
                 </div>
                 <div class="flex items-center gap-2">
-                  <span class="w-4 h-4 rounded bg-amber-100 border border-amber-300"></span>
+                  <span class="w-4 h-4 rounded bg-amber-100 border border-amber-300"/>
                   <span class="text-gray-600">已标记</span>
                 </div>
                 <div class="flex items-center gap-2">
-                  <span class="w-4 h-4 rounded bg-blue-500"></span>
+                  <span class="w-4 h-4 rounded bg-blue-500"/>
                   <span class="text-gray-600">当前题</span>
                 </div>
                 <div class="flex items-center gap-2">
-                  <span class="w-4 h-4 rounded bg-gray-100 border border-gray-200"></span>
+                  <span class="w-4 h-4 rounded bg-gray-100 border border-gray-200"/>
                   <span class="text-gray-600">未答题</span>
                 </div>
               </div>

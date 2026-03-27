@@ -725,7 +725,8 @@ onUnmounted(() => {
                 @click="handleSelectAnswer(currentQuestion.id, key)"
               >
                 <div class="flex items-start gap-3">
-                  <span class="flex-shrink-0 w-8 h-8 flex items-center justify-center rounded-full border font-medium text-sm"
+                  <span
+class="flex-shrink-0 w-8 h-8 flex items-center justify-center rounded-full border font-medium text-sm"
                     :class="userAnswers[currentQuestion.id]?.includes(key) ? 'border-blue-500 bg-blue-500 text-white' : 'border-gray-300 text-gray-600'"
                   >
                     {{ key }}
@@ -764,10 +765,12 @@ onUnmounted(() => {
         <div class="bg-white rounded-xl shadow-sm p-8 border border-blue-100">
           <!-- 结果概览 -->
           <div class="text-center mb-8">
-            <div class="inline-flex items-center justify-center w-24 h-24 rounded-full mb-4"
+            <div
+class="inline-flex items-center justify-center w-24 h-24 rounded-full mb-4"
               :class="resultStats.accuracy >= 80 ? 'bg-green-100' : resultStats.accuracy >= 60 ? 'bg-yellow-100' : 'bg-red-100'"
             >
-              <span class="text-3xl font-bold"
+              <span
+class="text-3xl font-bold"
                 :class="resultStats.accuracy >= 80 ? 'text-green-600' : resultStats.accuracy >= 60 ? 'text-yellow-600' : 'text-red-600'"
               >
                 {{ resultStats.accuracy }}%
@@ -820,7 +823,8 @@ onUnmounted(() => {
             class="bg-white rounded-xl shadow-sm p-6 border border-blue-100"
           >
             <div class="flex items-start gap-3 mb-4">
-              <span class="flex-shrink-0 w-8 h-8 flex items-center justify-center rounded-full text-sm font-medium"
+              <span
+class="flex-shrink-0 w-8 h-8 flex items-center justify-center rounded-full text-sm font-medium"
                 :class="userAnswers[q.id] === q.answer ? 'bg-green-100 text-green-600' : 'bg-red-100 text-red-600'"
               >
                 {{ index + 1 }}
@@ -839,7 +843,8 @@ onUnmounted(() => {
                 :class="getOptionClass(q, key, true)"
               >
                 <div class="flex items-center gap-2">
-                  <Icon v-if="getOptionIcon(q, key)" :name="getOptionIcon(q, key)" class="text-lg"
+                  <Icon
+v-if="getOptionIcon(q, key)" :name="getOptionIcon(q, key)" class="text-lg"
                     :class="key === q.answer ? 'text-green-500' : 'text-red-500'"
                   />
                   <span class="font-medium" :class="key === q.answer ? 'text-green-700' : ''">{{ key }}.</span>

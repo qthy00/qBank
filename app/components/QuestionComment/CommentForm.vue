@@ -21,7 +21,7 @@
         :key="index"
         class="relative w-20 h-20 rounded-lg overflow-hidden group"
       >
-        <img :src="url" class="w-full h-full object-cover" />
+        <img :src="url" class="w-full h-full object-cover" >
         <button
           class="absolute top-1 right-1 w-5 h-5 bg-black/50 rounded-full flex items-center justify-center text-white opacity-0 group-hover:opacity-100 transition-opacity"
           @click="removeImage(index)"

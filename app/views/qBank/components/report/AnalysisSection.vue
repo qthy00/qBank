@@ -5,7 +5,7 @@
         <Icon name="solar:document-add-broken" class="mr-1 text-slate-700" :size="14" />
         解析：
       </p>
-      <div class="answers-container flex flex-wrap items-center gap-x-4 gap-y-1" v-if="show">
+      <div v-if="show" class="answers-container flex flex-wrap items-center gap-x-4 gap-y-1">
         <span class="user-answer text-primary flex items-center">
           你的答案：<span class="font-medium ml-1">{{ userAnswer || '未作答' }}</span>
         </span>

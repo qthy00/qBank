@@ -252,7 +252,8 @@ onMounted(async () => {
             <div class="bg-(--color-shadow) rounded-lg p-4 space-y-4 ">
               <ul class="flex flex-wrap gap-3 mx-3">
                 <li v-for="item in currentSubmenu.items" :key="item.id">
-                  <a :href="item.url"
+                  <a
+:href="item.url"
                      class="cursor-pointer block px-3 py-1 border border-solid border-(--color-border) rounded hover:text-(--color-nav-text-hover) hover:border-(--color-nav-text-hover) text-sm">
                     {{ item.name }}
                   </a>

@@ -14,7 +14,7 @@ const ignoreMsgs = [
     '刷新令牌已过期', // 使用刷新令牌，刷新获取新的访问令牌时，结果因为过期失败，此时需要忽略。否则，会导致继续 401，无法跳转到登出界面
 ]
 // 是否显示重新登录
-export let reLogin = {show: false}
+export const reLogin = {show: false}
 // 请求队列
 let requestList: any[] = []
 // 是否正在刷新中

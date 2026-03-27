@@ -94,5 +94,5 @@ onActivated(() => {
 </script>
 
 <template>
-  <div ref="elRef" :class="[$attrs.class, prefixCls]" :style="styles"></div>
+  <div ref="elRef" :class="[$attrs.class, prefixCls]" :style="styles"/>
 </template>

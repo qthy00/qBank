@@ -33,10 +33,10 @@ defineExpose({open}) // 提供 open 方法，用于打开弹窗
 </script>
 
 <template>
-  <Dialog title="订单详情" v-model="dialogVisible">
+  <Dialog v-model="dialogVisible" title="订单详情">
     <h3 class="text-lg font-semibold text-gray-800 my-2 border-t border-gray-100">工具信息</h3>
     <div class="flex space-x-3">
-      <img :src="order?.itemLogo" alt="商品图片" class="w-16 h-16 rounded-md object-cover"/>
+      <img :src="order?.itemLogo" alt="商品图片" class="w-16 h-16 rounded-md object-cover">
       <div class="flex flex-col justify-evenly">
         <div class="font-bold text-gray-800 line-clamp-2">{{ order?.itemName }}</div>
         <span class="text-xs text-gray-600 line-clamp-2">{{ order?.itemDescription }}</span>
@@ -49,8 +49,8 @@ defineExpose({open}) // 提供 open 方法，用于打开弹窗
           <span class="ml-4">¥{{ fen2yuan(order?.totalPrice) }}</span>
         </div>
         <div
-            class="flex justify-between text-gray-500"
             v-if="order?.discountPrice && order.discountPrice > 0"
+            class="flex justify-between text-gray-500"
         >
           <span>优惠金额：</span>
           <span class="ml-4 text-red-500">- ¥{{ fen2yuan(order?.discountPrice) }}</span>
@@ -72,7 +72,7 @@ defineExpose({open}) // 提供 open 方法，用于打开弹窗
           <span class="w-24 text-gray-800">下单时间：</span>
           <span class="text-sm text-gray-500">{{ formatDate(order?.createTime) }}</span>
         </div>
-        <div class="flex justify-between" v-if="order?.payTime">
+        <div v-if="order?.payTime" class="flex justify-between">
           <span class="w-24 text-gray-800">支付时间：</span>
           <span class="text-sm text-gray-500">{{ formatDate(order?.payTime) }}</span>
         </div>
@@ -82,9 +82,9 @@ defineExpose({open}) // 提供 open 方法，用于打开弹窗
         </div>
         <div class="flex justify-between">
           <span class="w-24 text-gray-800">订单状态：</span>
-          <el-tag type="primary" v-if="order?.status === 0">待支付</el-tag>
-          <el-tag type="success" v-if="order?.status === 30">已完成</el-tag>
-          <el-tag type="warning" v-if="order?.status === 40">已取消</el-tag>
+          <el-tag v-if="order?.status === 0" type="primary">待支付</el-tag>
+          <el-tag v-if="order?.status === 30" type="success">已完成</el-tag>
+          <el-tag v-if="order?.status === 40" type="warning">已取消</el-tag>
         </div>
       </div>
     </div>

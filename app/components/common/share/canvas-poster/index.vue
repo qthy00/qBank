@@ -34,7 +34,7 @@ const onSavePoster = () => {
 </script>
 
 <template>
-  <Dialog title="分享海报" v-model="dialogVisible" width="400px" :scroll="false">
+  <Dialog v-model="dialogVisible" title="分享海报" width="400px" :scroll="false">
     <template #default>
       <div ref="dialogRef" class="flex flex-col items-center justify-center">
         <div
@@ -60,15 +60,15 @@ const onSavePoster = () => {
         <ClientOnly>
         <canvas
             v-if="isClient"
-            class="hideCanvas"
             ref="posterCanvas"
+            class="hideCanvas"
             :style="{
           height: poster.height + 'px',
           width: poster.width + 'px',
         }"
         />
         </ClientOnly>
-        <div class="poster-btn-box mt-3 flex justify-between items-center" v-if="posterImage !== ''">
+        <div v-if="posterImage !== ''" class="poster-btn-box mt-3 flex justify-between items-center">
           <el-button type="info" plain class="cancel-btn" @click="dialogVisible = false"
           >取消
           </el-button

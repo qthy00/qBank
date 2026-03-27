@@ -7,7 +7,7 @@
       <div v-if="mode === 'pop'" class="verifybox-top">
         {{ t('captcha.verification') }}
         <span class="verifybox-close" @click="closeBox">
-          <i class="iconfont icon-close"></i>
+          <i class="iconfont icon-close"/>
         </span>
       </div>
       <div :style="{ padding: mode === 'pop' ? '10px' : '0' }" class="verifybox-bottom">
@@ -17,15 +17,15 @@
           v-if="componentType"
           ref="instance"
           :arith="arith"
-          :barSize="barSize"
-          :blockSize="blockSize"
-          :captchaType="captchaType"
+          :bar-size="barSize"
+          :block-size="blockSize"
+          :captcha-type="captchaType"
           :explain="explain"
           :figure="figure"
-          :imgSize="imgSize"
+          :img-size="imgSize"
           :mode="mode"
           :type="verifyType"
-          :vSpace="vSpace"
+          :v-space="vSpace"
         />
       </div>
     </div>

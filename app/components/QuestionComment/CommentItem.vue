@@ -8,7 +8,7 @@
           :src="comment.avatar || '/images/default-avatar.png'"
           class="w-10 h-10 rounded-full object-cover"
           alt="avatar"
-        />
+        >
       </div>
 
       <!-- 内容区域 -->
@@ -30,7 +30,7 @@
             :src="url"
             class="w-20 h-20 rounded-lg object-cover cursor-pointer hover:opacity-90 transition-opacity"
             @click="previewImage(url)"
-          />
+          >
         </div>
 
         <!-- 时间和操作栏 -->

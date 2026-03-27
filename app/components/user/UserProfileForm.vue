@@ -154,15 +154,15 @@ const resetForm = () => {
     <template #footer>
       <div class="flex justify-end gap-3 px-6 pb-5">
         <el-button
-          @click="dialogVisible = false"
           class="rounded-full px-5 border-gray-300 hover:bg-gray-100 text-gray-600"
+          @click="dialogVisible = false"
         >
           取消
         </el-button>
         <el-button
           type="primary"
-          @click="submitForm"
           class="rounded-full px-6 text-white bg-gradient-to-r from-sky-500 to-blue-600 hover:from-sky-600 hover:to-blue-700 shadow-md transition-all"
+          @click="submitForm"
         >
           <i class="i-mdi-check-bold mr-2" />
           保存修改

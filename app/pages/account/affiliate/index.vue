@@ -34,7 +34,8 @@
               <p class="text-2xl font-bold text-gray-800">
                 {{ showMoney ? `¥${fen2yuan(summary.totalBrokeragePrice)}` : '****' }}
               </p>
-              <p v-if="summary.monthIncrease"
+              <p
+v-if="summary.monthIncrease"
                 :class="`${summary.monthIncrease > 0 ? 'text-green-500' : 'text-red-500'} text-xs mt-2`"
               >
                 <!--              <el-icon size="14"><ArrowUp /></el-icon>-->
@@ -93,7 +94,7 @@
             class="flex flex-col items-center mx-2 mb-2 cursor-pointer p-2 hover:shadow-lg transition-colors duration-300"
             @click="navigateTo(item.path)"
           >
-            <img class="menu-icon mb-2" :src="item.img" :alt="item.title" />
+            <img class="menu-icon mb-2" :src="item.img" :alt="item.title" >
             <div class="text-center text-sm">{{ item.title }}</div>
           </div>
         </div>
@@ -222,7 +223,7 @@
           </div>
         </template>
 
-        <div class="flex flex-col" v-loading="logLoading">
+        <div v-loading="logLoading" class="flex flex-col">
           <el-empty v-if="logList.length <= 0" description="暂无动态" />
           <div
             v-for="log in logList"
@@ -232,7 +233,7 @@
             <div>
               <div class="flex line-clamp-1 items-center">
                 <div class="flex flex-col">
-                  <img class="w-4 h-4 mr-1" src="@/assets/images/notice.png" alt="" />
+                  <img class="w-4 h-4 mr-1" src="@/assets/images/notice.png" alt="" >
                 </div>
                 <div class="text-#333 line-clamp-1">
                   {{ log.title }} {{ fen2yuan(log.price) }} 元
@@ -523,7 +524,7 @@ const downloadQrCode = () => {
 const showMoney = ref(true)
 const summary = ref<AffiliateRecordSummaryVO>({})
 const getSummaryInfo = async () => {
-  let data = await getAffiliateSummary()
+  const data = await getAffiliateSummary()
   summary.value = data || {}
 }
 

@@ -44,7 +44,7 @@ const emit = defineEmits(['update:value']);
 <template>
   <div class="flex items-center flex-1">
 
-    <div class="mr-2" v-if="label">{{ label }} </div>
+    <div v-if="label" class="mr-2">{{ label }} </div>
     <el-input
       v-bind="mergedProps"
       v-model="modelValue"

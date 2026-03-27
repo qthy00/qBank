@@ -5,7 +5,7 @@ import { cloneDeep } from 'lodash-es'
 import { propTypes } from '~/utils/propTypes'
 import { useDesign } from '~/composables/useDesign'
 import { isString } from '~/utils/is'
-import { type QrcodeLogo } from '~/types/qrcode.d.ts'
+import type { QrcodeLogo } from '~/types/qrcode.d.ts'
 
 defineOptions({ name: 'Qrcode' })
 

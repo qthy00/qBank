@@ -73,7 +73,7 @@ const submitForm = async () => {
   <Dialog v-model="dialogVisible" title="购买明细" width="500px" :scroll="false">
     <div class="flex items-center justify-between border-b border-gray-200 pb-4">
       <div class="flex items-center space-x-4">
-        <img :src="qPackage?.logo" class="w-16 h-16 object-cover rounded-md shadow" alt="logo" />
+        <img :src="qPackage?.logo" class="w-16 h-16 object-cover rounded-md shadow" alt="logo" >
         <div>
           <p class="text-sm font-semibold text-gray-700">{{ qPackage?.title }}</p>
           <!--          <p class="text-xs text-gray-500">{{qPackage?.description}}</p>-->
@@ -84,7 +84,7 @@ const submitForm = async () => {
           <span>单价：</span>
           <span class="font-semibold text-base line-through">¥{{ qPackage?.price }}</span>
         </div>
-        <div class="text-xs" v-if="discountPrice">
+        <div v-if="discountPrice" class="text-xs">
           <span>优惠：</span>
           <span class="text-red-600 text-base font-semibold"> ¥{{ discountPrice }}</span>
         </div>
@@ -116,8 +116,8 @@ const submitForm = async () => {
       type="primary"
       size="large"
       :disabled="formLoading"
-      @click="submitForm"
       class="float-end m-4 bg-gradient-to-r from-blue-600 to-blue-400 border-none text-white rounded-full shadow-md hover:opacity-90"
+      @click="submitForm"
     >
       去 结 算
     </el-button>

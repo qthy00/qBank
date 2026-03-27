@@ -132,7 +132,7 @@ const handleTrust = async (id: number) => {
           <div>
             <div class="text-sm font-medium text-gray-700 mb-2">其他登录设备</div>
             <div class="space-y-3">
-              <el-card shadow="hover" v-for="(device, i) in devices" :key="i" class="relative">
+              <el-card v-for="(device, i) in devices" :key="i" shadow="hover" class="relative">
                 <div class="flex items-start justify-between">
                   <div class="flex items-center gap-3">
                     <el-avatar :icon="device.icon" size="large" class="bg-gray-100 text-gray-500" />

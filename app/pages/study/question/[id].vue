@@ -1,10 +1,10 @@
 <script setup lang="ts">
-import {questionApi} from '~/api/qbank'
+import {questionApi,typeNames} from '~/api/qbank'
 import {getNoteList, createNote, updateNote, deleteNote} from '~/api/note'
 import type {QuestionVO} from '~/types/qBank'
 import type {NoteVO, NoteFormVO} from '~/types/note'
 import {createImageViewer} from '~/components/ImageViewer'
-import {typeNames} from '~/api/qbank'
+
 import QuestionNote from '~/components/Note/QuestionNote.vue'
 import {QuestionComment} from '~/components/QuestionComment/export'
 import {useUserStore} from '~/stores/user'
@@ -346,7 +346,7 @@ useHead({
                     <span class="flex-shrink-0 w-8 h-8 rounded-full bg-gray-100 text-gray-600 flex items-center justify-center font-medium">
                       {{ key }}
                     </span>
-                    <div class="flex-1 text-gray-700 leading-relaxed" v-html="value" @click="handleImageClick"/>
+                    <div class="flex-1 text-gray-700 leading-relaxed" @click="handleImageClick" v-html="value"/>
                   </div>
                 </div>
 

@@ -7,7 +7,7 @@
     </el-button>
     <CopperModal
       ref="cropperModelRef"
-      :srcValue="sourceValue"
+      :src-value="sourceValue"
       @upload-success="handleUploadSuccess"
     />
   </div>

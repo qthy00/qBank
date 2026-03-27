@@ -4,7 +4,7 @@
     <el-dialog
       v-model="dialogVisible"
       :title="t('cropper.modalTitle')"
-      maxHeight="380px"
+      max-height="380px"
       width="800px"
     >
       <div :class="prefixCls">
@@ -21,7 +21,7 @@
           </div>
 
           <div :class="`${prefixCls}-toolbar`">
-            <el-upload :beforeUpload="handleBeforeUpload" :fileList="[]" accept="image/*">
+            <el-upload :before-upload="handleBeforeUpload" :file-list="[]" accept="image/*">
               <el-tooltip :content="t('cropper.selectImage')" placement="bottom">
                 <el-button type="primary" >
                   <Icon name="ep:upload" class="mr-1px" />
@@ -69,7 +69,7 @@
         </div>
         <div :class="`${prefixCls}-right`">
           <div :class="`${prefixCls}-preview`">
-            <img v-if="previewSource" :alt="t('cropper.preview')" :src="previewSource" />
+            <img v-if="previewSource" :alt="t('cropper.preview')" :src="previewSource" >
           </div>
           <template v-if="previewSource">
             <div :class="`${prefixCls}-group`">

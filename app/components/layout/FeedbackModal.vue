@@ -17,16 +17,16 @@
           <!-- 功能改进 -->
           <label class="custom-radio-card group w-1/3 cursor-pointer" for="radio-improvement">
             <input
-              type="radio"
               id="radio-improvement"
+              v-model="reportData.type"
+              type="radio"
               name="reportType"
               value="功能改进"
               class="report-radio absolute top-0 left-0 w-full h-full z-20 cursor-pointer opacity-0"
-              v-model="reportData.type"
-            />
+            >
             <div
               class="check-icon absolute inset-0 bg-blue-500 rounded-xl opacity-0 group-hover:opacity-5 transition-opacity radio-checked:opacity-10"
-            ></div>
+            />
             <div
               class="relative flex flex-col items-center justify-center h-full text-center p-1 border-2 border-transparent rounded-xl group-hover:border-blue-200 transition-all"
             >
@@ -50,16 +50,16 @@
           <!-- 内容不当 -->
           <label class="custom-radio-card group w-1/3 cursor-pointer" for="radio-inappropriate">
             <input
-              type="radio"
               id="radio-inappropriate"
+              v-model="reportData.type"
+              type="radio"
               name="reportType"
               value="内容不当"
               class="report-radio absolute top-0 left-0 w-full h-full z-20 cursor-pointer opacity-0"
-              v-model="reportData.type"
-            />
+            >
             <div
               class="check-icon absolute inset-0 bg-blue-500 rounded-xl opacity-0 group-hover:opacity-5 transition-opacity"
-            ></div>
+            />
             <div
               class="relative flex flex-col items-center justify-center h-full text-center p-2 border-2 border-transparent rounded-xl group-hover:border-blue-200 transition-all"
             >
@@ -85,16 +85,16 @@
           <!-- 侵权版权 -->
           <label class="custom-radio-card group w-1/3 cursor-pointer" for="radio-copyright">
             <input
-              type="radio"
               id="radio-copyright"
+              v-model="reportData.type"
+              type="radio"
               name="reportType"
               value="侵权版权"
               class="report-radio absolute top-0 left-0 w-full h-full z-20 cursor-pointer opacity-0"
-              v-model="reportData.type"
-            />
+            >
             <div
               class="check-icon absolute inset-0 bg-blue-500 rounded-xl opacity-0 group-hover:opacity-5 transition-opacity"
-            ></div>
+            />
             <div
               class="relative flex flex-col items-center justify-center h-full text-center p-2 border-2 border-transparent rounded-xl group-hover:border-blue-200 transition-all"
             >
@@ -120,16 +120,16 @@
           <!-- 其他 -->
           <label class="custom-radio-card group w-1/3 cursor-pointer" for="radio-other">
             <input
-              type="radio"
               id="radio-other"
+              v-model="reportData.type"
+              type="radio"
               name="reportType"
               value="其他问题"
               class="report-radio absolute top-0 left-0 w-full h-full z-20 cursor-pointer opacity-0"
-              v-model="reportData.type"
-            />
+            >
             <div
               class="check-icon absolute inset-0 bg-blue-500 rounded-xl opacity-0 group-hover:opacity-5 transition-opacity"
-            ></div>
+            />
             <div
               class="relative flex flex-col items-center justify-center h-full text-center p-2 border-2 border-transparent rounded-xl group-hover:border-blue-200 transition-all"
             >
@@ -157,9 +157,9 @@
       <!-- 举报详情 -->
       <el-form-item label="详细描述" prop="description">
         <el-input
+          v-model="reportData.description"
           type="textarea"
           :rows="6"
-          v-model="reportData.description"
           placeholder="请详细描述您的反馈内容，提供越详细的信息越有助于我们改进..."
           :maxlength="500"
           show-word-limit
@@ -195,14 +195,14 @@
 
         <!-- 操作按钮 -->
         <div class="flex justify-center">
-          <el-button @click="dialogVisible = false" class="hover:bg-gray-50 mr-5"> 取消</el-button>
+          <el-button class="hover:bg-gray-50 mr-5" @click="dialogVisible = false"> 取消</el-button>
           <el-button
             type="primary"
-            @click="handleSubmit"
             :disabled="formLoading"
             class="hover:bg-blue-600 shadow-lg hover:shadow-xl disabled:opacity-50 hover:-translate-y-0.5 active:translate-y-0"
+            @click="handleSubmit"
           >
-            <span class="flex items-center" v-if="!formLoading"><Icon name="ep:promotion" class="mr-1" />提交举报</span>
+            <span v-if="!formLoading" class="flex items-center"><Icon name="ep:promotion" class="mr-1" />提交举报</span>
             <span v-if="formLoading"> <Icon name="ep:loading" class="mr-1" /> 提交中... </span>
           </el-button>
         </div>

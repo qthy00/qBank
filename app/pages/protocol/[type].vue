@@ -45,12 +45,13 @@ useHead({
     <!-- 富文本内容展示 -->
 
     <!-- 创作规范 -->
-    <div class="text-wrap p-6 px-4 py-8 md:px-8" v-if="data?.contentHtml">
+    <div v-if="data?.contentHtml" class="text-wrap p-6 px-4 py-8 md:px-8">
       <h1 class="text-3xl font-bold text-center mb-8 py-6">{{ data?.title }}</h1>
       <div class="container-content p-4">
-        <div class="protocol-content"
+        <div
+class="protocol-content"
              v-html="data?.contentHtml"
-        ></div>
+        />
       </div>
     </div>
 

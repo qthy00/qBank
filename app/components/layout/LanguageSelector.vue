@@ -10,7 +10,7 @@
         ]"
         type="button"
       >
-        <i class="i-fa:language mr-1.5"></i>
+        <i class="i-fa:language mr-1.5"/>
         <span class="text-sm">{{ currentLocaleName }}</span>
       </button>
 
@@ -22,9 +22,9 @@
             :command="locale.code"
             class="px-3 py-2 rounded-md hover:bg-blue-50 flex items-center"
           >
-            <i class="i-fa:language text-blue-500 mr-2"></i>
+            <i class="i-fa:language text-blue-500 mr-2"/>
             <span>{{ locale.name }}</span>
-            <i class="el-icon-check ml-auto text-blue-500" v-if="locale.code === currentLocale"></i>
+            <i v-if="locale.code === currentLocale" class="el-icon-check ml-auto text-blue-500"/>
           </el-dropdown-item>
         </el-dropdown-menu>
       </template>

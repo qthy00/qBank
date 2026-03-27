@@ -17,7 +17,7 @@ const getShareInfo = (
 ) => {
   const appStore = useAppStore()
 
-  let shareInfo = {
+  const shareInfo = {
     title: '', // 分享标题
     desc: '', // 描述
     image: '', // 分享图片
@@ -70,8 +70,8 @@ const buildSpmLink = (query, linkAddress = '') => {
 const decryptSpm = async (spm: string) => {
   const userStore = useUserStore()
   const { wsCache } = useCache()
-  let shareParamsArray = spm.split('.')
-  let shareParams = {
+  const shareParamsArray = spm.split('.')
+  const shareParams = {
     spm,
     shareId: '0',
     page: '1',

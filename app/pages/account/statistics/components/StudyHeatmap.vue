@@ -213,7 +213,7 @@ const statistics = computed(() => {
                 backgroundColor: day ? getCellColor(day.duration) : '#ebedf0',
               }"
               :title="getCellTooltip(day)"
-            ></div>
+            />
           </div>
         </div>
       </div>
@@ -222,11 +222,11 @@ const statistics = computed(() => {
       <div class="heatmap-legend">
         <span class="legend-label">少</span>
         <div class="legend-cells">
-          <div class="legend-cell" style="background-color: #ebedf0" title="未学习"></div>
-          <div class="legend-cell" style="background-color: #9be9a8" title="1-30分钟"></div>
-          <div class="legend-cell" style="background-color: #40c463" title="30-60分钟"></div>
-          <div class="legend-cell" style="background-color: #30a14e" title="60-120分钟"></div>
-          <div class="legend-cell" style="background-color: #216e39" title="120分钟以上"></div>
+          <div class="legend-cell" style="background-color: #ebedf0" title="未学习"/>
+          <div class="legend-cell" style="background-color: #9be9a8" title="1-30分钟"/>
+          <div class="legend-cell" style="background-color: #40c463" title="30-60分钟"/>
+          <div class="legend-cell" style="background-color: #30a14e" title="60-120分钟"/>
+          <div class="legend-cell" style="background-color: #216e39" title="120分钟以上"/>
         </div>
         <span class="legend-label">多</span>
       </div>

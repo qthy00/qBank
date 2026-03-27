@@ -113,10 +113,10 @@ watch(() => route.params.id, () => {
   <div class="min-h-screen bg-(--color-bg-container)">
     <!-- 顶部渐变背景 -->
     <div class="relative h-48 overflow-hidden">
-      <div class="absolute inset-0 bg-gradient-to-br from-(--color-primary) via-(--color-primary-light) to-(--color-primary-lighter)"></div>
+      <div class="absolute inset-0 bg-gradient-to-br from-(--color-primary) via-(--color-primary-light) to-(--color-primary-lighter)"/>
       <div class="absolute inset-0 opacity-10">
-        <div class="absolute top-0 right-0 w-96 h-96 bg-white rounded-full -translate-y-1/2 translate-x-1/2"></div>
-        <div class="absolute bottom-0 left-0 w-64 h-64 bg-white rounded-full translate-y-1/2 -translate-x-1/2"></div>
+        <div class="absolute top-0 right-0 w-96 h-96 bg-white rounded-full -translate-y-1/2 translate-x-1/2"/>
+        <div class="absolute bottom-0 left-0 w-64 h-64 bg-white rounded-full translate-y-1/2 -translate-x-1/2"/>
       </div>
     </div>
 
@@ -196,11 +196,11 @@ watch(() => route.params.id, () => {
                   :src="article.coverImage"
                   :alt="article.title"
                   class="w-full h-80 object-cover"
-                />
+                >
               </div>
 
               <!-- 正文 -->
-              <div class="prose prose-lg max-w-none article-content" v-html="article?.content"></div>
+              <div class="prose prose-lg max-w-none article-content" v-html="article?.content"/>
 
               <!-- 标签 -->
               <div v-if="article?.tags && article.tags.length > 0" class="mt-10 pt-6 border-t border-(--color-border-light)">
@@ -232,7 +232,7 @@ watch(() => route.params.id, () => {
                   <Icon name="ep:arrow-left" class="group-hover:-translate-x-1 transition-transform" />
                   <span class="line-clamp-1 max-w-xs">{{ article.prevArticle.title }}</span>
                 </button>
-                <div v-else></div>
+                <div v-else/>
                 <!-- 下一篇 -->
                 <button
                   v-if="article?.nextArticle"
@@ -306,7 +306,7 @@ watch(() => route.params.id, () => {
                       :src="item.coverImage"
                       :alt="item.title"
                       class="w-full h-full object-cover group-hover:scale-110 transition-transform duration-300"
-                    />
+                    >
                     <div v-else class="w-full h-full flex items-center justify-center text-(--color-primary)">
                       <Icon name="ep:picture" class="text-sm" />
                     </div>

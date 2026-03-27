@@ -1,14 +1,14 @@
 <!-- API使用说明弹窗 -->
 <template>
   <div class="api-docs-modal">
-    <div class="modal-overlay" @click="$emit('close')"></div>
+    <div class="modal-overlay" @click="$emit('close')"/>
     <div class="modal-content">
       <div class="modal-header">
         <h3 class="modal-title">API文档说明</h3>
         <button class="close-btn" @click="$emit('close')">×</button>
       </div>
       <div class="modal-body">
-        <div class="content-scroll" v-html="content"></div>
+        <div class="content-scroll" v-html="content"/>
       </div>
     </div>
   </div>

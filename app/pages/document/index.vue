@@ -1,7 +1,7 @@
 <script setup lang="ts">
 import {DocumentApi} from '~/api/document'
-import type {DocumentVO, DocumentCategoryVO, ExamTypeVO, YearOptionVO} from '~/types/document'
-import type {DocumentType} from '~/types/document'
+import type {DocumentVO, DocumentCategoryVO, ExamTypeVO, YearOptionVO,DocumentType} from '~/types/document'
+
 
 definePageMeta({
   layout: 'default'
@@ -175,11 +175,11 @@ onMounted(() => {
     <!-- 页面标题区 -->
     <div class="relative overflow-hidden">
       <!-- 背景渐变 -->
-      <div class="absolute inset-0 bg-gradient-to-br from-(--color-primary) via-(--color-primary-light) to-(--color-primary-lighter)"></div>
+      <div class="absolute inset-0 bg-gradient-to-br from-(--color-primary) via-(--color-primary-light) to-(--color-primary-lighter)"/>
       <!-- 装饰图案 -->
       <div class="absolute inset-0 opacity-10">
-        <div class="absolute top-0 right-0 w-96 h-96 bg-white rounded-full -translate-y-1/2 translate-x-1/2"></div>
-        <div class="absolute bottom-0 left-0 w-64 h-64 bg-white rounded-full translate-y-1/2 -translate-x-1/2"></div>
+        <div class="absolute top-0 right-0 w-96 h-96 bg-white rounded-full -translate-y-1/2 translate-x-1/2"/>
+        <div class="absolute bottom-0 left-0 w-64 h-64 bg-white rounded-full translate-y-1/2 -translate-x-1/2"/>
       </div>
       <!-- 内容 -->
       <div class="relative max-w-6xl mx-auto px-4 py-12">
@@ -343,7 +343,7 @@ onMounted(() => {
               :src="doc.coverImage"
               :alt="doc.title"
               class="w-full h-full object-cover group-hover:scale-110 transition-transform duration-500"
-            />
+            >
             <div v-else class="w-full h-full flex items-center justify-center bg-gradient-to-br from-(--color-primary-light) to-(--color-primary-lighter)">
               <Icon name="ep:document" class="text-5xl text-(--color-primary)" />
             </div>

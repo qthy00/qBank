@@ -2,8 +2,8 @@
   <div class="change-avatar">
     <CropperAvatar
       ref="cropperRef"
-      :btnProps="{ preIcon: 'ep:upload-filled' }"
-      :showBtn="false"
+      :btn-props="{ preIcon: 'ep:upload-filled' }"
+      :show-btn="false"
       :value="img"
       width="120px"
       @change="handelUpload"

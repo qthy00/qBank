@@ -4,7 +4,7 @@
       class="flex items-center px-3 py-2 bg-slate-50 rounded-lg border border-slate-200 transition-all duration-300"
       :class="isWarning ? 'bg-amber-50 border-amber-200' : ''"
     >
-      <div class="w-3 h-3 rounded-full bg-red-500 mr-2 animate-pulse"></div>
+      <div class="w-3 h-3 rounded-full bg-red-500 mr-2 animate-pulse"/>
       <span class="text-sm font-medium text-slate-700 md:hidden xl:block">
         {{ timer?.timeMode === 'countdown' ? '剩余时间：' : '已用时间：' }}
       </span>

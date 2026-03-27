@@ -69,13 +69,13 @@ const openTerms = () => {
   <Dialog v-model="dialogVisible" title="实名认证" width="40%" :scroll="false">
     <div class="text-gray-500 mt-2 text-center">请输入真实姓名和身份证号码完成实名认证</div>
     <el-form
-      class="my-10 mx-5"
       ref="formRef"
+      v-loading="formLoading"
+      class="my-10 mx-5"
       :model="formData"
       :rules="formRules"
       label-width="80px"
       label-position="top"
-      v-loading="formLoading"
     >
       <el-form-item label="真实姓名" prop="name">
         <el-input v-model="formData.name" placeholder="请输入您的姓名" :prefix-icon="Avatar" />
@@ -100,7 +100,7 @@ const openTerms = () => {
     </el-form>
     <template #footer>
       <el-button @click="dialogVisible = false">取 消</el-button>
-      <el-button @click="submitForm" type="primary" :disabled="formLoading">提 交</el-button>
+      <el-button type="primary" :disabled="formLoading" @click="submitForm">提 交</el-button>
     </template>
   </Dialog>
 </template>

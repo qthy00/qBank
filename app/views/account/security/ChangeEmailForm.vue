@@ -99,12 +99,12 @@ onBeforeUnmount(() => {
 <template>
   <Dialog v-model="dialogVisible" title="绑定邮箱" width="40%" :scroll="false">
     <el-form
-      class="my-10 mx-5"
       ref="formRef"
+      v-loading="formLoading"
+      class="my-10 mx-5"
       :model="formData"
       :rules="formRules"
       label-width="80px"
-      v-loading="formLoading"
     >
       <el-form-item label="邮箱" prop="email">
         <el-input v-model="formData.email" placeholder="请输入邮箱" />
@@ -115,13 +115,13 @@ onBeforeUnmount(() => {
           <button
             type="button"
             :disabled="smsCountdown > 0"
-            @click.stop="getCode()"
             :class="[
               'px-4 py-2 rounded text-white font-medium transition-all',
               smsCountdown > 0
                 ? 'bg-gradient-to-r from-[#b2d6ff] to-[#e0caff] opacity-80 cursor-not-allowed'
                 : 'bg-gradient-to-r from-[#b2d6ff] to-[#e0caff] hover:opacity-90',
             ]"
+            @click.stop="getCode()"
           >
             {{ smsCountdown > 0 ? `${smsCountdown}秒后可获取` : '获取验证码' }}
           </button>
@@ -130,7 +130,7 @@ onBeforeUnmount(() => {
     </el-form>
     <template #footer>
       <el-button @click="dialogVisible = false">取 消</el-button>
-      <el-button @click="submitForm" type="primary" :disabled="formLoading">提 交</el-button>
+      <el-button type="primary" :disabled="formLoading" @click="submitForm">提 交</el-button>
     </template>
   </Dialog>
 </template>

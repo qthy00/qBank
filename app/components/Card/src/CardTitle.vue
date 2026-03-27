@@ -13,7 +13,7 @@ defineProps({
 
 <template>
   <span class="card-title">{{ title }}</span>
-  <slot class="float-end" name="right"></slot>
+  <slot class="float-end" name="right"/>
 </template>
 
 <style scoped lang="scss">

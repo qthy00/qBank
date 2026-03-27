@@ -25,7 +25,7 @@ async function beforeBind(path, query) {
       }
     }
     const data = await LoginApi.socialAuthRedirect(socialType, encodeURIComponent(redirectUri))
-    let url = data.split('&redirect_uri')[0]
+    const url = data.split('&redirect_uri')[0]
     return  url + '&redirect_uri=' + encodeURIComponent(redirectUri)
   } catch (e){}
 }

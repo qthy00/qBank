@@ -115,7 +115,8 @@
                 to="/help/faq"
                 class="hot-faq-item flex items-center gap-2 p-2 rounded hover:bg-gray-50 transition-colors"
               >
-                <span class="w-5 h-5 flex items-center justify-center rounded text-xs font-bold"
+                <span
+class="w-5 h-5 flex items-center justify-center rounded text-xs font-bold"
                       :class="i <= 3 ? 'bg-red-100 text-red-500' : 'bg-gray-100 text-gray-500'">
                   {{ i }}
                 </span>

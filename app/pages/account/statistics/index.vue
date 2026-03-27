@@ -102,8 +102,8 @@ onMounted(() => {
         <AccuracyTrendChart
           :data="currentTrendData"
           :trend-type="trendType"
-          @type-change="handleTrendTypeChange"
           class="chart-card"
+          @type-change="handleTrendTypeChange"
         />
 
         <!-- 科目正确率分布 -->
@@ -125,8 +125,8 @@ onMounted(() => {
         :page="recordQuery.page"
         :limit="recordQuery.limit"
         :loading="loading"
-        @page-change="handlePageChange"
         class="records-section"
+        @page-change="handlePageChange"
       />
     </template>
   </div>

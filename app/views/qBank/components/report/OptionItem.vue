@@ -4,7 +4,7 @@
     :class="getOptionClass"
   >
     <!-- 正确/错误标识 -->
-    <div class="option-marker absolute top-0 right-0" v-if="isCorrect || isWrong">
+    <div v-if="isCorrect || isWrong" class="option-marker absolute top-0 right-0">
       <div
         class="w-5 h-5 rounded-bl-lg flex items-center justify-center"
         :class="isCorrect ? 'bg-success/60' : 'bg-error/60'"

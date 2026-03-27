@@ -205,14 +205,14 @@ watch(() => route.query.keyword, (newVal) => {
             placeholder="搜索题库、题目、文章..."
             class="w-full pl-12 pr-24 py-4 rounded-xl bg-white border border-gray-200 focus:border-[var(--color-primary)] focus:outline-none focus:ring-2 focus:ring-[var(--color-primary)]/20 transition-all text-lg"
             @keydown.enter="handleSearch"
-          />
+          >
           <Icon
             name="ep:search"
             class="absolute left-4 text-xl text-gray-400"
           />
           <button
-            @click="handleSearch"
             class="absolute right-2 top-2 bottom-2 bg-[var(--color-primary)] text-white px-6 rounded-lg hover:bg-[var(--color-primary)]/90 transition-colors font-medium"
+            @click="handleSearch"
           >
             搜索
           </button>
@@ -224,14 +224,14 @@ watch(() => route.query.keyword, (newVal) => {
           <button
             v-for="word in searchHistory"
             :key="word"
-            @click="selectHistory(word)"
             class="px-3 py-1 bg-gray-100 hover:bg-gray-200 rounded-full text-sm text-gray-600 transition-colors"
+            @click="selectHistory(word)"
           >
             {{ word }}
           </button>
           <button
-            @click="clearHistory"
             class="text-sm text-gray-400 hover:text-gray-600 ml-2"
+            @click="clearHistory"
           >
             清空
           </button>

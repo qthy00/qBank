@@ -72,7 +72,7 @@ import { propTypes } from '@/utils/propTypes'
 import type { UploadInstance, UploadProps, UploadRawFile, UploadUserFile } from 'element-plus'
 import { isString } from '@/utils/is'
 import { useUpload } from '~/components/Upload/src/useUpload'
-import { UploadFile } from 'element-plus/es/components/upload/src/upload'
+import type { UploadFile } from 'element-plus/es/components/upload/src/upload'
 
 defineOptions({ name: 'UploadFile' })
 
@@ -80,7 +80,7 @@ const message = useMessage() // 消息弹窗
 const emit = defineEmits(['update:modelValue'])
 
 const props = defineProps({
-  modelValue: propTypes.oneOfType<string | string[]>([String, Array<String>]).isRequired,
+  modelValue: propTypes.oneOfType<string | string[]>([String, Array<string>]).isRequired,
   fileType: propTypes.array.def(['doc', 'xls', 'ppt', 'txt', 'pdf']), // 文件类型, 例如['png', 'jpg', 'jpeg']
   fileSize: propTypes.number.def(5), // 大小限制(MB)
   limit: propTypes.number.def(5), // 数量限制

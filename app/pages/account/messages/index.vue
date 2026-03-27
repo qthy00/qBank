@@ -20,17 +20,17 @@
           type="primary"
           plain
           class="mark-all-btn"
-          @click="handleMarkAllRead"
           :loading="markingAll"
+          @click="handleMarkAllRead"
         >
           <Icon name="ep:check" class="btn-icon" />
           全部已读
         </el-button>
         <el-button
           class="refresh-btn"
-          @click="handleRefresh"
           :loading="refreshing"
           circle
+          @click="handleRefresh"
         >
           <Icon name="ep:refresh" />
         </el-button>

@@ -14,14 +14,14 @@
       :disabled="disabled"
       @input="$emit('update:modelValue', $event.target.value)"
       @change="$emit('change', $event.target.value)"
-    ></textarea>
+    />
 
     <!-- 清除按钮 -->
     <button
       v-if="showClearBtn && modelValue && !disabled"
-      @click="handleClear"
       class="absolute right-2 top-2 text-neu-300 hover:text-neu-500 transition-colors p-1 rounded-full hover:bg-neu-100"
       :aria-label="clearBtnAriaLabel"
+      @click="handleClear"
     >
       <Icon name="ep:circle-close" width="16" height="16" />
     </button>

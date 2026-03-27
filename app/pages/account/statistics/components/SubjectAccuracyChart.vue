@@ -92,7 +92,7 @@ const getAccuracyClass = (accuracy: number): string => {
                   width: `${item.accuracy}%`,
                   backgroundColor: getAccuracyColor(item.accuracy),
                 }"
-              ></div>
+              />
             </div>
             <div class="accuracy-value-wrapper">
               <span

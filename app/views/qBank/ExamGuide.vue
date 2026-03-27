@@ -32,7 +32,7 @@
             <!-- 步骤流程 -->
             <div class="relative">
               <!-- 连接线 -->
-              <div class="hidden md:block absolute top-6 left-0 right-0 h-0.5 bg-gray-200 -z-10"></div>
+              <div class="hidden md:block absolute top-6 left-0 right-0 h-0.5 bg-gray-200 -z-10"/>
 
               <div class="grid grid-cols-1 md:grid-cols-5 gap-4">
                 <!-- 动态渲染流程步骤 -->
@@ -65,7 +65,8 @@
                   </tr>
                   </thead>
                   <tbody>
-                  <tr v-for="(schedule, index) in scheduleItems" :key="index"
+                  <tr
+v-for="(schedule, index) in scheduleItems" :key="index"
                       class="border-b border-gray-200 hover:bg-gray-50"
                       :class="{ 'border-0': index === scheduleItems.length - 1 }">
                     <td class="py-3 px-4 text-sm text-gray-800 font-medium">{{ schedule.event }}</td>
@@ -120,10 +121,12 @@
             <h2 class="text-xl font-semibold text-gray-800 mb-6">报考所需材料</h2>
 
             <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4">
-              <div v-for="(material, index) in requiredMaterials" :key="index"
+              <div
+v-for="(material, index) in requiredMaterials" :key="index"
                    class="border border-gray-200 rounded-lg p-4 hover:shadow-md transition-shadow">
                 <div class="flex items-center mb-3">
-                  <div :class="material.iconBgClass"
+                  <div
+:class="material.iconBgClass"
                        class="w-10 h-10 rounded-full flex items-center justify-center mr-3">
                     <Icon :name="material.icon" :class="material.iconColorClass" :size="20"/>
                   </div>
@@ -141,7 +144,8 @@
             <h2 class="text-xl font-semibold text-gray-800 mb-6">报考常见问题</h2>
 
             <div class="space-y-4">
-              <div v-for="(faq, index) in faqItems" :key="index"
+              <div
+v-for="(faq, index) in faqItems" :key="index"
                    class="border border-gray-200 rounded-lg overflow-hidden">
                 <div class="bg-gray-50 px-5 py-3 cursor-pointer" @click="toggleFAQ(index)">
                   <div class="flex justify-between items-center">

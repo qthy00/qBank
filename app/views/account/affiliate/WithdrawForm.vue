@@ -167,7 +167,7 @@ const resetForm = () => {
 }
 
 const getWithdrawRules = async () => {
-  let data = (await getSwapConfig()) as SwapConfig
+  const data = (await getSwapConfig()) as SwapConfig
 
   if (data) {
     state.minPrice = data.brokerageWithdrawMinPrice || 0
@@ -215,9 +215,9 @@ onMounted(async () => {
       <el-divider />
       <el-form
         ref="formRef"
+        v-loading="formLoading"
         :model="formData"
         :rules="formRules"
-        v-loading="formLoading"
         label-position="right"
         label-width="110px">
         <el-form-item label="提现至" prop="type">
@@ -237,11 +237,11 @@ onMounted(async () => {
           />
         </el-form-item>
 
-        <el-form-item label="提现账号" v-if="[2, 6].includes(formData.type || 0)" prop="userAccount">
+        <el-form-item v-if="[2, 6].includes(formData.type || 0)" label="提现账号" prop="userAccount">
           <el-input v-model="formData.userAccount" placeholder="请输入提现账号" />
         </el-form-item>
         <!-- 收款码 -->
-        <el-form-item label="收款码" v-if="[3, 4].includes(formData.type || 0)" prop="qrCodeUrl">
+        <el-form-item v-if="[3, 4].includes(formData.type || 0)" label="收款码" prop="qrCodeUrl">
           <UploadImg
             v-model="formData.qrCodeUrl"
             :limit="1"
@@ -250,7 +250,7 @@ onMounted(async () => {
           />
         </el-form-item>
         <!-- 持卡人姓名 -->
-        <el-form-item label="收款真名" v-if="[2, 5, 6].includes(formData.type || 0)" prop="userName">
+        <el-form-item v-if="[2, 5, 6].includes(formData.type || 0)" label="收款真名" prop="userName">
           <el-input v-model="formData.userName" placeholder="请输入姓名" />
         </el-form-item>
         <template v-if="formData.type === 2">
@@ -292,7 +292,7 @@ onMounted(async () => {
 
     <template #footer>
       <el-button @click="dialogVisible = false">取消</el-button>
-      <el-button type="primary" @click="onConfirm" :disabled="formData.price == 0">确认提现</el-button>
+      <el-button type="primary" :disabled="formData.price == 0" @click="onConfirm">确认提现</el-button>
     </template>
   </Dialog>
 </template>

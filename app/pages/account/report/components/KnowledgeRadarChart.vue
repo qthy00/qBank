@@ -129,7 +129,7 @@ const getMasteryLabel = (mastery: number) => {
                     width: `${item.mastery}%`,
                     backgroundColor: getMasteryColor(item.mastery)
                   }"
-                ></div>
+                />
               </div>
               <div class="progress-stats">
                 <span>{{ item.questionCount }}题</span>

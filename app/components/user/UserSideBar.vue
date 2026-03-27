@@ -18,7 +18,7 @@ const drawerVisible = ref(false)
       size="large"
       @click="drawerVisible = true"
     >
-      <Icon name="ep:menu"></Icon>
+      <Icon name="ep:menu"/>
     </el-button>
 
     <!-- PC端菜单 -->

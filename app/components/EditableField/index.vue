@@ -2,7 +2,7 @@
   <div>
     <template v-if="editable">
       <component :is="component" v-model="innerValue" v-bind="mergedProps">
-        <slot></slot>
+        <slot/>
       </component>
     </template>
     <template v-else>

@@ -57,7 +57,7 @@
       </template>
     </div>
     <div class="el-upload__tip">
-      <slot name="tip"></slot>
+      <slot name="tip"/>
     </div>
   </div>
 
@@ -90,7 +90,7 @@ const uploadList = ref<UploadUserFile[]>([])
 
 // 接受父组件参数
 const props = defineProps({
-  modelValue: propTypes.oneOfType<string | string[]>([String, Array<String>]).isRequired,
+  modelValue: propTypes.oneOfType<string | string[]>([String, Array<string>]).isRequired,
   drag: propTypes.bool.def(true), // 是否支持拖拽上传 ==> 非必传（默认为 true）
   disabled: propTypes.bool.def(false), // 是否禁用上传组件 ==> 非必传（默认为 false）
   limit: propTypes.number.def(20), // 最大图片上传数 ==> 非必传（默认为 5张）
@@ -177,7 +177,7 @@ const uploadSuccess: UploadProps['onSuccess'] = (res: any): void => {
 
 // 发送图片链接列表更新
 const emitUpdateModelValue = () => {
-  let result: string[] = fileList.value.map((file) => file.url!)
+  const result: string[] = fileList.value.map((file) => file.url!)
   emit('update:modelValue', result)
 }
 

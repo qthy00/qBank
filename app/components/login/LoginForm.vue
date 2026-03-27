@@ -52,15 +52,15 @@
     <!-- 登录按钮 -->
     <button
         :disabled="loginLoading"
-        @click="handleLogin"
         class="w-full bg-gradient-to-r from-blue-600 to-indigo-600 hover:from-blue-700 hover:to-indigo-700 text-white font-medium py-3 rounded-xl transition-all duration-300 transform hover:scale-[1.02] focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-offset-2 mt-6 md:mt-0 shadow-lg shadow-blue-500/20"
+        @click="handleLogin"
     >
       <div class="flex items-center justify-center space-x-2">
         <span>{{ loginLoading ? $t('login.loggingIn') : $t('login.loginButton') }}</span>
         <div
             v-if="loginLoading"
             class="animate-spin rounded-full h-4 w-4 border-b-2 border-white"
-        ></div>
+        />
       </div>
     </button>
     <!-- 其他登录方式 -->
@@ -81,8 +81,8 @@
               backgroundColor: item.color,
               '--hover-bg': item.color
             }"
-            @click.stop="doSocialLogin(item.type)"
             class="w-8 h-8 rounded-full text-white hover:text-white transition-all duration-300 transform hover:scale-110"
+            @click.stop="doSocialLogin(item.type)"
         >
           <Icon :name="item.icon" :size="20" color="white"/>
         </button>
@@ -93,8 +93,8 @@
       <span class="text-gray-600">{{ $t('login.noAccount') }}</span>
       <button
           link
-          @click="handleOpenRegisterModal"
           class="text-blue-600 font-medium hover:underline"
+          @click="handleOpenRegisterModal"
       >
         {{ $t('login.registerNow') }}
       </button>

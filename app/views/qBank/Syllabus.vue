@@ -1,6 +1,6 @@
 <template>
     <div v-loading="loading" element-loading-text="加载大纲中...">
-      <div class="flex flex-col gap-5" v-if="syllabus">
+      <div v-if="syllabus" class="flex flex-col gap-5">
         <!-- 整体用el-card包裹 -->
         <el-card class="border border-gray-200 shadow-sm">
           <!-- 页面标题区 -->
@@ -36,8 +36,8 @@
                   class="p-4 hover:bg-gray-50 transition-colors">
                 <div class="flex flex-wrap justify-between items-center">
                   <button
-                      @click="handleHistory(item.id)"
-                      class="font-medium text-gray-800 hover:text-indigo-600 transition-colors">
+                      class="font-medium text-gray-800 hover:text-indigo-600 transition-colors"
+                      @click="handleHistory(item.id)">
                     {{item.title}}
                   </button>
                   <span class="text-gray-500 text-sm">发布时间：{{ formatDate(item.publishDate, 'YYYY年MM月DD日') }}</span>

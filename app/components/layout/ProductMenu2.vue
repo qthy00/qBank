@@ -8,10 +8,10 @@
       <div class="mb-4 md:mb-6 flex items-center justify-between">
         <h2 class="text-lg md:text-xl font-bold text-gray-900">所有产品与服务</h2>
         <button
-          @click="handleCloseMenu"
           class="text-gray-500 hover:text-gray-700 transition-colors p-2 rounded-full hover:bg-gray-100"
+          @click="handleCloseMenu"
         >
-          <i class="el-icon-close text-lg"></i>
+          <i class="el-icon-close text-lg"/>
         </button>
       </div>
 
@@ -20,13 +20,13 @@
         <button
           v-for="(category, index) in categories"
           :key="index"
-          @click="activeCategory = index"
           class="whitespace-nowrap px-3 py-1.5 md:px-4 md:py-2 rounded-full text-xs md:text-sm font-medium transition-all"
           :class="
             activeCategory === index
               ? 'bg-indigo-100 text-indigo-700'
               : 'bg-gray-100 text-gray-700 hover:bg-gray-200'
           "
+          @click="activeCategory = index"
         >
           {{ category.name }}
         </button>
@@ -47,7 +47,7 @@
               <div
                 class="w-9 h-9 md:w-10 md:h-10 rounded-full bg-indigo-100 flex items-center justify-center text-indigo-600 mr-3 flex-shrink-0"
               >
-                <i :class="product.iconClass + ' text-base md:text-lg'"></i>
+                <i :class="product.iconClass + ' text-base md:text-lg'"/>
               </div>
               <div class="flex-1">
                 <h3 class="font-semibold text-gray-900 truncate">
@@ -66,7 +66,7 @@
                   </span>
                   <i
                     class="el-icon-arrow-right text-indigo-500 opacity-0 group-hover:opacity-100 transition-opacity ml-2 text-xs"
-                  ></i>
+                  />
                 </div>
               </div>
             </div>
@@ -77,10 +77,10 @@
       <!-- 回到首页按钮 -->
       <div class="mt-4 md:mt-6 pb-4 md:pb-0">
         <button
-          @click="navigateToHome()"
           class="w-full inline-flex items-center justify-center px-5 py-2.5 bg-indigo-600 hover:bg-indigo-700 text-white font-medium rounded-lg transition-colors shadow-sm"
+          @click="navigateToHome()"
         >
-          <i class="el-icon-home mr-2"></i>
+          <i class="el-icon-home mr-2"/>
           回到首页
         </button>
       </div>

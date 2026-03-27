@@ -43,21 +43,21 @@
             class="w-full pl-12 pr-52 py-4 rounded-full bg-white border border-gray-200 focus:border-blue-500 focus:outline-none transition-all duration-300 text-lg font-medium"
             @focus="handleFocus()"
             @keydown.enter="handleSearch"
-        />
+        >
 
         <!-- 清除按钮 -->
         <button
             v-if="keyword"
-            @click="clearSearch"
             class="absolute right-36 top-1/2 transform -translate-y-1/2 text-gray-400 hover:text-gray-600 transition-colors cursor-pointer"
+            @click="clearSearch"
         >
           <Icon name="ep:close" :size="20"/>
         </button>
 
         <!-- 优化后的搜索按钮 -->
         <button
-            @click="handleSearch"
             class="absolute right-0 top-0 bottom-0 bg-gradient-to-r from-blue-500 to-indigo-600 text-white font-semibold px-8 rounded-r-full hover:from-blue-600 hover:to-indigo-700 transition-all duration-300 flex items-center justify-center space-x-2"
+            @click="handleSearch"
         >
           <span :class="isMobile ? '' : 'text-xl'">搜　索</span>
         </button>
@@ -67,7 +67,7 @@
     <!-- 搜索建议/历史/结果 -->
     <div v-show="showSearchResults" class="search-results-container fixed inset-0 z-40">
       <!-- 半透明遮罩 -->
-      <div class="search-overlay absolute inset-0 bg-black/5" @click="closeSearchResults"></div>
+      <div class="search-overlay absolute inset-0 bg-black/5" @click="closeSearchResults"/>
 
       <!-- 搜索结果内容 -->
       <div
@@ -85,8 +85,8 @@
           <div class="flex justify-between items-center mb-4">
             <h3 class="font-medium text-gray-700">搜索历史</h3>
             <button
-                @click="clearSearchHistory"
                 class="text-sm text-gray-500 hover:text-gray-700 transition-colors"
+                @click="clearSearchHistory"
             >
               <div class="flex items-center">
                 <Icon name="ep:delete" class="mr-1"/>
@@ -99,8 +99,8 @@
             <button
                 v-for="(item, index) in historyList"
                 :key="index"
-                @click="selectHistory(item)"
                 class="px-3 py-1.5 bg-gray-100 hover:bg-gray-200 rounded-full text-sm text-gray-700 transition-colors"
+                @click="selectHistory(item)"
             >
               {{ item }}
             </button>
@@ -136,16 +136,16 @@
           </div>
 
           <div
-              class="p-4 grid gap-4 sm:grid-cols-1 md:grid-cols-2 lg:grid-cols-3"
               v-infinite-scroll="loadMoreTools"
+              class="p-4 grid gap-4 sm:grid-cols-1 md:grid-cols-2 lg:grid-cols-3"
               :infinite-scroll-disabled="loading || searchResults.length >= total"
               :infinite-scroll-distance="50"
           >
             <button
                 v-for="(item, index) in searchResults"
                 :key="index"
-                @click="selectResult(item)"
                 class="flex items-center p-4 bg-white rounded-2xl shadow-sm border hover:shadow-md transition-all"
+                @click="selectResult(item)"
             >
               <!-- 图标 / Logo -->
               <div
@@ -156,7 +156,7 @@
                     :src="item.logo"
                     alt="logo"
                     class="w-full h-full object-cover rounded-full"
-                />
+                >
                 <Icon v-else :name="item.icon" color="gray" class="text-xl"/>
               </div>
 
@@ -165,13 +165,13 @@
                 <div
                     class="font-semibold text-gray-800 leading-snug"
                     v-html="highlightKeyword(item.name, keyword)"
-                ></div>
+                />
                 <p class="text-xs text-gray-500 mt-1">{{ item.categoryName }}</p>
               </div>
             </button>
           </div>
-          <div class="text-center my-4 text-gray-500" v-if="loading">加载中...</div>
-          <div class="text-center my-4 text-gray-400" v-else-if="searchResults.length >= total">
+          <div v-if="loading" class="text-center my-4 text-gray-500">加载中...</div>
+          <div v-else-if="searchResults.length >= total" class="text-center my-4 text-gray-400">
             没有更多结果了
           </div>
         </div>
@@ -186,8 +186,8 @@
           <h3 class="font-medium text-gray-700 mb-2">没有找到相关结果</h3>
           <p class="text-sm text-gray-500 mb-4">请尝试调整搜索关键词或检查拼写</p>
           <button
-              @click="clearSearch"
               class="px-4 py-2 bg-gray-100 hover:bg-gray-200 rounded-full text-sm text-gray-700 transition-colors"
+              @click="clearSearch"
           >
             重新搜索
           </button>

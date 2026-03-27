@@ -87,7 +87,7 @@
           </div>
         </div>
 
-        <div class="flex flex-wrap items-start gap-2" v-if="question.answer">
+        <div v-if="question.answer" class="flex flex-wrap items-start gap-2">
           <span class="text-sm text-slate-600 whitespace-nowrap pt-1">参考答案：</span>
           <div
             class="flex-1 p-3 sm:p-3.5 rounded-lg border border-success bg-success/5 min-h-[100px]"

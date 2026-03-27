@@ -75,8 +75,8 @@
             type="primary"
             plain
             size="small"
-            @click="handleRealName"
             :disabled="isRealName"
+            @click="handleRealName"
           >
             {{ isRealName ? '您已认证' : '立即认证' }}
           </el-button>
@@ -146,8 +146,8 @@
                 type="primary"
                 plain
                 size="small"
-                @click="bindWeChat"
                 :disabled="isBindWechat"
+                @click="bindWeChat"
               >
                 {{ isBindWechat ? '已绑定' : '绑定' }}
               </el-button>

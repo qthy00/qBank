@@ -1,10 +1,10 @@
 <template>
   <el-button
-    @click="handleExport"
     :type="type"
     plain
     class="px-2 sm:px-6 py-1 sm:py-3 text-sm sm:text-base h-auto whitespace-nowrap"
     :disabled="isExporting || disabled"
+    @click="handleExport"
   >
     <Icon name="uiw:file-pdf" />
     <span v-if="isExporting" class="loading">

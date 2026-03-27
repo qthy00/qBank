@@ -326,14 +326,14 @@ onMounted(() => {
             placeholder="输入关键词搜索题目..."
             class="w-full pl-12 pr-24 py-4 rounded-xl bg-white border border-gray-200 focus:border-[var(--color-primary)] focus:outline-none focus:ring-2 focus:ring-[var(--color-primary)]/20 transition-all text-lg"
             @keydown.enter="handleSearch"
-          />
+          >
           <Icon
             name="ep:search"
             class="absolute left-4 text-xl text-gray-400"
           />
           <button
-            @click="handleSearch"
             class="absolute right-2 top-2 bottom-2 bg-[var(--color-primary)] text-white px-6 rounded-lg hover:bg-[var(--color-primary)]/90 transition-colors font-medium"
+            @click="handleSearch"
           >
             搜索
           </button>
@@ -345,8 +345,8 @@ onMounted(() => {
           <button
             v-for="item in hotKeywords.slice(0, 6)"
             :key="item.keyword"
-            @click="selectHistory(item.keyword)"
             class="px-3 py-1 bg-white hover:bg-gray-100 border border-gray-200 rounded-full text-sm text-gray-600 transition-colors"
+            @click="selectHistory(item.keyword)"
           >
             {{ item.keyword }}
           </button>
@@ -358,14 +358,14 @@ onMounted(() => {
           <button
             v-for="keyword in searchHistory.slice(0, 8)"
             :key="keyword"
-            @click="selectHistory(keyword)"
             class="px-3 py-1 bg-gray-100 hover:bg-gray-200 rounded-full text-sm text-gray-600 transition-colors"
+            @click="selectHistory(keyword)"
           >
             {{ keyword }}
           </button>
           <button
-            @click="clearHistory"
             class="text-sm text-gray-400 hover:text-gray-600 ml-2"
+            @click="clearHistory"
           >
             清空
           </button>
@@ -382,8 +382,8 @@ onMounted(() => {
                 <h3 class="font-semibold text-gray-900">筛选条件</h3>
                 <button
                   v-if="hasActiveFilters"
-                  @click="clearFilters"
                   class="text-sm text-[var(--color-primary)] hover:underline"
+                  @click="clearFilters"
                 >
                   清空筛选
                 </button>
@@ -399,12 +399,12 @@ onMounted(() => {
                     class="flex items-center gap-2 cursor-pointer hover:bg-gray-50 p-2 rounded-lg transition-colors"
                   >
                     <input
+                      v-model="searchParams.type"
                       type="radio"
                       :value="type.value"
-                      v-model="searchParams.type"
                       class="text-[var(--color-primary)]"
                       @change="handleFilterChange"
-                    />
+                    >
                     <span class="text-sm text-gray-600 flex-1">{{ type.label }}</span>
                     <span class="text-xs text-gray-400">({{ type.count }})</span>
                   </label>
@@ -421,12 +421,12 @@ onMounted(() => {
                     class="flex items-center gap-2 cursor-pointer hover:bg-gray-50 p-2 rounded-lg transition-colors"
                   >
                     <input
+                      v-model="searchParams.difficulty"
                       type="radio"
                       :value="difficulty.value"
-                      v-model="searchParams.difficulty"
                       class="text-[var(--color-primary)]"
                       @change="handleFilterChange"
-                    />
+                    >
                     <span class="text-sm text-gray-600 flex-1">{{ difficulty.label }}</span>
                     <span class="text-xs text-gray-400">({{ difficulty.count }})</span>
                   </label>
@@ -443,12 +443,12 @@ onMounted(() => {
                     class="flex items-center gap-2 cursor-pointer hover:bg-gray-50 p-2 rounded-lg transition-colors"
                   >
                     <input
+                      v-model="searchParams.pointId"
                       type="radio"
                       :value="point.value"
-                      v-model="searchParams.pointId"
                       class="text-[var(--color-primary)]"
                       @change="handleFilterChange"
-                    />
+                    >
                     <span class="text-sm text-gray-600 flex-1">{{ point.label }}</span>
                     <span class="text-xs text-gray-400">({{ point.count }})</span>
                   </label>
@@ -465,12 +465,12 @@ onMounted(() => {
                     class="flex items-center gap-2 cursor-pointer hover:bg-gray-50 p-2 rounded-lg transition-colors"
                   >
                     <input
+                      v-model="searchParams.qbankId"
                       type="radio"
                       :value="qbank.value"
-                      v-model="searchParams.qbankId"
                       class="text-[var(--color-primary)]"
                       @change="handleFilterChange"
-                    />
+                    >
                     <span class="text-sm text-gray-600 flex-1 truncate">{{ qbank.label }}</span>
                     <span class="text-xs text-gray-400">({{ qbank.count }})</span>
                   </label>
@@ -510,7 +510,7 @@ onMounted(() => {
                 <template v-if="searchParams.type !== undefined">
                   <span class="inline-flex items-center gap-1 px-2 py-1 bg-blue-50 text-blue-600 rounded-lg text-sm">
                     题型: {{ getFilterLabel('type', searchParams.type) }}
-                    <button @click="removeFilter('type')" class="hover:text-blue-800">
+                    <button class="hover:text-blue-800" @click="removeFilter('type')">
                       <Icon name="ep:close" class="text-xs"/>
                     </button>
                   </span>
@@ -518,7 +518,7 @@ onMounted(() => {
                 <template v-if="searchParams.difficulty !== undefined">
                   <span class="inline-flex items-center gap-1 px-2 py-1 bg-green-50 text-green-600 rounded-lg text-sm">
                     难度: {{ getFilterLabel('difficulty', searchParams.difficulty) }}
-                    <button @click="removeFilter('difficulty')" class="hover:text-green-800">
+                    <button class="hover:text-green-800" @click="removeFilter('difficulty')">
                       <Icon name="ep:close" class="text-xs"/>
                     </button>
                   </span>
@@ -526,7 +526,7 @@ onMounted(() => {
                 <template v-if="searchParams.pointId !== undefined">
                   <span class="inline-flex items-center gap-1 px-2 py-1 bg-purple-50 text-purple-600 rounded-lg text-sm">
                     知识点: {{ getFilterLabel('pointId', searchParams.pointId) }}
-                    <button @click="removeFilter('pointId')" class="hover:text-purple-800">
+                    <button class="hover:text-purple-800" @click="removeFilter('pointId')">
                       <Icon name="ep:close" class="text-xs"/>
                     </button>
                   </span>
@@ -534,7 +534,7 @@ onMounted(() => {
                 <template v-if="searchParams.qbankId !== undefined">
                   <span class="inline-flex items-center gap-1 px-2 py-1 bg-orange-50 text-orange-600 rounded-lg text-sm">
                     题库: {{ getFilterLabel('qbankId', searchParams.qbankId) }}
-                    <button @click="removeFilter('qbankId')" class="hover:text-orange-800">
+                    <button class="hover:text-orange-800" @click="removeFilter('qbankId')">
                       <Icon name="ep:close" class="text-xs"/>
                     </button>
                   </span>
@@ -570,8 +570,8 @@ onMounted(() => {
                           {{ item.difficultyName }}
                         </span>
                         <button
-                          @click.stop="goToQbank(item.qbankId)"
                           class="text-xs text-gray-400 hover:text-[var(--color-primary)] transition-colors"
+                          @click.stop="goToQbank(item.qbankId)"
                         >
                           {{ item.qbankName }}
                         </button>
@@ -605,8 +605,8 @@ onMounted(() => {
 
                     <!-- 收藏按钮 -->
                     <button
-                      @click.stop="toggleFavorite(item)"
                       class="p-2 rounded-lg hover:bg-gray-100 transition-colors"
+                      @click.stop="toggleFavorite(item)"
                     >
                       <Icon
                         :name="item.isFavorited ? 'ep:star-filled' : 'ep:star'"
@@ -626,8 +626,8 @@ onMounted(() => {
                 <h3 class="text-lg font-medium text-gray-700 mb-2">未找到相关题目</h3>
                 <p class="text-gray-500 mb-6">换个关键词或调整筛选条件试试</p>
                 <button
-                  @click="clearFilters"
                   class="px-6 py-2 bg-[var(--color-primary)] text-white rounded-lg hover:bg-[var(--color-primary)]/90 transition-colors"
+                  @click="clearFilters"
                 >
                   清空筛选
                 </button>

@@ -151,7 +151,7 @@
         </div>
       </div>
       <el-empty v-if="teamList.length <= 0" description="暂无数据"/>
-      <el-card class="mt-3" shadow="never" v-for="item in  teamList" :key="item.id">
+      <el-card v-for="item in  teamList" :key="item.id" class="mt-3" shadow="never">
         <div class="flex justify-between items-center">
           <div class="flex items-center">
             <el-avatar :src="item.avatar" />
@@ -203,7 +203,7 @@ const loading = ref(false)
 const router = useRouter()
 const summary = ref<AffiliateRecordSummaryVO>({})
 const getSummaryInfo = async () => {
-  let data = await getAffiliateUserSummary()
+  const data = await getAffiliateUserSummary()
   summary.value = data || {}
   if (data) {
     totalMembers.value = data.firstBrokerageUserCount + data.secondBrokerageUserCount

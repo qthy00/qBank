@@ -119,11 +119,11 @@ onMounted(()=>{
             v-for="(exam) in exams.slice(0,5)"
             :key="exam.id"
             href="#"
-            @click.prevent="activateTab(exam.id)"
             :class="[
             'border border-solid border-(--color-border) rounded-full  px-3 py-2 hover:bg-(--color-btn-hover) hover:text-(--color-bg-container)',
             activeTab === exam.id ? 'active-tab bg-(--color-btn-primary) text-(--color-bg-container)' : 'bg-(--color-bg-container) text-(--color-text-secondary)'
           ]"
+            @click.prevent="activateTab(exam.id)"
         >
           {{ exam.name }}
         </a>
@@ -133,7 +133,7 @@ onMounted(()=>{
         <NuxtLink
             :to="{ path: '/qbank', query: { categoryId } }"
            class="text-(--color-text-secondary) px-3 py-2 rounded-full flex items-center border border-solid border-(--color-border) hover:bg-(--color-disabled)">
-          <span class="mr-1 ">更多</span> <i class="hy-ico-djt ic-12"></i>
+          <span class="mr-1 ">更多</span> <i class="hy-ico-djt ic-12"/>
         </NuxtLink>
       </div>
     </div>
@@ -156,7 +156,8 @@ onMounted(()=>{
           </div>
           <!-- 固定底部按钮 -->
           <div class="mt-auto">
-            <a href="#" class="block bg-(--color-btn-primary) text-(--color-btn-text) px-4 py-2 hover:-translate-y-1 text-center hover:bg-(--color-btn-hover)
+            <a
+href="#" class="block bg-(--color-btn-primary) text-(--color-btn-text) px-4 py-2 hover:-translate-y-1 text-center hover:bg-(--color-btn-hover)
                 hover:text-(--color-bg-container) transition-all">
               查看详情
             </a>
@@ -170,7 +171,8 @@ onMounted(()=>{
          <div class="flex flex-col space-y-5">
            <!-- 头条部分 -->
            <a v-for="(newsItem, newsIndex) in currentExam.news" :key="newsIndex" href="" class="flex items-center space-x-2">
-             <div :class="[
+             <div
+:class="[
               'text-white px-2 py-1 rounded-full text-sm',
               newsIndex === 0 ? 'bg-(--color-warning)' : 'bg-(--color-text-hover)'
             ]">
@@ -189,7 +191,8 @@ onMounted(()=>{
                <a v-for="(material, matIndex) in currentExam.materials" :key="matIndex" href="#" class="block group">
                  <div class="flex flex-col items-center text-center">
                    <div class="overflow-hidden w-full h-32 mb-2">
-                     <img :src="material.image" alt=""
+                     <img
+:src="material.image" alt=""
                           class="w-full h-full object-cover transform transition-transform duration-300 group-hover:scale-110">
                    </div>
                    <div class="text-sm text-(--color-text-secondary) hover:text-(--color-text-hover) line-clamp-2 text-wrap">

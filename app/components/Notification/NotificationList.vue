@@ -139,7 +139,7 @@
 
       <!-- 加载更多 -->
       <div v-if="hasMore" class="load-more">
-        <el-button :loading="loading" @click="handleLoadMore" size="default">
+        <el-button :loading="loading" size="default" @click="handleLoadMore">
           加载更多
         </el-button>
       </div>

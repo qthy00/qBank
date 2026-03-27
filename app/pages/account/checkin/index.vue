@@ -228,15 +228,15 @@ onMounted(() => {
           <CardTitle title="打卡日历" />
           <div class="calendar-legend">
             <span class="legend-item">
-              <span class="legend-dot checked"></span>
+              <span class="legend-dot checked"/>
               <span>已打卡</span>
             </span>
             <span class="legend-item">
-              <span class="legend-dot today"></span>
+              <span class="legend-dot today"/>
               <span>今天</span>
             </span>
             <span class="legend-item">
-              <span class="legend-dot"></span>
+              <span class="legend-dot"/>
               <span>未打卡</span>
             </span>
           </div>

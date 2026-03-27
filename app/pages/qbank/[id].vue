@@ -344,13 +344,13 @@ onUnmounted(() => {
               class="group flex items-center gap-1 p-3 z-50 cursor-pointer text-(--color-nav-text) "
               @click="toggleOpen"
           >
-            <i class="hy-ico-qh ic-20  group-hover:scale-120 transition-transform duration-300 ease-out"></i>
+            <i class="hy-ico-qh ic-20  group-hover:scale-120 transition-transform duration-300 ease-out"/>
             <span class="font-bold font-semibold">{{ category?.name }}</span>
           </div>
 
           <!-- 分割线 -->
           <div id="anchor" class="relative flex items-center ">
-            <span class="h-2/3 border-solid border-r border-(--color-border)"></span>
+            <span class="h-2/3 border-solid border-r border-(--color-border)"/>
           </div>
 
           <!-- 弹出浮层区域，仅替代右侧内容区域 -->
@@ -371,8 +371,8 @@ onUnmounted(() => {
                       v-for="cat in categories" :key="cat.id"
                       plain
                       type="primary"
-                      @click="handleCategoryChange(cat.id)"
-                      class="px-3 py-1 bg-(--color-btn-primary) rounded-lg hover:bg-(--color-btn-hover) transition">
+                      class="px-3 py-1 bg-(--color-btn-primary) rounded-lg hover:bg-(--color-btn-hover) transition"
+                      @click="handleCategoryChange(cat.id)">
                     {{ cat.name }}
                   </el-button>
                 </div>
@@ -394,13 +394,13 @@ onUnmounted(() => {
 
             <!-- 分割线 -->
             <div class="relative flex items-center">
-              <span class="h-2/3 border-solid border-r border-(--color-border)"></span>
+              <span class="h-2/3 border-solid border-r border-(--color-border)"/>
             </div>
 
             <!-- 报考指南 -->
             <div class="flex flex-5/12 justify-around  gap-4 p-3 pt-6 pb-6 text-(--color-nav-text)">
               <div class="flex flex-col flex-wrap justify-center items-center md:flex sm:hidden">
-                <i class="hy-ico-bkzn ic-26"></i>
+                <i class="hy-ico-bkzn ic-26"/>
                 <span class="mt-2">报考指南</span>
               </div>
 
@@ -417,13 +417,13 @@ onUnmounted(() => {
 
             <!-- 分割线 -->
             <div class="relative flex items-center md:flex sm:hidden">
-              <span class="h-2/3 border-solid border-r border-(--color-border)"></span>
+              <span class="h-2/3 border-solid border-r border-(--color-border)"/>
             </div>
 
             <!-- 备考学习 -->
             <div class="flex flex-5/12 justify-around gap-4 p-3 pt-6 pb-6 text-(--color-nav-text)">
               <div class="flex flex-col flex-wrap justify-center items-center md:flex sm:hidden">
-                <i class="hy-ico-beikao ic-26"></i>
+                <i class="hy-ico-beikao ic-26"/>
                 <span class="mt-2">备考学习</span>
               </div>
               <div class="flex flex-wrap content-center justify-between gap-2 max-h-[5rem] overflow-hidden">
@@ -578,7 +578,8 @@ onUnmounted(() => {
                 <span class="text-2xl font-bold text-[var(--color-danger)]">
                   ¥{{ ((qbankDetail?.price || 0) / 100).toFixed(2) }}
                 </span>
-                <span v-if="(qbankDetail?.originalPrice || 0) > 0"
+                <span
+v-if="(qbankDetail?.originalPrice || 0) > 0"
                       class="text-sm text-[var(--color-text-secondary)] line-through">
                   ¥{{ ((qbankDetail?.originalPrice || 0) / 100).toFixed(2) }}
                 </span>
@@ -628,7 +629,8 @@ onUnmounted(() => {
                 <div class="w-1 h-5 bg-[var(--color-btn-primary)] rounded-full"/>
                 <h3 class="font-bold text-[var(--color-text-primary)]">推荐试卷</h3>
               </div>
-              <a href="#"
+              <a
+href="#"
                  class="text-sm text-[var(--color-text-secondary)] hover:text-[var(--color-btn-primary)] flex items-center gap-1">
                 更多
                 <Icon name="ep:arrow-right" class="text-xs"/>
@@ -684,7 +686,8 @@ onUnmounted(() => {
                 <div class="w-1 h-5 bg-[var(--color-btn-primary)] rounded-full"/>
                 <h3 class="font-bold text-[var(--color-text-primary)]">学习文档</h3>
               </div>
-              <a href="#"
+              <a
+href="#"
                  class="text-sm text-[var(--color-text-secondary)] hover:text-[var(--color-btn-primary)] flex items-center gap-1">
                 更多
                 <Icon name="ep:arrow-right" class="text-xs"/>
@@ -727,7 +730,8 @@ onUnmounted(() => {
                 <div class="w-1 h-5 bg-[var(--color-btn-primary)] rounded-full"/>
                 <h3 class="font-bold text-[var(--color-text-primary)]">考试资讯</h3>
               </div>
-              <a href="#"
+              <a
+href="#"
                  class="text-sm text-[var(--color-text-secondary)] hover:text-[var(--color-btn-primary)] flex items-center gap-1">
                 更多
                 <Icon name="ep:arrow-right" class="text-xs"/>
@@ -739,7 +743,8 @@ onUnmounted(() => {
                   :key="index"
                   class="border-b border-[var(--color-border)] last:border-b-0 pb-3 last:pb-0"
               >
-                <a href="#"
+                <a
+href="#"
                    class="text-[var(--color-text-primary)] hover:text-[var(--color-btn-primary)] transition-colors line-clamp-2 mb-2">
                   {{ news.title }}
                 </a>

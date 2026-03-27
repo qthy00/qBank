@@ -240,7 +240,7 @@ onMounted(async () => {
         </div>
 
         <div class="space-y-4">
-            <el-row :gutter="10" v-for="(item, index) in state.questionInfo">
+            <el-row v-for="(item, index) in state.questionInfo" :gutter="10">
               <el-col :span="12">
                 <el-form-item
                   label-width="55px"
@@ -345,24 +345,24 @@ onMounted(async () => {
     <!-- 弹窗底部按钮 -->
     <template #footer>
       <div class="flex justify-between ml-4">
-        <el-button type="warning" plain size="large" @click="resetSettings" class="px-7">
+        <el-button type="warning" plain size="large" class="px-7" @click="resetSettings">
           恢复默认
         </el-button>
         <div>
           <el-button
             type="info"
             plain
-            @click="router.back()"
             size="large"
             class="px-7 bg-gray-200 hover:bg-gray-300 text-gray-700"
+            @click="router.back()"
           >
             取 消
           </el-button>
           <el-button
             type="primary"
             size="large"
-            @click="confirm()"
             class="px-7 bg-gradient-to-r from-blue-600 to-blue-400 border-none text-white shadow-md hover:opacity-80"
+            @click="confirm()"
           >
             开始考试
           </el-button>

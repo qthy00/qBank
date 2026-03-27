@@ -66,7 +66,7 @@ const handleDownload = async () => {
     const url = await DocumentApi.getDownloadUrl(document.value.id)
 
     /* 模拟下载 */
-    const link = document.createElement('a')
+    const link = document.value.createElement('a')
     link.href = url
     link.download = document.value.title + '.' + document.value.fileType?.toLowerCase()
     link.click()
@@ -107,10 +107,10 @@ onMounted(() => {
   <div class="min-h-screen bg-(--color-bg-container)">
     <!-- 顶部渐变背景 -->
     <div class="relative h-56 overflow-hidden">
-      <div class="absolute inset-0 bg-gradient-to-br from-(--color-primary) via-(--color-primary-light) to-(--color-primary-lighter)"></div>
+      <div class="absolute inset-0 bg-gradient-to-br from-(--color-primary) via-(--color-primary-light) to-(--color-primary-lighter)"/>
       <div class="absolute inset-0 opacity-10">
-        <div class="absolute top-0 right-0 w-96 h-96 bg-white rounded-full -translate-y-1/2 translate-x-1/2"></div>
-        <div class="absolute bottom-0 left-0 w-64 h-64 bg-white rounded-full translate-y-1/2 -translate-x-1/2"></div>
+        <div class="absolute top-0 right-0 w-96 h-96 bg-white rounded-full -translate-y-1/2 translate-x-1/2"/>
+        <div class="absolute bottom-0 left-0 w-64 h-64 bg-white rounded-full translate-y-1/2 -translate-x-1/2"/>
       </div>
     </div>
 
@@ -139,7 +139,7 @@ onMounted(() => {
                       :src="document.coverImage"
                       :alt="document.title"
                       class="w-full h-full object-cover"
-                    />
+                    >
                     <div v-else class="w-full h-full flex items-center justify-center">
                       <Icon name="ep:document" class="text-6xl text-(--color-primary)" />
                     </div>
@@ -276,10 +276,10 @@ onMounted(() => {
             <!-- 文档内容/介绍 -->
             <div class="p-8">
               <div class="flex items-center gap-2 mb-6">
-                <div class="w-1 h-6 bg-(--color-primary) rounded-full"></div>
+                <div class="w-1 h-6 bg-(--color-primary) rounded-full"/>
                 <h2 class="text-lg font-bold text-(--color-text-primary)">文档介绍</h2>
               </div>
-              <div class="prose prose-base max-w-none document-content" v-html="document?.content"></div>
+              <div class="prose prose-base max-w-none document-content" v-html="document?.content"/>
 
               <!-- 标签 -->
               <div v-if="document?.tags && document.tags.length > 0" class="mt-8 pt-6 border-t border-(--color-border-light)">
@@ -360,7 +360,7 @@ onMounted(() => {
                       :src="item.coverImage"
                       :alt="item.title"
                       class="w-full h-full object-cover"
-                    />
+                    >
                     <div v-else class="w-full h-full flex items-center justify-center text-(--color-primary)">
                       <Icon name="ep:document" class="text-lg" />
                     </div>

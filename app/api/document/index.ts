@@ -5,9 +5,9 @@ import type {
   DocumentDetailVO,
   DocumentCategoryVO,
   ExamTypeVO,
-  YearOptionVO,
+  YearOptionVO,DocumentType
 } from "~/types/document";
-import type {DocumentType} from "~/types/document";
+
 import {
   getMockDocumentList,
   getMockDocumentDetail,

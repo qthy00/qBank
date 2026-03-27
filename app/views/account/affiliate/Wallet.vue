@@ -37,18 +37,18 @@
               <el-button
                 type="primary"
                 size="default"
-                @click="handleWithdraw(summary.brokeragePrice)"
                 :disabled="summary.brokeragePrice <= 0"
                 class="bg-white text-blue-600 hover:bg-blue-50"
+                @click="handleWithdraw(summary.brokeragePrice)"
               >
                 提现
               </el-button>
               <el-button
                 type="primary"
                 size="default"
-                @click="handleToBalance(summary.brokeragePrice)"
                 :disabled="summary.brokeragePrice <= 0"
                 class="bg-transparent border border-white hover:bg-white/10"
+                @click="handleToBalance(summary.brokeragePrice)"
               >
                 转余额
               </el-button>
@@ -94,7 +94,7 @@
 <!--          </div>-->
         </div>
 
-        <el-tabs v-model="state.currentTab" @tab-change="onChangeTab" class="w-full">
+        <el-tabs v-model="state.currentTab" class="w-full" @tab-change="onChangeTab">
           <el-tab-pane v-for="(tab, key) in tabMaps" :key="key" :label="tab.name" :name="key" />
         </el-tabs>
 
@@ -106,10 +106,10 @@
 
       <div v-else class="bg-white rounded-xl shadow-sm overflow-hidden">
         <div
-          v-loading="loading"
-          class="p-2 flex border border-b-solid border-gray-3 my-2"
           v-for="item in list"
           :key="item.id"
+          v-loading="loading"
+          class="p-2 flex border border-b-solid border-gray-3 my-2"
         >
           <div class="flex-1 items-start">
             <div class="flex justify-between mb-2">

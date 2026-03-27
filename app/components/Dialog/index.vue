@@ -80,12 +80,13 @@ const dialogStyle = computed(() => {
         align-center
     >
       <template #header="{ close }">
-        <div :class="`rounded-tr-2xl rounded-tl-2xl ${isMobile ? 'p-2' : 'p-4'} border-b border-gray-100 flex justify-between
+        <div
+:class="`rounded-tr-2xl rounded-tl-2xl ${isMobile ? 'p-2' : 'p-4'} border-b border-gray-100 flex justify-between
       items-center bg-gradient-to-r from-blue-600 to-blue-300 shadow-md`">
           <div class="text-white">
             <h3 class="ml-1 text-lg font-bold flex items-center relative pl-6 text-white/95">
               <!-- 左侧装饰条 -->
-              <span class="absolute left-0 top-1/2 transform -translate-y-1/2 w-1.5 h-6 bg-white rounded-full"></span>
+              <span class="absolute left-0 top-1/2 transform -translate-y-1/2 w-1.5 h-6 bg-white rounded-full"/>
               <slot name="title">
                 {{ title }}
               </slot>
@@ -93,8 +94,8 @@ const dialogStyle = computed(() => {
           </div>
           <el-button
               circle
-              @click="close"
               class="transition-all p-2 rounded-full cursor-pointer hover:bg-white/20 text-blue hover:text-white z-20"
+              @click="close"
           >
             <Icon name="ep:close"/>
           </el-button>
@@ -102,12 +103,12 @@ const dialogStyle = computed(() => {
       </template>
       <div class="mx-5 mb-5">
         <el-scrollbar v-if="scroll" :style="dialogStyle">
-          <slot></slot>
+          <slot/>
         </el-scrollbar>
-        <slot v-else></slot>
+        <slot v-else/>
       </div>
       <template v-if="slots.footer" #footer>
-        <slot name="footer"></slot>
+        <slot name="footer"/>
       </template>
     </el-dialog>
 </template>

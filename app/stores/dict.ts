@@ -2,9 +2,9 @@ import {defineStore} from 'pinia'
 // @ts-ignore
 import type {DictDataVO} from '~/api/dict/dict.data'
 import {CACHE_KEY, useCache} from '~/composables/useCache.ts'
+import {getSimpleDictDataList} from '~/api/dict/dict.data'
 
 const {wsCache} = useCache('sessionStorage')
-import {getSimpleDictDataList} from '~/api/dict/dict.data'
 
 
 export interface DictItem {

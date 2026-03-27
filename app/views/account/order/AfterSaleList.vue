@@ -64,19 +64,20 @@ onMounted(() => {
       <div class="bg-white rounded-xl shadow-sm overflow-hidden p-4">
         <div v-loading="loading" class="space-y-4">
           <el-card
-            shadow="hover"
             v-for="(afterSale, index) in list"
             :key="index"
+            shadow="hover"
             @click="handleViewDetail(afterSale)"
           >
             <!-- 订单内容 -->
             <div class="p-4">
               <div class="flex space-x-3">
-                <img v-if="afterSale.itemLogo"
+                <img
+v-if="afterSale.itemLogo"
                   :src="afterSale.itemLogo"
                   alt="商品图片"
                   class="w-20 h-20 rounded-md object-cover"
-                />
+                >
                 <div class="flex-1">
                   <div class="flex justify-between items-center">
                     <div class="font-bold text-gray-800 line-clamp-2">{{ afterSale.itemName }}</div>

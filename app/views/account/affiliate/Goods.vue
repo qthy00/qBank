@@ -89,15 +89,15 @@ onMounted(() => {
           <div
             v-for="tool in list"
             :key="tool.contentId"
-            @click="onShareGoods(tool)"
             class="tool-card cursor-pointer border rounded-lg p-4 bg-gray-50 hover:shadow-md transition-shadow group overflow-hidden"
+            @click="onShareGoods(tool)"
           >
             <div class="flex items-center gap-3 mb-3">
               <div
                 class="w-12 h-12 bg-blue-100 rounded-lg flex items-center justify-center mb-3 group-hover:scale-105 transition-transform"
               >
                 <template v-if="tool.logo">
-                  <img :src="tool.logo" alt="logo" class="w-12 h-12 object-cover" />
+                  <img :src="tool.logo" alt="logo" class="w-12 h-12 object-cover" >
                 </template>
                 <template v-else>
                   <Icon :name="tool.icon" class="text-xl text-blue-600 mx-2.5" />
@@ -116,10 +116,10 @@ onMounted(() => {
               </div>
             </div>
             <div class="flex justify-between text-xs text-gray-400 mt-2">
-              <div class="commission-num" v-if="tool.brokeragePrice === undefined">
+              <div v-if="tool.brokeragePrice === undefined" class="commission-num">
                 预计佣金：计算中
               </div>
-              <div class="commission-num" v-else>
+              <div v-else class="commission-num">
                 预计佣金：<span class="text-red-700">￥{{ fen2yuan(tool.brokeragePrice) }}</span>
               </div>
               <el-button size="small" type="primary" plain @click.stop="onShareGoods(tool)"
@@ -128,8 +128,8 @@ onMounted(() => {
             </div>
           </div>
         </div>
-        <div class="text-center my-4 text-gray-500" v-if="loading">加载中...</div>
-        <div class="text-center my-4 text-gray-400" v-else-if="list.length >= total">
+        <div v-if="loading" class="text-center my-4 text-gray-500">加载中...</div>
+        <div v-else-if="list.length >= total" class="text-center my-4 text-gray-400">
           没有更多工具了
         </div>
       </div>

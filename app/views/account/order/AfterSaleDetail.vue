@@ -37,10 +37,10 @@ const cancelApply = (id?: number) => {
 </script>
 
 <template>
-  <Dialog title="售后详情" v-model="dialogVisible">
+  <Dialog v-model="dialogVisible" title="售后详情">
     <h3 class="text-lg font-semibold text-gray-800 my-2 border-t border-gray-100">工具信息</h3>
     <div class="flex space-x-3">
-      <img :src="order?.itemLogo" alt="工具图片" class="w-16 h-16 rounded-md object-cover" />
+      <img :src="order?.itemLogo" alt="工具图片" class="w-16 h-16 rounded-md object-cover" >
       <div class="flex flex-col justify-evenly">
         <div class="font-bold text-gray-800 line-clamp-2">{{ order?.itemName }}</div>
         <span class="text-xs text-gray-600 line-clamp-2">{{ order?.itemDescription }}</span>

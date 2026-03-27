@@ -7,7 +7,7 @@
       :crossorigin="crossorigin"
       :src="src"
       :style="getImageStyle"
-    />
+    >
   </div>
 </template>
 <script lang="ts" setup>
@@ -131,13 +131,13 @@ function croppered() {
   if (!cropper.value) {
     return
   }
-  let imgInfo = cropper.value.getData()
+  const imgInfo = cropper.value.getData()
   const canvas = props.circled ? getRoundedCanvas() : cropper.value.getCroppedCanvas()
   canvas.toBlob((blob) => {
     if (!blob) {
       return
     }
-    let fileReader: FileReader = new FileReader()
+    const fileReader: FileReader = new FileReader()
     fileReader.readAsDataURL(blob)
     fileReader.onloadend = (e) => {
       emit('cropend', {

@@ -3,7 +3,7 @@
     <div class="error-code">404</div>
     <h1 class="error-message">页面未找到</h1>
     <p class="error-description">抱歉，您访问的页面不存在或已被移除</p>
-    <button @click="() => push('/')" class="home-button">返回首页</button>
+    <button class="home-button" @click="() => push('/')">返回首页</button>
   </div>
 </template>
 

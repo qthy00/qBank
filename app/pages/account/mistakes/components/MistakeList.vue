@@ -68,13 +68,13 @@ const getDifficultyLabel = (difficulty: number) => {
 </script>
 
 <template>
-  <div class="mistake-list" v-loading="loading">
+  <div v-loading="loading" class="mistake-list">
     <!-- 表头 -->
     <div class="list-header">
       <el-checkbox
         :model-value="isAllSelected"
-        @change="handleSelectAll"
         :disabled="list.length === 0"
+        @change="handleSelectAll"
       >
         全选
       </el-checkbox>

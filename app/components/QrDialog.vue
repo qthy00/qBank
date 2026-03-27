@@ -7,8 +7,8 @@ const { visible, title, url } = storeToRefs(store)
 
 <template>
   <Dialog
-    title="请扫码支付"
     v-model="visible"
+    title="请扫码支付"
     width="350px"
     max-height="350px"
   >

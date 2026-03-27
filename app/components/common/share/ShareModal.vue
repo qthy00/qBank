@@ -53,7 +53,7 @@ const onShareByCopyLink = () => {
         @click="onShareByPoster"
       >
         <div class="flex-1 flex-col items-center">
-          <img class="share-img mb-2" src="~/assets/images/share_poster.png" alt="分享海报" />
+          <img class="share-img mb-2" src="~/assets/images/share_poster.png" alt="分享海报" >
           <el-text class="text-#666 mt-1">生成海报</el-text>
         </div>
       </button>
@@ -64,7 +64,7 @@ const onShareByCopyLink = () => {
         @click="onShareByCopyLink"
       >
         <div class="flex-1 flex-col items-center">
-          <img class="share-img mb-2" src="~/assets/images/share_link.png" alt="分享链接" />
+          <img class="share-img mb-2" src="~/assets/images/share_link.png" alt="分享链接" >
           <el-text class="text-#666 mt-1">复制链接</el-text>
         </div>
       </button>
@@ -74,7 +74,7 @@ const onShareByCopyLink = () => {
   <!-- 分享海报，对应操作 ② -->
   <CanvasPoster
     ref="sharePosterRef"
-    :shareInfo="shareInfo"
+    :share-info="shareInfo"
   />
 </template>
 

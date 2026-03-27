@@ -109,7 +109,7 @@ const sortedSuggestions = computed(() => {
             class="dot"
             :class="{ active: n <= suggestion.priority }"
             :style="{ backgroundColor: n <= suggestion.priority ? getTypeConfig(suggestion.type).color : '#e5e7eb' }"
-          ></span>
+          />
         </div>
       </div>
     </div>

@@ -16,8 +16,8 @@
               <div>
                 <span class="text-slate-500">/ {{ report.totalScore }}分</span>
                 <div
-                  class="mt-1 flex items-center text-success text-sm"
                   v-if="report.relativeScore"
+                  class="mt-1 flex items-center text-success text-sm"
                 >
                   <Icon name="raphael:arrowup" class="text-success mr-1" />
                   <span
@@ -176,8 +176,8 @@
         type="primary"
         plain
         size="default"
-        @click="navigateTo(`/t/${qPackage.series}`)"
         class="px-2 sm:px-6 py-1 sm:py-3 text-sm sm:text-base h-auto whitespace-nowrap"
+        @click="navigateTo(`/t/${qPackage.series}`)"
       >
         返回首页
       </el-button>
@@ -206,6 +206,7 @@
         type="danger"
         plain
         size="default"
+        class="px-2 sm:px-6 py-1 sm:py-3 text-sm sm:text-base h-auto whitespace-nowrap"
         @click="
             navigateTo({
               name: 'PaperReportDetail',
@@ -213,7 +214,6 @@
               query: { p: query.p, up: query.up },
             })
           "
-        class="px-2 sm:px-6 py-1 sm:py-3 text-sm sm:text-base h-auto whitespace-nowrap"
       >
         查看试卷判分
       </el-button>
@@ -222,7 +222,7 @@
 </template>
 
 <script setup lang="ts">
-import { type HeaderInfo } from '~/components/PdfExportButton/pdf-export-util'
+import type { HeaderInfo } from '~/components/PdfExportButton/pdf-export-util'
 import { questionTypes } from './func'
 import type { PaperReport } from '~/types/qBank'
 import { questionApi } from '@/api/qbank'

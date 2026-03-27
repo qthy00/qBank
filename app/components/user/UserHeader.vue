@@ -6,8 +6,8 @@
         src="../../assets/images/bg.png"
         class="w-full h-56 object-cover"
         alt="背景图"
-      />
-      <div class="absolute inset-0 bg-black bg-opacity-30"></div>
+      >
+      <div class="absolute inset-0 bg-black bg-opacity-30"/>
       <!-- 用户信息 -->
       <div class="absolute bottom-4 left-0 w-full">
         <div class="container mx-auto px-4 flex items-center space-x-4 text-white">

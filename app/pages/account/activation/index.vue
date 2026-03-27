@@ -181,27 +181,27 @@ onMounted(() => {
       <el-row>
         <div class="form-group">
           <input
-              type="text"
               v-model="activationCode"
+              type="text"
               placeholder="请输入激活码"
-              @input="formatActivationCode"
               :class="{ error: isCodeError && !isCodeChecking }"
+              @input="formatActivationCode"
               @keyup.enter="checkCode"
-          />
+          >
         </div>
         <div class="form-actions ml-3">
           <button
               class="btn check-btn"
-              @click="checkCode"
               :disabled="isCodeChecking || !isCodeValid"
+              @click="checkCode"
           >
             <span v-if="!isCodeChecking">验证</span>
             <Icon v-if="isCodeChecking" class="loading" name="svg-spinners:270-ring"/>
           </button>
           <button
               class="btn activate-btn"
-              @click="confirmActivation"
               :disabled="!canActivate || isLoading"
+              @click="confirmActivation"
           >
             <span v-if="!isLoading">激活选中工具</span>
             <Icon v-if="isLoading" class="loading" name="svg-spinners:270-ring"/>
@@ -209,14 +209,14 @@ onMounted(() => {
         </div>
       </el-row>
       <el-row>
-        <p class="error-message" v-if="isCodeError && !isCodeChecking">{{ errorMsg }}</p>
-        <p class="info-message" v-if="isCodeChecking">正在验证激活码...</p>
-        <p class="info-message" v-else></p>
+        <p v-if="isCodeError && !isCodeChecking" class="error-message">{{ errorMsg }}</p>
+        <p v-if="isCodeChecking" class="info-message">正在验证激活码...</p>
+        <p v-else class="info-message"/>
       </el-row>
     </div>
 
     <!-- 工具选择区域 (当激活码对应多个工具时显示) -->
-    <div class="tool-selection" v-if="availableTools.length > 0">
+    <div v-if="availableTools.length > 0" class="tool-selection">
       <div class="selection-header">
         <h3>请选择要激活的工具</h3>
         <p class="selection-desc">此激活码可用于激活以下工具中的一个</p>
@@ -224,15 +224,15 @@ onMounted(() => {
 
       <div class="tools-grid">
         <div
-            class="tool-card"
             v-for="tool in availableTools"
             :key="tool.id"
+            class="tool-card"
             :class="{ selected: selectedToolId === tool.id }"
             @click="selectedToolId = tool.id"
         >
           <div class="tool-icon">
             <template v-if="isUrl(tool.icon)">
-              <img :src="tool.icon" alt="Tool Icon" class="w-12 h-12 object-cover"/>
+              <img :src="tool.icon" alt="Tool Icon" class="w-12 h-12 object-cover">
             </template>
             <template v-else>
               <Icon :name="tool.icon"/>
@@ -268,7 +268,7 @@ onMounted(() => {
       </div>
 
       <!-- 空状态 -->
-      <div class="empty-state" v-if="filteredCodes.length === 0 && !isLoading">
+      <div v-if="filteredCodes.length === 0 && !isLoading" class="empty-state">
         <svg
             width="80"
             height="80"
@@ -294,7 +294,7 @@ onMounted(() => {
       </div>
 
       <!-- 激活码列表 -->
-      <div class="codes-list" v-if="filteredCodes.length > 0 && !isLoading">
+      <div v-if="filteredCodes.length > 0 && !isLoading" class="codes-list">
         <div class="code-item header">
           <div class="code-col code-name">工具名称</div>
           <div class="code-col code-key">激活码</div>
@@ -303,16 +303,16 @@ onMounted(() => {
           <!--          <div class="code-col code-expiry">有效期至</div>-->
         </div>
         <div
-            class="code-item"
             v-for="(code, index) in filteredCodes"
             :key="index"
+            class="code-item"
             :class="{ expired: code.codeStatus === '已过期' }"
         >
           <div class="code-col code-name ">
             <div class="flex items-center">
               <div class="mr-2">
                 <template v-if="isUrl(code.dataLogo)">
-                  <img :src="code.dataLogo" alt="Tool Icon" class="w-6 h-6 object-cover"/>
+                  <img :src="code.dataLogo" alt="Tool Icon" class="w-6 h-6 object-cover">
                 </template>
                 <template v-else>
                   <Icon :name="code.dataLogo"/>

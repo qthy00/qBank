@@ -65,8 +65,8 @@
 
                 <!-- 章节卡片网格 -->
                 <div
-                    class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6"
                     v-if="chapters.length"
+                    class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6"
                 >
                   <div
                       v-for="(chapter, index) in chapters"
@@ -114,7 +114,7 @@
                             :stroke-width="8"
                             :stroke="chapter.isCompleted ? '#10b981' : '#60a5fa'"
                             bg-color="#e5e7eb"
-                        ></el-progress>
+                        />
                       </div>
                     </div>
 
@@ -232,7 +232,7 @@
                                       :stroke-width="8"
                                       :stroke="chapter.isCompleted ? '#10b981' : '#60a5fa'"
                                       bg-color="#e5e7eb"
-                                  ></el-progress>
+                                  />
                                 </div>
                               </div>
                             </div>
@@ -259,7 +259,7 @@
                               :stroke-width="8"
                               stroke="#10b981"
                               bg-color="#e5e7eb"
-                          ></el-progress>
+                          />
                         </div>
 
                         <div>
@@ -271,7 +271,7 @@
                               :stroke-width="8"
                               stroke="#60a5fa"
                               bg-color="#e5e7eb"
-                          ></el-progress>
+                          />
                         </div>
                       </div>
                     </div>

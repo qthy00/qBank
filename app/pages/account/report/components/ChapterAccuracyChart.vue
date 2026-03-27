@@ -126,7 +126,7 @@ const sortedData = computed(() => {
                     width: `${item.accuracy}%`,
                     background: `linear-gradient(90deg, ${getAccuracyColor(item.accuracy)}80 0%, ${getAccuracyColor(item.accuracy)} 100%)`
                   }"
-                ></div>
+                />
               </div>
               <div class="progress-info">
                 <span class="progress-stat">

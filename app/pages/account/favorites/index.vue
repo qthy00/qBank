@@ -121,13 +121,13 @@ onMounted(() => {
         <div
           v-for="tool in tools"
           :key="tool.id"
-          @click="handleToolClick(tool)"
           class="tool-card cursor-pointer border rounded-lg p-4 bg-gray-50 hover:shadow-md transition-shadow group overflow-hidden"
+          @click="handleToolClick(tool)"
         >
           <div class="flex items-center gap-3 mb-3">
             <div class="w-12 h-12 bg-blue-100 rounded-lg flex items-center justify-center mb-3 group-hover:scale-105 transition-transform">
               <template v-if="tool.logo">
-                <img :src="tool.logo" alt="logo" class="w-12 h-12 object-cover" />
+                <img :src="tool.logo" alt="logo" class="w-12 h-12 object-cover" >
               </template>
               <template v-else>
                 <Icon :name="tool.icon" class="text-xl text-blue-600 mx-2.5" />
@@ -144,7 +144,7 @@ onMounted(() => {
           </div>
         </div>
       </div>
-      <div class="text-center my-4 text-gray-400" v-if="!toolsLoading && tools.length >= toolsTotal && tools.length > 0">
+      <div v-if="!toolsLoading && tools.length >= toolsTotal && tools.length > 0" class="text-center my-4 text-gray-400">
         没有更多收藏了
       </div>
     </div>
@@ -167,7 +167,7 @@ onMounted(() => {
                 <el-tag size="small" type="info">{{ item.qbankName }}</el-tag>
               </div>
               <!-- 题目内容 -->
-              <div class="text-sm text-gray-800 mb-3" v-html="item.question.content"></div>
+              <div class="text-sm text-gray-800 mb-3" v-html="item.question.content"/>
               <!-- 选项预览 -->
               <div v-if="item.question.options" class="grid grid-cols-2 gap-2 text-xs text-gray-600">
                 <div v-for="(option, key) in item.question.options" :key="key" class="truncate">

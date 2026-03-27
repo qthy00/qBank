@@ -1,6 +1,6 @@
-import type {FavoriteVO, FeedbackQuestionVO, UserProfileUpdateReqVO } from '~/types/user'
+import type {FavoriteVO, FeedbackQuestionVO, UserProfileUpdateReqVO,PackageAccessVO } from '~/types/user'
 import { httpGet, httpUpload, httpPost, httpPut } from "~/composables/useHttp";
-import type {PackageAccessVO} from "~/types/user";
+
 import { getMockUser, getMockUserPermissions, updateMockUser } from './mock'
 
 /* 是否启用Mock数据 */

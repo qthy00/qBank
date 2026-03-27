@@ -5,7 +5,7 @@ import { isWxBrowser } from '@/utils/is.ts'
 const dialogVisible = ref(false)
 const isLoading = ref(true)
 const wechatQrCodeUrl = ref('')
-let { path, query } = useRoute()
+const { path, query } = useRoute()
 
 /** 打开弹窗 */
 const open = async () => {
@@ -26,7 +26,7 @@ const getWechatQrCodeUrl = async () => {
       }
     }
     const data = await LoginApi.socialAuthRedirect(32, encodeURIComponent(redirectUri))
-    let url = data.split('&redirect_uri')[0]
+    const url = data.split('&redirect_uri')[0]
     wechatQrCodeUrl.value = url + '&redirect_uri=' + encodeURIComponent(redirectUri)
   } finally {
     isLoading.value = false
@@ -54,7 +54,7 @@ const getWechatQrCodeUrl = async () => {
               scrolling="no"
               class="w-full border-0 overflow-hidden"
               :style="{ height: '330px' }"
-            ></iframe>
+            />
           </div>
         </el-card>
         <!-- 返回按钮 -->

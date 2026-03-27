@@ -76,23 +76,23 @@
     <!-- 登录按钮 -->
     <button
         :disabled="loginLoading"
-        @click="resetPassword()"
         class="w-full bg-gradient-to-r from-blue-600 to-indigo-600 hover:from-blue-700 hover:to-indigo-700 text-white font-medium py-3 rounded-xl transition-all duration-300 transform hover:scale-[1.02] focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-offset-2 mt-6 md:mt-0 shadow-lg shadow-blue-500/20"
+        @click="resetPassword()"
     >
       <div class="flex items-center justify-center space-x-2">
         <span>{{ loginLoading ? $t('login.passwordResetting') : $t('login.forgetFormTitle') }}</span>
         <div
             v-if="loginLoading"
             class="animate-spin rounded-full h-4 w-4 border-b-2 border-white"
-        ></div>
+        />
       </div>
     </button>
     <!-- 返回登录 -->
     <div class="mt-6 text-center text-sm">
       <button
           link
-          @click="handleBackLogin()"
           class="text-blue-600 font-medium hover:underline"
+          @click="handleBackLogin()"
       >
         {{ $t('login.backLogin') }}
       </button>
@@ -213,7 +213,7 @@ const getSmsCode = async (params) => {
     message.success(t('login.SmsSendMsg'))
     // 设置倒计时
     mobileCodeTimer.value = 60
-    let msgTimer = setInterval(() => {
+    const msgTimer = setInterval(() => {
       mobileCodeTimer.value = mobileCodeTimer.value - 1
       if (mobileCodeTimer.value <= 0) {
         clearInterval(msgTimer)

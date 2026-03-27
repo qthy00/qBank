@@ -114,8 +114,8 @@
 
 <script setup lang="ts">
 import type { GuideCategoryVO, GuideVO } from '~/types/help'
-import { getMockGuideList } from '~/api/help/mock'
-import { mockGuideCategories } from '~/api/help/mock'
+import { getMockGuideList, mockGuideCategories  } from '~/api/help/mock'
+
 
 definePageMeta({
   layout: 'default'

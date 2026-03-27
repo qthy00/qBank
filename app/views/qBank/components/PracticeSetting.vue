@@ -105,16 +105,16 @@ const loadSubjectInfo = async (subjectId: number) => {
       <div v-for="(group, groupIndex) in buttons" :key="groupIndex" class="mb-6">
         <!-- 分组标题 -->
         <div class="text-sm font-semibold text-gray-800 mb-3 flex items-center">
-          <div class="w-1.5 h-4 bg-blue-500 rounded-full mr-2"></div>
+          <div class="w-1.5 h-4 bg-blue-500 rounded-full mr-2"/>
           {{ group.type }}
         </div>
 
         <!-- 选项按钮组 -->
         <div class="option-row flex flex-wrap justify-start gap-2">
           <el-button
-            :class="['option-btn', isSelected(groupIndex, btn.value) ? 'selected' : 'default']"
             v-for="(btn, i) in group.list"
             :key="i"
+            :class="['option-btn', isSelected(groupIndex, btn.value) ? 'selected' : 'default']"
             @click="onClickBtn(groupIndex, btn.value)"
           >
             {{ btn.type }}
@@ -125,9 +125,9 @@ const loadSubjectInfo = async (subjectId: number) => {
 
     <el-button
       type="primary"
-      @click="startPractice()"
       class="float-end m-4 bg-gradient-to-r from-blue-600 to-blue-400 border-none text-white rounded-full shadow-md hover:opacity-90"
       size="large"
+      @click="startPractice()"
     >
       确 定
     </el-button>

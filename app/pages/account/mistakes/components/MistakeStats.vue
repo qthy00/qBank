@@ -71,8 +71,8 @@ const masteryRate = computed(() => {
       <el-button
         type="primary"
         size="large"
-        @click="$emit('retry-all')"
         :disabled="!stats || stats.unMasteredCount === 0"
+        @click="$emit('retry-all')"
       >
         <Icon name="material-symbols:refresh" class="btn-icon" />
         开始复习错题

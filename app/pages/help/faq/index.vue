@@ -110,8 +110,8 @@
 
 <script setup lang="ts">
 import type { FAQCategoryVO, FAQVO } from '~/types/help'
-import { getMockFAQList } from '~/api/help/mock'
-import { mockFAQCategories } from '~/api/help/mock'
+import { getMockFAQList, mockFAQCategories  } from '~/api/help/mock'
+
 
 definePageMeta({
   layout: 'default'

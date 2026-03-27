@@ -62,9 +62,11 @@
             class="search-result-item block bg-(--color-bg-container) rounded-lg border border-(--color-border) p-4 hover:shadow-md transition-all duration-200"
           >
             <div class="flex items-start gap-4">
-              <div class="icon-wrapper w-12 h-12 rounded-lg flex items-center justify-center flex-shrink-0"
+              <div
+class="icon-wrapper w-12 h-12 rounded-lg flex items-center justify-center flex-shrink-0"
                    :class="item.type === 'faq' ? 'bg-blue-50' : 'bg-green-50'">
-                <Icon :name="item.type === 'faq' ? 'ep:question-filled' : 'ep:notebook'"
+                <Icon
+:name="item.type === 'faq' ? 'ep:question-filled' : 'ep:notebook'"
                       class="text-2xl"
                       :class="item.type === 'faq' ? 'text-blue-500' : 'text-green-500'" />
               </div>
@@ -75,9 +77,11 @@
                   </el-tag>
                   <span class="text-xs text-(--color-text-secondary)">{{ item.categoryName }}</span>
                 </div>
-                <h3 class="font-bold text-(--color-text-primary) mb-2 hover:text-blue-500 transition-colors"
+                <h3
+class="font-bold text-(--color-text-primary) mb-2 hover:text-blue-500 transition-colors"
                     v-html="highlightKeyword(item.title)" />
-                <p class="text-sm text-(--color-text-secondary) line-clamp-2"
+                <p
+class="text-sm text-(--color-text-secondary) line-clamp-2"
                    v-html="highlightKeyword(item.summary || '')" />
               </div>
               <Icon name="ep:arrow-right" class="text-(--color-text-secondary) flex-shrink-0" />

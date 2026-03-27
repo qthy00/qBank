@@ -17,7 +17,7 @@
             scrolling="no"
             class="w-full border-0 overflow-hidden"
             :style="{ height: iframeHeight }"
-          ></iframe>
+          />
         </div>
       </el-card>
       <!-- 返回按钮 -->
@@ -51,7 +51,7 @@ const getWechatQrCodeUrl = async () => {
     const redirectUri = 'https://gongjua.cn' + path + '?event=login&type=32'
     // const redirectUri = 'https://www.gongjua.cn?event=login&type=32'
     const data = await LoginApi.socialAuthRedirect(32, encodeURIComponent(redirectUri))
-    let url = data.split('&redirect_uri')[0]
+    const url = data.split('&redirect_uri')[0]
     wechatQrCodeUrl.value = url + '&redirect_uri=' + encodeURIComponent(redirectUri)
   }finally {
     isLoading.value = false

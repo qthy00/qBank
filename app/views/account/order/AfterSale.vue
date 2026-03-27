@@ -41,7 +41,7 @@ const submit = async () => {
     message.error('请选择退款原因')
     return
   }
-  let data = {
+  const data = {
     orderId,
     refundPrice: formData.amount * 100,
     ...formData,
@@ -160,7 +160,7 @@ onMounted(async () => {
           </el-checkbox>
         </div>
 
-        <el-button type="primary" @click="submit" class="w-full">提交申请</el-button>
+        <el-button type="primary" class="w-full" @click="submit">提交申请</el-button>
       </div>
     </el-card>
   </div>

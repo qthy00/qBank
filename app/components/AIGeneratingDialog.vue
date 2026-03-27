@@ -21,12 +21,12 @@
         src="../assets/images/loading.gif"
         alt="生成中"
         class="w-80 h-32 object-contain mb-4"
-      />
+      >
 
       <div class="text-sm text-gray-600">
         {{ description }}
-        <br />
-        <br />
+        <br >
+        <br >
         请稍候，预计耗时约 <b>10~30 秒</b>。
       </div>
 
@@ -62,7 +62,7 @@ defineProps({
 })
 
 onMounted(() => {
-  let timer = setInterval(() => {
+  const timer = setInterval(() => {
     if (progress.value >= 100) {
       clearInterval(timer);
     } else {

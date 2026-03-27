@@ -1,0 +1,10 @@
+{
+  "permissions": {
+    "allow": [
+      "Read(//c/Program Files/JetBrains/**)",
+      "Read(//d/Lilia/xcy-nuxt/$LOCALAPPDATA/Programs/**)",
+      "Bash(git add:*)",
+      "Bash(git commit:*)"
+    ]
+  }
+}

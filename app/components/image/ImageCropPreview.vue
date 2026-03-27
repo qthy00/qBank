@@ -9,7 +9,7 @@
       <!-- 带网格背景的裁剪容器 -->
       <div class="w-full h-[400px] border rounded-lg overflow-hidden relative">
         <!-- 透明网格背景 -->
-        <div class="absolute inset-0 grid-bg"></div>
+        <div class="absolute inset-0 grid-bg"/>
 
         <!-- 图片裁剪容器 -->
         <div class="w-full h-full">
@@ -19,7 +19,7 @@
             class="w-full h-full object-contain"
             alt="原始图片"
             @load="handleImageLoad"
-          />
+          >
         </div>
       </div>
 

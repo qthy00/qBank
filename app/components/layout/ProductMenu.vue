@@ -16,7 +16,7 @@
               <div
                 class="w-12 h-12 rounded-full bg-blue-100 flex items-center justify-center text-blue-600 mr-4"
               >
-                <i class="el-icon-laptop text-xl"></i>
+                <i class="el-icon-laptop text-xl"/>
               </div>
               <div class="flex-1">
                 <h3 class="font-bold text-lg text-gray-900 truncate">
@@ -50,7 +50,7 @@
                   </div>
                   <i
                     class="el-icon-arrow-right text-blue-500 opacity-0 group-hover:opacity-100 transition-opacity"
-                  ></i>
+                  />
                 </a>
               </li>
             </ul>
@@ -61,7 +61,7 @@
               class="text-blue-600 text-sm font-medium hover:text-blue-700 transition-colors flex items-center"
             >
               {{ $t('products.seeAll') }}
-              <i class="el-icon-arrow-right ml-1.5 text-xs"></i>
+              <i class="el-icon-arrow-right ml-1.5 text-xs"/>
             </a>
           </div>
         </div>
@@ -76,7 +76,7 @@
               <div
                 class="w-12 h-12 rounded-full bg-green-100 flex items-center justify-center text-green-600 mr-4"
               >
-                <i class="el-icon-cpu text-xl"></i>
+                <i class="el-icon-cpu text-xl"/>
               </div>
               <div class="flex-1">
                 <h3 class="font-bold text-lg text-gray-900 truncate">
@@ -110,7 +110,7 @@
                   </div>
                   <i
                     class="el-icon-arrow-right text-green-500 opacity-0 group-hover:opacity-100 transition-opacity"
-                  ></i>
+                  />
                 </a>
               </li>
             </ul>
@@ -121,7 +121,7 @@
               class="text-green-600 text-sm font-medium hover:text-green-700 transition-colors flex items-center"
             >
               {{ $t('products.seeAll') }}
-              <i class="el-icon-arrow-right ml-1.5 text-xs"></i>
+              <i class="el-icon-arrow-right ml-1.5 text-xs"/>
             </a>
           </div>
         </div>
@@ -137,7 +137,7 @@
               <div
                 class="w-12 h-12 rounded-full bg-purple-100 flex items-center justify-center text-purple-600 mr-4"
               >
-                <i class="el-icon-cloud-server text-xl"></i>
+                <i class="el-icon-cloud-server text-xl"/>
               </div>
               <div class="flex-1">
                 <h3 class="font-bold text-lg text-gray-900 truncate">
@@ -171,7 +171,7 @@
                   </div>
                   <i
                     class="el-icon-arrow-right text-purple-500 opacity-0 group-hover:opacity-100 transition-opacity"
-                  ></i>
+                  />
                 </a>
               </li>
             </ul>
@@ -182,7 +182,7 @@
               class="text-purple-600 text-sm font-medium hover:text-purple-700 transition-colors flex items-center"
             >
               {{ $t('products.seeAll') }}
-              <i class="el-icon-arrow-right ml-1.5 text-xs"></i>
+              <i class="el-icon-arrow-right ml-1.5 text-xs"/>
             </a>
           </div>
         </div>
@@ -232,7 +232,7 @@
                   </div>
                   <i
                     class="el-icon-arrow-right text-orange-500 opacity-0 group-hover:opacity-100 transition-opacity"
-                  ></i>
+                  />
                 </a>
               </li>
             </ul>
@@ -243,7 +243,7 @@
               class="text-orange-600 text-sm font-medium hover:text-orange-700 transition-colors flex items-center"
             >
               {{ $t('products.seeAll') }}
-              <i class="el-icon-arrow-right ml-1.5 text-xs"></i>
+              <i class="el-icon-arrow-right ml-1.5 text-xs"/>
             </a>
           </div>
         </div>

@@ -63,7 +63,7 @@
                     <Icon name="ep:circle-check" class="text-blue-600" :size="16" />
                   </div>
                 </div>
-                <el-progress :percentage="80" :stroke-width="3" class="mt-2 sm:mt-3"></el-progress>
+                <el-progress :percentage="80" :stroke-width="3" class="mt-2 sm:mt-3"/>
                 <p class="text-[10px] sm:text-xs text-slate-500 mt-1 sm:mt-2">
                   正确率: {{ item.accuracy }}%
                 </p>
@@ -96,7 +96,7 @@
           />
           <!-- 复合题 -->
           <template v-if="[6, 8].includes(category.type)">
-            <div  class="mb-4 sm:mb-5" v-for="question in category.questions" :key="question.id">
+            <div  v-for="question in category.questions" :key="question.id" class="mb-4 sm:mb-5">
               <div class="p-3 sm:p-4 bg-indigo-50 border-b border-indigo-100 rounded-2xl mt-3">
                 <h4 class="font-medium text-indigo-800 mb-2 text-sm sm:text-base">
                   第{{question.sort}}题 {{ category.type === 6 ? '案例背景' : '通用题干' }}
@@ -143,8 +143,8 @@
         type="primary"
         plain
         size="default"
-        @click="navigateTo(`/t/${qPackage.series}`)"
         class="px-2 sm:px-6 py-1 sm:py-3 text-sm sm:text-base h-auto whitespace-nowrap"
+        @click="navigateTo(`/t/${qPackage.series}`)"
       >
         返回首页
       </el-button>
@@ -173,10 +173,10 @@
         type="danger"
         plain
         size="default"
+        class="px-2 sm:px-6 py-1 sm:py-3 text-sm sm:text-base h-auto whitespace-nowrap"
         @click="
             navigateTo({ name: 'PaperReport', params: { toolId: params.toolId }, query: { p: query.p, up: query.up } })
           "
-        class="px-2 sm:px-6 py-1 sm:py-3 text-sm sm:text-base h-auto whitespace-nowrap"
       >
         查看考试报告
       </el-button>
@@ -187,7 +187,7 @@
 <script setup lang="ts">
 import CategoryHeader from './components/report/CategoryHeader.vue'
 import QuestionItem from './components/report/QuestionItem.vue'
-import { type HeaderInfo } from '~/components/PdfExportButton/pdf-export-util'
+import type { HeaderInfo } from '~/components/PdfExportButton/pdf-export-util'
 import type { PaperReport, QuestionAnswerVO } from '~/types/qBank'
 import { getTypeName } from './func'
 import { formatDate, formatPast2 } from '@/utils/formatTime'

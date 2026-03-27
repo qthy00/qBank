@@ -112,8 +112,8 @@
           <!-- 操作按钮 -->
           <div class="flex justify-center">
             <button
-              @click="goBackIndex(qPackage.id)"
               class="py-3 px-8 bg-blue-600 hover:bg-blue-700 text-white rounded-xl font-medium transition-colors flex items-center justify-center w-full sm:w-auto"
+              @click="goBackIndex(qPackage.id)"
             >
               <Icon name="heroicons:arrow-left-20-solid" class="mr-2" />
               返回章节列表

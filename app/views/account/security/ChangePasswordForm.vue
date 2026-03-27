@@ -73,28 +73,28 @@ const resetForm = () => {
 <template>
   <Dialog v-model="dialogVisible" title="修改密码" width="40%" :scroll="false">
     <el-form
-      class="my-10 mx-5"
       ref="formRef"
+      v-loading="formLoading"
+      class="my-10 mx-5"
       :model="formData"
       :rules="formRules"
       label-width="80px"
-      v-loading="formLoading"
     >
       <el-form-item label="旧密码" prop="oldPassword">
         <el-input v-model="formData.oldPassword" placeholder="请输入旧密码" />
       </el-form-item>
       <el-form-item label="新密码" prop="password">
         <el-input
-          type="password"
           v-model="formData.password"
+          type="password"
           placeholder="请输入新密码"
           show-password
         />
       </el-form-item>
       <el-form-item label="确认密码" prop="confirmPassword">
         <el-input
-          type="password"
           v-model="formData.confirmPassword"
+          type="password"
           placeholder="请输入确认密码"
           show-password
         />
@@ -102,7 +102,7 @@ const resetForm = () => {
     </el-form>
     <template #footer>
       <el-button @click="dialogVisible = false">取 消</el-button>
-      <el-button @click="submitForm" type="primary" :disabled="formLoading">提 交</el-button>
+      <el-button type="primary" :disabled="formLoading" @click="submitForm">提 交</el-button>
     </template>
   </Dialog>
 </template>

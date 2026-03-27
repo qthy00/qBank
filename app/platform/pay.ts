@@ -68,7 +68,7 @@ export default class HyPay {
 
   // 预支付
   async prepay(channel: string): Promise<OrderResultVO> {
-    let data: OrderSubmitVO = {
+    const data: OrderSubmitVO = {
       id: this.id,
       channelCode: channel,
       returnUrl: this.returnUrl,
@@ -100,7 +100,7 @@ export default class HyPay {
   }
 
   async wechatNativePay() {
-    let data = await this.prepay('wx_native')
+    const data = await this.prepay('wx_native')
     // 显示扫码弹窗
     const payDialog = usePayDialogStore()
     payDialog.show(data.displayContent)
@@ -109,7 +109,7 @@ export default class HyPay {
   // 微信公众号 JSSDK 支付
   async wechatOfficialAccountPay() {
     const message = useMessage()
-    let data = await this.prepay('wx_pub')
+    const data = await this.prepay('wx_pub')
     if (!data) {
       return
     }
@@ -145,12 +145,12 @@ export default class HyPay {
 
   // 支付链接
   async redirectPay() {
-    let { displayContent } = await this.prepay('alipay_wap')
+    const { displayContent } = await this.prepay('alipay_wap')
     location.href = displayContent
   }
 
   async aliPay() {
-    let { displayContent } = await this.prepay('alipay_pc')
+    const { displayContent } = await this.prepay('alipay_pc')
     location.href = displayContent
   }
 

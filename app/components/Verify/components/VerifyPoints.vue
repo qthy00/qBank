@@ -11,7 +11,7 @@
         class="verify-img-panel"
       >
         <div v-show="showRefresh" class="verify-refresh" style="z-index: 3" @click="refresh">
-          <i class="iconfont icon-refresh"></i>
+          <i class="iconfont icon-refresh"/>
         </div>
         <img
           ref="canvas"
@@ -19,7 +19,7 @@
           alt=""
           style="display: block; width: 100%; height: 100%"
           @click="bindingClick ? canvasClick($event) : undefined"
-        />
+        >
 
         <div
           v-for="(tempPoint, index) in tempPoints"
@@ -104,7 +104,7 @@ const props = defineProps({
 const { t } = useI18n()
 const { mode, captchaType } = toRefs(props)
 const { proxy } = getCurrentInstance()
-let secretKey = ref(''), //后端返回的ase加密秘钥
+const secretKey = ref(''), //后端返回的ase加密秘钥
   checkNum = ref(3), //默认需要点击的字数
   fontPos = reactive([]), //选中的坐标信息
   checkPosArr = reactive([]), //用户点击的坐标
@@ -132,7 +132,7 @@ const init = () => {
   num.value = 1
   getPictrue()
   nextTick(() => {
-    let { imgHeight, imgWidth, barHeight, barWidth } = resetSize(proxy)
+    const { imgHeight, imgWidth, barHeight, barWidth } = resetSize(proxy)
     setSize.imgHeight = imgHeight
     setSize.imgWidth = imgWidth
     setSize.barHeight = barHeight
@@ -153,17 +153,17 @@ const canvasClick = (e) => {
   if (num.value == checkNum.value) {
     num.value = createPoint(getMousePos(canvas, e))
     //按比例转换坐标值
-    let arr = pointTransfrom(checkPosArr, setSize)
+    const arr = pointTransfrom(checkPosArr, setSize)
     checkPosArr.length = 0
     checkPosArr.push(...arr)
     //等创建坐标执行完
     setTimeout(() => {
       // var flag = this.comparePos(this.fontPos, this.checkPosArr);
       //发送后端请求
-      var captchaVerification = secretKey.value
+      const captchaVerification = secretKey.value
         ? aesEncrypt(backToken.value + '---' + JSON.stringify(checkPosArr), secretKey.value)
         : backToken.value + '---' + JSON.stringify(checkPosArr)
-      let data = {
+      const data = {
         captchaType: captchaType.value,
         pointJson: secretKey.value
           ? aesEncrypt(JSON.stringify(checkPosArr), secretKey.value)
@@ -201,8 +201,8 @@ const canvasClick = (e) => {
 }
 //获取坐标
 const getMousePos = function (obj, e) {
-  var x = e.offsetX
-  var y = e.offsetY
+  const x = e.offsetX
+  const y = e.offsetY
   return { x, y }
 }
 //创建坐标点
@@ -224,7 +224,7 @@ const refresh = async function () {
 
 // 请求背景图片和验证图片
 const getPictrue = async () => {
-  let data = {
+  const data = {
     captchaType: captchaType.value
   }
   const res = await getCode(data)
@@ -240,9 +240,9 @@ const getPictrue = async () => {
 }
 //坐标转换函数
 const pointTransfrom = function (pointArr, imgSize) {
-  var newPointArr = pointArr.map((p) => {
-    let x = Math.round((310 * p.x) / parseInt(imgSize.imgWidth))
-    let y = Math.round((155 * p.y) / parseInt(imgSize.imgHeight))
+  const newPointArr = pointArr.map((p) => {
+    const x = Math.round((310 * p.x) / parseInt(imgSize.imgWidth))
+    const y = Math.round((155 * p.y) / parseInt(imgSize.imgHeight))
     return { x, y }
   })
   return newPointArr
