@@ -85,8 +85,7 @@ jobs:
         uses: actions/upload-artifact@v4
         with:
           name: build-output
-          path: |
-            .output/**
+          path: .output
 
   # 部署到预发布环境
   deploy-staging:
