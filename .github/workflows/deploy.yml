@@ -74,16 +74,19 @@ jobs:
           NODE_ENV: production
           NUXT_PUBLIC_DEV: false
 
+      # 验证构建输出
+      - name: Verify build output
+        run: |
+          ls -la .output/ || (echo "Error: .output directory not found!" && exit 1)
+          ls -la .output/server/ || (echo "Error: server directory not found!" && exit 1)
+
       # 上传构建产物
       - name: Upload build artifacts
         uses: actions/upload-artifact@v4
         with:
           name: build-output
-          path: |
-            .output/**
-            !.output/cache/**
+          path: .output/
           retention-days: 7
-          if-no-files-found: error
 
   # 部署到预发布环境
   deploy-staging:
