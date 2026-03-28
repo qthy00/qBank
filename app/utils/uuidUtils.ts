@@ -65,14 +65,6 @@ export function isValidUUID(uuid: string): boolean {
 }
 
 /**
- * 获取UUID版本
- */
-export function getUUIDVersion(uuid: string): number | null {
-  if (!isValidUUID(uuid)) return null
-  return getUUIDVersion(uuid)
-}
-
-/**
  * 格式化UUID
  * @param uuid UUID字符串
  * @param uppercase 是否转为大写

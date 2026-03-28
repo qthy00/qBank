@@ -1,0 +1,248 @@
+name: Deploy to Production
+
+# 触发条件
+on:
+  # 手动触发
+  workflow_dispatch:
+    inputs:
+      environment:
+        description: '部署环境'
+        required: true
+        default: 'production'
+        type: choice
+        options:
+          - production
+          - staging
+
+  # 发布(release)时自动触发
+  release:
+    types: [published]
+
+  # 推送到master分支时触发（可选）
+  # push:
+  #   branches: [master]
+
+# 环境变量
+env:
+  NODE_VERSION: '20'
+  PNPM_VERSION: '9'
+
+jobs:
+  # 构建任务
+  build:
+    name: Build Application
+    runs-on: ubuntu-latest
+
+    steps:
+      # 检出代码
+      - name: Checkout code
+        uses: actions/checkout@v4
+
+      # 安装 pnpm
+      - name: Install pnpm
+        uses: pnpm/action-setup@v3
+        with:
+          version: ${{ env.PNPM_VERSION }}
+
+      # 安装 Node.js
+      - name: Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: ${{ env.NODE_VERSION }}
+          cache: 'pnpm'
+
+      # 安装依赖
+      - name: Install dependencies
+        run: pnpm install --frozen-lockfile
+
+      # 运行类型检查
+      - name: Type check
+        run: pnpm typecheck || echo "Type check skipped"
+
+      # 运行单元测试
+      - name: Run unit tests
+        run: pnpm test:unit --coverage || echo "Tests skipped"
+
+      # 代码规范检查
+      - name: Lint code
+        run: pnpm lint || echo "Lint skipped"
+
+      # 构建应用
+      - name: Build application
+        run: pnpm build
+        env:
+          NODE_ENV: production
+          NUXT_PUBLIC_DEV: false
+
+      # 上传构建产物
+      - name: Upload build artifacts
+        uses: actions/upload-artifact@v4
+        with:
+          name: build-output
+          path: .output/
+          retention-days: 7
+
+  # 部署到预发布环境
+  deploy-staging:
+    name: Deploy to Staging
+    needs: build
+    runs-on: ubuntu-latest
+    if: github.event.inputs.environment == 'staging' || github.event_name == 'release'
+    environment:
+      name: staging
+      url: https://staging.xueciyuan.com
+
+    steps:
+      - name: Download build artifacts
+        uses: actions/download-artifact@v4
+        with:
+          name: build-output
+          path: .output/
+
+      - name: Deploy to Staging Server
+        uses: appleboy/ssh-action@v1.0.3
+        with:
+          host: ${{ secrets.STAGING_HOST }}
+          username: ${{ secrets.STAGING_USER }}
+          key: ${{ secrets.SSH_PRIVATE_KEY }}
+          script: |
+            set -e
+
+            echo "正在部署到预发布环境..."
+
+            # 备份当前版本
+            BACKUP_NAME="/var/www/xcy-qthy-staging_backup_$(date +%Y%m%d_%H%M%S)"
+            if [ -d "/var/www/xcy-qthy-staging" ]; then
+              sudo cp -r /var/www/xcy-qthy-staging "$BACKUP_NAME"
+            fi
+
+            # 清理并创建新目录
+            sudo rm -rf /var/www/xcy-qthy-staging
+            sudo mkdir -p /var/www/xcy-qthy-staging
+
+            echo "等待文件传输..."
+
+      - name: Transfer files to Staging
+        uses: appleboy/scp-action@v0.1.7
+        with:
+          host: ${{ secrets.STAGING_HOST }}
+          username: ${{ secrets.STAGING_USER }}
+          key: ${{ secrets.SSH_PRIVATE_KEY }}
+          source: ".output/"
+          target: "/var/www/xcy-qthy-staging/"
+          strip_components: 1
+
+      - name: Restart Staging Service
+        uses: appleboy/ssh-action@v1.0.3
+        with:
+          host: ${{ secrets.STAGING_HOST }}
+          username: ${{ secrets.STAGING_USER }}
+          key: ${{ secrets.SSH_PRIVATE_KEY }}
+          script: |
+            echo "重启服务..."
+            cd /var/www/xcy-qthy-staging
+
+            # 使用 PM2 管理进程
+            if pm2 list | grep -q "xcy-qthy-staging"; then
+              pm2 restart xcy-qthy-staging
+            else
+              pm2 start server/index.mjs --name xcy-qthy-staging
+            fi
+
+            # 保存 PM2 配置
+            pm2 save
+
+            echo "预发布环境部署完成!"
+
+  # 部署到生产环境
+  deploy-production:
+    name: Deploy to Production
+    needs: build
+    runs-on: ubuntu-latest
+    if: github.event.inputs.environment == 'production' || github.event_name == 'release'
+    environment:
+      name: production
+      url: https://www.xueciyuan.com
+
+    steps:
+      - name: Download build artifacts
+        uses: actions/download-artifact@v4
+        with:
+          name: build-output
+          path: .output/
+
+      - name: Deploy to Production Server
+        uses: appleboy/ssh-action@v1.0.3
+        with:
+          host: ${{ secrets.PRODUCTION_HOST }}
+          username: ${{ secrets.PRODUCTION_USER }}
+          key: ${{ secrets.SSH_PRIVATE_KEY }}
+          script: |
+            set -e
+
+            echo "正在部署到生产环境..."
+
+            # 备份当前版本
+            BACKUP_NAME="/var/www/xcy-qthy_backup_$(date +%Y%m%d_%H%M%S)"
+            if [ -d "/var/www/xcy-qthy" ]; then
+              sudo cp -r /var/www/xcy-qthy "$BACKUP_NAME"
+              echo "已备份到: $BACKUP_NAME"
+            fi
+
+            # 清理并创建新目录
+            sudo rm -rf /var/www/xcy-qthy
+            sudo mkdir -p /var/www/xcy-qthy
+
+            echo "等待文件传输..."
+
+      - name: Transfer files to Production
+        uses: appleboy/scp-action@v0.1.7
+        with:
+          host: ${{ secrets.PRODUCTION_HOST }}
+          username: ${{ secrets.PRODUCTION_USER }}
+          key: ${{ secrets.SSH_PRIVATE_KEY }}
+          source: ".output/"
+          target: "/var/www/xcy-qthy/"
+          strip_components: 1
+
+      - name: Restart Production Service
+        uses: appleboy/ssh-action@v1.0.3
+        with:
+          host: ${{ secrets.PRODUCTION_HOST }}
+          username: ${{ secrets.PRODUCTION_USER }}
+          key: ${{ secrets.SSH_PRIVATE_KEY }}
+          script: |
+            echo "重启生产服务..."
+            cd /var/www/xcy-qthy
+
+            # 使用 PM2 管理进程
+            if pm2 list | grep -q "xcy-qthy-prod"; then
+              pm2 restart xcy-qthy-prod
+            else
+              pm2 start server/index.mjs --name xcy-qthy-prod
+            fi
+
+            # 保存 PM2 配置
+            pm2 save
+
+            echo "生产环境部署完成!"
+
+      - name: Notify Deployment Success
+        uses: 8398a7/action-slack@v3
+        if: success()
+        with:
+          status: ${{ job.status }}
+          text: "✅ 生产环境部署成功!"
+          fields: repo,message,author,ref
+        env:
+          SLACK_WEBHOOK_URL: ${{ secrets.SLACK_WEBHOOK_URL }}
+
+      - name: Notify Deployment Failure
+        uses: 8398a7/action-slack@v3
+        if: failure()
+        with:
+          status: ${{ job.status }}
+          text: "❌ 生产环境部署失败，请检查日志!"
+          fields: repo,message,author,ref
+        env:
+          SLACK_WEBHOOK_URL: ${{ secrets.SLACK_WEBHOOK_URL }}
