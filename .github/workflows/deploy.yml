@@ -79,8 +79,11 @@ jobs:
         uses: actions/upload-artifact@v4
         with:
           name: build-output
-          path: .output/
+          path: |
+            .output/**
+            !.output/cache/**
           retention-days: 7
+          if-no-files-found: error
 
   # 部署到预发布环境
   deploy-staging:
@@ -97,7 +100,8 @@ jobs:
         uses: actions/download-artifact@v4
         with:
           name: build-output
-          path: .output/
+          path: .
+          merge-multiple: true
 
       - name: Deploy to Staging Server
         uses: appleboy/ssh-action@v1.0.3
@@ -169,7 +173,8 @@ jobs:
         uses: actions/download-artifact@v4
         with:
           name: build-output
-          path: .output/
+          path: .
+          merge-multiple: true
 
       - name: Deploy to Production Server
         uses: appleboy/ssh-action@v1.0.3
