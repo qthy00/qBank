@@ -117,6 +117,7 @@ jobs:
           host: ${{ secrets.SERVER_HOST }}
           username: ${{ secrets.SERVER_USER }}
           key: ${{ secrets.SSH_PRIVATE_KEY }}
+          port: 9822
           script: |
             set -e
 
@@ -140,6 +141,7 @@ jobs:
           host: ${{ secrets.SERVER_HOST }}
           username: ${{ secrets.SERVER_USER }}
           key: ${{ secrets.SSH_PRIVATE_KEY }}
+          port: 9822
           source: ".output/"
           target: "/var/www/xcy-qthy-staging/"
           strip_components: 1
@@ -150,6 +152,7 @@ jobs:
           host: ${{ secrets.SERVER_HOST }}
           username: ${{ secrets.SERVER_USER }}
           key: ${{ secrets.SSH_PRIVATE_KEY }}
+          port: 9822
           script: |
             echo "重启服务..."
             cd /var/www/xcy-qthy-staging
@@ -192,6 +195,7 @@ jobs:
           host: ${{ secrets.SERVER_HOST }}
           username: ${{ secrets.SERVER_USER }}
           key: ${{ secrets.SSH_PRIVATE_KEY }}
+          port: 9822
           script: |
             set -e
 
@@ -216,6 +220,7 @@ jobs:
           host: ${{ secrets.SERVER_HOST }}
           username: ${{ secrets.SERVER_USER }}
           key: ${{ secrets.SSH_PRIVATE_KEY }}
+          port: 9822
           source: ".output/"
           target: "/var/www/xcy-qthy/"
           strip_components: 1
@@ -226,6 +231,7 @@ jobs:
           host: ${{ secrets.SERVER_HOST }}
           username: ${{ secrets.SERVER_USER }}
           key: ${{ secrets.SSH_PRIVATE_KEY }}
+          port: 9822
           script: |
             echo "重启生产服务..."
             cd /var/www/xcy-qthy
