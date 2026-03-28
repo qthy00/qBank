@@ -1,4 +1,5 @@
 <script setup lang="ts">
+import { watch } from 'vue'
 import type { ChapterAccuracyVO } from '~/types/statistics'
 
 /**
@@ -28,12 +29,15 @@ const selectedSubject = ref<string>('')
 
 /* 科目列表 */
 const subjects = computed(() => {
-  const list = Object.keys(groupedBySubject.value)
+  return Object.keys(groupedBySubject.value)
+})
+
+/* 初始化默认选中的科目 */
+watch(subjects, (list) => {
   if (list.length > 0 && !selectedSubject.value) {
     selectedSubject.value = list[0]
   }
-  return list
-})
+}, { immediate: true })
 
 /* 当前科目的章节数据 */
 const currentSubjectData = computed(() => {

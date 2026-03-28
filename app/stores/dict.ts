@@ -47,7 +47,9 @@ export const useDictStore = defineStore('dict', () => {
                 data = res.data?.value || []
             }
             // 清空原有数据（防止脏数据）
-            Object.keys(dictMap).forEach(key => delete dictMap[key])
+            for (const key of Object.keys(dictMap)) {
+              dictMap[key] = []
+            }
             data.forEach((dictData: DictDataVO) => {
                 if (!dictMap[dictData.dictType]) {
                     dictMap[dictData.dictType] = [] // 初始化空数组

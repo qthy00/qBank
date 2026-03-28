@@ -1,3 +1,4 @@
+<!-- eslint-disable vue/multi-word-component-names -->
 <template>
   <el-card v-loading="loading" element-loading-text="加载题目中...">
     <!-- 抬头标题区域 -->
@@ -710,7 +711,11 @@ const restoreCurrentQuestionCache = () => {
   }
 
   // 已提交的题目不再计时
-  cache.isSubmitted ? stopTimer() : startTimer()
+  if (cache.isSubmitted) {
+    stopTimer()
+  } else {
+    startTimer()
+  }
 }
 
 // 计时器控制
@@ -735,7 +740,10 @@ const typeName = computed(() => {
 })
 
 // 是否已提交当前题目的答案
-const isSubmitted = computed(() => answerCache.value[currentQuestion.value.id]?.isSubmitted)
+const isSubmitted = computed(() => {
+  if (!currentQuestion.value) return false
+  return answerCache.value[currentQuestion.value.id]?.isSubmitted ?? false
+})
 const showExplanation = computed(() => {
   const cache = answerCache.value[currentQuestion.value.id]
   switch (showAnswerSetting.value) {
@@ -747,6 +755,8 @@ const showExplanation = computed(() => {
       return false
     case 3:
       return !!(cache && cache.isSubmitted)
+    default:
+      return false
   }
 })
 
@@ -1099,10 +1109,11 @@ const submitAnswer = async () => {
   questionList = currentQuestion.value.questionList
   switch (type) {
     case 1:
-    case 2:
+    case 2: {
       const correctAnswers = answer?.split(',')
       isCorrect = isArrayValueEqual(correctAnswers, currentAnswer.value)
       break
+    }
     case 0:
     case 3:
     case 4:
@@ -1148,27 +1159,6 @@ const submitAnswer = async () => {
     nextQuestion()
   }
 }
-
-// const submitBatchStats = async () => {
-//   const correctCount = Object.values(answerCache.value).filter((c) => c.isCorrect).length
-//   const submittedCount = answeredQuestions.value.length
-//   const totalTime = Object.values(answerCache.value).reduce((sum, c) => sum + c.spendTime, 0) || 0
-//   const correctRate = Math.round((correctCount / submittedCount) * 100)
-//   questionStore.saveTimeRate(totalTime, correctRate)
-//   questionStore.totalCount = total.value
-//   const stats = {
-//     totalQuestions: total.value,
-//     submittedCount,
-//     correctCount,
-//     totalTime,
-//     finishTime: new Date().getTime(),
-//   }
-//   try {
-//     await questionApi.submitBatchStats(stats)
-//   } catch (error) {
-//     console.error('提交批量统计失败', error)
-//   }
-// }
 
 const handleToQuestion = (index: number) => {
   fillAnswers.value = []
@@ -1350,7 +1340,8 @@ const loadQuestionList = async () => {
     total.value = data.total
     questions.value = data.list
     initAnswerCache()
-  } catch (e) {
+  } catch {
+    // 加载失败，静默处理
   } finally {
     loading.value = false
   }

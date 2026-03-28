@@ -1,3 +1,4 @@
+<!-- eslint-disable vue/multi-word-component-names -->
 <script setup lang="ts">
 import { type AffiliateToolVO, getAffiliateTool } from '~/api/user/affiliate.ts'
 import { useAppStore } from '@/stores/modules/app.ts'
@@ -49,10 +50,6 @@ const onShareGoods = (item: AffiliateToolVO) => {
   )
   showShareModal()
 }
-
-// const handleClick = (tool: ToolDetailVO) => {
-//   router.push(`/t/${tool.series}`)
-// }
 
 onMounted(() => {
   getList()

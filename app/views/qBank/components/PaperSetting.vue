@@ -240,7 +240,7 @@ onMounted(async () => {
         </div>
 
         <div class="space-y-4">
-            <el-row v-for="(item, index) in state.questionInfo" :gutter="10">
+            <el-row v-for="(item, index) in state.questionInfo" :key="index" :gutter="10">
               <el-col :span="12">
                 <el-form-item
                   label-width="55px"

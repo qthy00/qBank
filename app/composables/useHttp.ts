@@ -125,22 +125,11 @@ async function refreshToken() {
  * 处理未授权（区分环境）
  */
 async function handleAuthorized() {
-    // const { modalStates, openModal } = useModal()
-
-
-    // if (import.meta.client){
-    //     useCookie('accessToken').value = null
-    //     useCookie('refreshToken').value = null
-    // }
     if(import.meta.client){
         const authStore =  useAuthStore()
         await authStore.logout(false)
         reLogin.show = false
-        // if (!modalStates.value.login) {
-        //     openModal('login')
-        // }
     }
-
 }
 
 // 处理错误

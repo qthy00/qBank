@@ -49,7 +49,6 @@ const getWechatQrCodeUrl = async () => {
   isLoading.value = true
   try{
     const redirectUri = 'https://gongjua.cn' + path + '?event=login&type=32'
-    // const redirectUri = 'https://www.gongjua.cn?event=login&type=32'
     const data = await LoginApi.socialAuthRedirect(32, encodeURIComponent(redirectUri))
     const url = data.split('&redirect_uri')[0]
     wechatQrCodeUrl.value = url + '&redirect_uri=' + encodeURIComponent(redirectUri)

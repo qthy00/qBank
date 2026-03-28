@@ -440,10 +440,6 @@ const menuList = ref([
   // },
 ])
 
-// 推广工具数据
-// const promoLink = ref('https://tool.example.com/r/8a7b6c5d')
-// const qrCodeUrl = ref('https://picsum.photos/200/200?random=qr')
-
 // 订单列表数据
 const loading = ref(false)
 const currentPage = ref(1)
@@ -453,52 +449,10 @@ const _searchKeyword = ref('')
 // 提现相关
 const _showWithdrawDialog = ref(false)
 
-// 最近提现记录
-const _recentWithdrawals = ref([
-  {
-    amount: 200.0,
-    status: 'success',
-    applyTime: '2023-07-15 10:23:45',
-    arrivalTime: '2023-07-16 14:30:22',
-  },
-  {
-    amount: 150.0,
-    status: 'success',
-    applyTime: '2023-07-05 09:15:36',
-    arrivalTime: '2023-07-06 11:45:12',
-  },
-  {
-    amount: 300.0,
-    status: 'processing',
-    applyTime: '2023-07-28 16:45:12',
-    arrivalTime: '',
-  },
-])
-
 // 分销规则弹窗
 const showRulesDialog = ref(false)
 
 const _getList = () => {}
-
-// 生成图表数据
-// const generateChartData = (days) => {
-//   const xAxis = []
-//   const series = []
-//
-//   for (let i = days - 1; i >= 0; i--) {
-//     const date = new Date()
-//     date.setDate(date.getDate() - i)
-//     xAxis.push(`${date.getMonth() + 1}/${date.getDate()}`)
-//     series.push(Math.floor(Math.random() * 100) + 10)
-//   }
-//
-//   chartData.value = { xAxis, series }
-// }
-
-// 处理日期范围变化
-const _handleDateChange = (_days) => {
-  // generateChartData(Number(days))
-}
 
 // 搜索订单
 const _searchOrders = () => {

@@ -1,3 +1,4 @@
+<!-- eslint-disable vue/multi-word-component-names -->
 <script setup lang="ts">
 import { fen2yuan } from '~/utils/money.ts'
 import { formatDate } from '~/utils/formatTime.ts'

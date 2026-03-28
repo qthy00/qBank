@@ -124,10 +124,6 @@ const beforeUpload: UploadProps['beforeUpload'] = (file: UploadRawFile) => {
   message.success('正在上传文件，请稍候...')
   uploadNumber.value++
 }
-// 处理上传的文件发生变化
-// const handleFileChange = (uploadFile: UploadFile): void => {
-//   uploadRef.value.data.path = uploadFile.name
-// }
 // 文件上传成功
 const handleFileSuccess: UploadProps['onSuccess'] = (res: any): void => {
   message.success('上传成功')

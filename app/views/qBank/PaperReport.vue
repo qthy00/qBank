@@ -302,12 +302,6 @@ const processDistributionData = (key: string) => {
   }, [])
 }
 
-
-// const chartData = {
-//   chapters: report.value.chapterErrorList.map((item) => item.chapterName), // 章节名称数组
-//   errorCounts: report.value.chapterErrorList.map((item) => item.errorCount), // 错题数量数组
-// }
-
 const scoreOptions = reactive({
   tooltip: {
     trigger: 'item',
@@ -426,59 +420,6 @@ const timeOptions = reactive({
     },
   ],
 })
-// const mistakeOptions = reactive({
-//   tooltip: {
-//     trigger: 'axis',
-//     axisPointer: {
-//       type: 'shadow',
-//     },
-//     formatter: '{b} 错题数: {c}',
-//   },
-//   grid: {
-//     left: '3%',
-//     right: '4%',
-//     bottom: '3%',
-//     containLabel: true,
-//   },
-//   xAxis: [
-//     {
-//       type: 'category',
-//       data: chartData.chapters,
-//       axisTick: {
-//         alignWithLabel: true,
-//       },
-//       axisLabel: {
-//         fontSize: 10,
-//         interval: 0,
-//       },
-//     },
-//   ],
-//   yAxis: [
-//     {
-//       type: 'value',
-//       min: 0,
-//       tickInterval: 1,
-//       axisLabel: {
-//         fontSize: 12,
-//       },
-//     },
-//   ],
-//   series: [
-//     {
-//       name: '错题数量',
-//       type: 'bar',
-//       barWidth: '60%',
-//       data: chartData.errorCounts,
-//       itemStyle: {
-//         color: new echarts.graphic.LinearGradient(0, 0, 0, 1, [
-//           { offset: 0, color: '#165DFF' },
-//           { offset: 1, color: '#4080FF' },
-//         ]),
-//         borderRadius: [4, 4, 0, 0],
-//       },
-//     },
-//   ],
-// })
 
 
 const loadReport = async () => {

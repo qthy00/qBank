@@ -94,16 +94,6 @@ const addHeader = (
   pdf.setFont('Helvetica', 'normal');
   pdf.setFontSize(10);
 
-  // 绘制个人信息
-  // const leftYPositions = [12];
-  // let index = 0;
-  // for (const [key, value] of Object.entries(headerInfo)) {
-  //   if (index < leftYPositions.length) {
-  //     pdf.text(`${key}: ${value}`, 15 + logoWidth + logoMargin, leftYPositions[index]);
-  //     index++;
-  //   }
-  // }
-
   // 绘制页码
   pdf.text(`Haoyou Technology Co.`, pageWidth - 60, 12);
 

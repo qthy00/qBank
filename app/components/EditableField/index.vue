@@ -47,7 +47,6 @@ watch(innerValue, val => {
 // 收集传给 component 的额外属性（事件等）
 const attrs = useAttrs()
 
-// const componentProps = computed(() => props.props)
 const mergedProps = computed(() => ({
   ...props.props,
   ...attrs

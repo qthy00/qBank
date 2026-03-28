@@ -1,9 +1,5 @@
 <!-- 搜索组件 -->
 <template>
-  <!--  <div-->
-  <!--    :class="`search-container w-full max-w-6xl mx-auto px-4 py-8 ${isMobile ? 'mb-2' : 'mb-12'}`"-->
-  <!--    :style="{ 'padding-top': menuHeight }"-->
-  <!--  >-->
   <div
       :class="[
       'search-container',
@@ -108,26 +104,6 @@
         </div>
 
         <!-- 热门搜索 -->
-        <!--        <div v-if="showHotSearch" class="p-5 border-t border-gray-100">-->
-        <!--          <h3 class="font-medium text-gray-700 mb-4">热门搜索</h3>-->
-
-        <!--          <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-3">-->
-        <!--            <button-->
-        <!--              v-for="(item, index) in hotSearchItems"-->
-        <!--              :key="index"-->
-        <!--              @click="selectHotSearch(item)"-->
-        <!--              class="flex items-center p-3 hover:bg-gray-50 rounded-lg transition-colors"-->
-        <!--            >-->
-        <!--              <span-->
-        <!--                class="w-6 h-6 rounded-full bg-blue-500 text-white flex items-center justify-center text-sm font-bold mr-3"-->
-        <!--              >-->
-        <!--                {{ index + 1 }}-->
-        <!--              </span>-->
-        <!--              <span class="flex-1 text-left">{{ item.title }}</span>-->
-        <!--              <span class="text-xs text-gray-500">{{ item.count }}人已搜索</span>-->
-        <!--            </button>-->
-        <!--          </div>-->
-        <!--        </div>-->
 
         <!-- 搜索结果 -->
         <div v-if="!showHotSearch && searchResults.length" class="p-0">
@@ -250,15 +226,6 @@ const showHotSearch = ref(false)
 const searchBoxBottom = ref(0)
 const resultsRef = ref(null)
 const loading = ref(false)
-// 热门搜索数据
-// const hotSearchItems = ref([
-//   {title: 'iPhone 14 Pro', count: 12536},
-//   {title: '华为 MateBook', count: 8754},
-//   {title: '小米手环 8', count: 7621},
-//   {title: '三星 Galaxy S23', count: 6489},
-//   {title: 'Apple Watch Series 8', count: 5923},
-//   {title: 'AirPods Pro', count: 4872},
-// ])
 
 watch(showSearchResults, (visible) => {
   document.body.style.overflow = visible ? 'hidden' : ''

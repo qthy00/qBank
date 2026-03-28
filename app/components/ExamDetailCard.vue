@@ -12,12 +12,6 @@ const activateTab = (tabId: number) => {
   activeTab.value = tabId
 }
 
-
-// const currentExam = computed(() =>
-//   props.exams.find(exam => exam.id === activeTab.value) ?? props.exams[0]
-// )
-
-// const {data: currentExam} = await questionApi.getExamInfoList(props.exams[0].id, true)
 const currentExam = ref<examsItemVO>()
 
 const defaultExamsData: examsItemVO[] = [

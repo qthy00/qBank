@@ -1,3 +1,4 @@
+<!-- eslint-disable vue/multi-word-component-names -->
 <template>
     <div v-loading="loading" element-loading-text="加载大纲中...">
       <div v-if="syllabus" class="flex flex-col gap-5">
@@ -92,18 +93,6 @@ useHead({
   ],
 })
 
-
-// const getSyllabusInfo = async () => {
-//   if(!qPackage.value.relationCategoryId || syllabus.value) return
-//   try {
-//     loading.value = true
-//     syllabus.value = await ArticleApi.getContentInfo(param)
-//   } catch (err) {
-//     console.log(err)
-//   }finally {
-//     loading.value = false
-//   }
-// }
 
 const getSyllabusList = async () => {
   if(!qPackage.value.relationCategoryId || !param.catalogId) return
