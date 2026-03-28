@@ -80,12 +80,16 @@ jobs:
           ls -la .output/ || (echo "Error: .output directory not found!" && exit 1)
           ls -la .output/server/ || (echo "Error: server directory not found!" && exit 1)
 
+      # 打包构建产物
+      - name: Archive build output
+        run: tar -czf build-output.tar.gz .output/
+
       # 上传构建产物
       - name: Upload build artifacts
         uses: actions/upload-artifact@v4
         with:
           name: build-output
-          path: ${{ github.workspace }}/.output
+          path: build-output.tar.gz
 
   # 部署到预发布环境
   deploy-staging:
@@ -103,7 +107,9 @@ jobs:
         with:
           name: build-output
           path: .
-          merge-multiple: true
+
+      - name: Extract build artifacts
+        run: tar -xzf build-output.tar.gz
 
       - name: Deploy to Staging Server
         uses: appleboy/ssh-action@v1.0.3
@@ -176,7 +182,9 @@ jobs:
         with:
           name: build-output
           path: .
-          merge-multiple: true
+
+      - name: Extract build artifacts
+        run: tar -xzf build-output.tar.gz
 
       - name: Deploy to Production Server
         uses: appleboy/ssh-action@v1.0.3
