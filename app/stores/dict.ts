@@ -31,45 +31,52 @@ export const useDictStore = defineStore('dict', () => {
 
     const dictMap = reactive<Record<string, DictItem[]>>({})
     const isSetDict = ref(false)
+    let isLoading = false
+    let loadPromise: Promise<void> | null = null
 
     const setDictMap = async () => {
-
-        if (Object.keys(dictMap).length > 0) {
-            isSetDict.value = true;
-            return; // 已有数据直接返回，避免重复处理
+        if (isSetDict.value) return
+        if (isLoading && loadPromise) {
+            return loadPromise
         }
-        try {
-            const server = import.meta.server
-            const res = await getSimpleDictDataList(types, server)
-            // 处理服务端/客户端数据结构差异
-            let data: DictDataVO[] = res
-            if (server) {
-                data = res.data?.value || []
-            }
-            // 清空原有数据（防止脏数据）
-            for (const key of Object.keys(dictMap)) {
-              dictMap[key] = []
-            }
-            data.forEach((dictData: DictDataVO) => {
-                if (!dictMap[dictData.dictType]) {
-                    dictMap[dictData.dictType] = [] // 初始化空数组
+        isLoading = true
+        loadPromise = (async () => {
+            try {
+                const server = import.meta.server
+                const res = await getSimpleDictDataList(types, server)
+                // 处理服务端/客户端数据结构差异
+                let data: DictDataVO[] = res
+                if (server) {
+                    data = res.data?.value || []
                 }
-                // 追加字典项
-                dictMap[dictData.dictType].push({
-                    value: dictData.value,
-                    label: dictData.label,
-                    colorType: dictData.colorType,
-                    cssClass: dictData.cssClass
+                // 清空原有数据（防止脏数据）
+                for (const key of Object.keys(dictMap)) {
+                  dictMap[key] = []
+                }
+                data.forEach((dictData: DictDataVO) => {
+                    if (!dictMap[dictData.dictType]) {
+                        dictMap[dictData.dictType] = [] // 初始化空数组
+                    }
+                    // 追加字典项
+                    dictMap[dictData.dictType].push({
+                        value: dictData.value,
+                        label: dictData.label,
+                        colorType: dictData.colorType,
+                        cssClass: dictData.cssClass
+                    })
                 })
-            })
 
-            isSetDict.value = true
-            // console.log('最终字典Map：', dictMap)
-        }catch {
-            console.error('字典数据加载失败')
-            // 错误处理：防止页面卡死
-            isSetDict.value = false;
-        }
+                isSetDict.value = true
+                // console.log('最终字典Map：', dictMap)
+            } catch {
+                console.error('字典数据加载失败')
+                // 错误处理：防止页面卡死
+                isSetDict.value = false
+            }
+        })()
+        await loadPromise
+        isLoading = false
+        loadPromise = null
     }
     const getDictByType = (type: string) => {
         if (!isSetDict.value) {

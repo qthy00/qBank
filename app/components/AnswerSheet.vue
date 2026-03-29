@@ -54,7 +54,6 @@ const questionsByType = computed(() => {
   // 使用对象临时存储分组，避免创建固定数量的空数组
   const groupMap: Record<number, Group> = {}
 
-  const tCounts: Record<number, number> = {}
   props.questions.forEach((question: PaperQuestion | QuestionVO, index: number) => {
     const type: number = question.type
     const typeName = question.typeName
@@ -66,7 +65,6 @@ const questionsByType = computed(() => {
         typeName,
         list: []
       }
-      tCounts[type] = 0
     }
 
     // 添加到对应分组，并添加globalIndex
@@ -74,14 +72,20 @@ const questionsByType = computed(() => {
       ...question,
       index,
     })
-
-    tCounts[type]++
   })
-  // eslint-disable-next-line vue/no-side-effects-in-computed-properties
-  typeCounts.value = tCounts
   // 将对象转换为数组，保持类型顺序
   return Object.values(groupMap)
 })
+
+// 使用 watcher 更新题型计数（避免 computed 中的副作用）
+watch(() => props.questions, () => {
+  const tCounts: Record<number, number> = {}
+  props.questions.forEach((question: PaperQuestion | QuestionVO) => {
+    const type: number = question.type
+    tCounts[type] = (tCounts[type] || 0) + 1
+  })
+  typeCounts.value = tCounts
+}, { immediate: true, deep: true })
 
 const emits = defineEmits(['redirect'])
 // 跳转到指定题目

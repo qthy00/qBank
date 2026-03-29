@@ -171,7 +171,9 @@ async function handleResponse(data: any, originalRequest?: any) {
 
     if (ignoreMsgs.indexOf(msg) !== -1) {
         console.log('请求出错啦！!', msg)
-        void (import.meta.client && message.error(msg))
+        if (import.meta.client) {
+            message.error(msg)
+        }
     } else if (code === 401) {
         // 如果没有刷新令牌，删除现有用户信息等缓存
         const {getRefreshToken} = useToken()
@@ -314,13 +316,16 @@ export async function useHttp(key: string | undefined,
             return useFetch(url, {
                 ...options,
                 async onResponse({response}) {
+                    clearTimeout(timeoutId)
                     // 传递原请求配置
                     response._data = await handleResponse(response._data, originalRequest)
                 },
                 async onResponseError({response}) {
                     clearTimeout(timeoutId)
                     console.log('HTTP错误=====', response)
-                    void (import.meta.client && message.error(`HTTP错误：${response.status}`))
+                    if (import.meta.client) {
+                        message.error(`HTTP错误：${response.status}`)
+                    }
                     throw new Error(`HTTP错误：${response.status}`)
                 }
             })

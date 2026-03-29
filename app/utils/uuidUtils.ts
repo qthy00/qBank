@@ -5,7 +5,7 @@ import {
   v5 as uuidv5,
   NIL as NIL_UUID,
   validate as validateUUID,
-  version as getUUIDVersion,
+  version as getUUIDVersionLib,
 } from 'uuid'
 
 /**
@@ -69,7 +69,7 @@ export function isValidUUID(uuid: string): boolean {
  */
 export function getUUIDVersion(uuid: string): number | null {
   if (!isValidUUID(uuid)) return null
-  return getUUIDVersion(uuid)
+  return getUUIDVersionLib(uuid)
 }
 
 /**
