@@ -52,7 +52,6 @@ const instructions = `## 强制技能激活流程（必须执行）
 【调试与优化】
 - bug-detective: BUG/报错/异常/不工作/排查修复
 - security-guard: 安全/Sa-Token/认证授权/加密/XSS/CSRF防护
-- chrome-devtools: 浏览器调试/截图/元素检查/性能分析
 
 【工程化】
 - architecture-design: 架构/模块划分/重构/依赖管理
