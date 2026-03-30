@@ -31,10 +31,7 @@ const nextAnnouncement = () => {
   currentIndex.value = (currentIndex.value + 1) % announcements.value.length
 }
 
-const prevAnnouncement = () => {
-  if (announcements.value.length <= 1) return
-  currentIndex.value = (currentIndex.value - 1 + announcements.value.length) % announcements.value.length
-}
+
 
 const goToDetail = () => {
   if (currentAnnouncement.value) {
@@ -104,31 +101,15 @@ onUnmounted(() => {
         <div v-if="currentAnnouncement" class="announcement-item">
           <span v-if="currentAnnouncement.isTop" class="top-tag">置顶</span>
           <span class="announcement-text">{{ currentAnnouncement.title }}</span>
-          <Icon name="ep:arrow-right" class="arrow-icon" />
         </div>
       </div>
 
       <!-- 右侧操作 -->
       <div class="bar-actions">
-        <!-- 切换按钮（多条公告时显示） -->
-        <template v-if="announcements.length > 1">
-          <button class="action-btn nav-btn" @click.stop="prevAnnouncement">
-            <Icon name="ep:arrow-up" />
-          </button>
-          <button class="action-btn nav-btn" @click.stop="nextAnnouncement">
-            <Icon name="ep:arrow-down" />
-          </button>
-        </template>
-
         <!-- 查看更多 -->
-        <button class="action-btn more-btn" @click.stop="goToList">
+        <button class="action-btn more-btn " @click.stop="goToList">
           <span>更多</span>
           <Icon name="ep:arrow-right" />
-        </button>
-
-        <!-- 关闭按钮 -->
-        <button class="action-btn close-btn" @click.stop="hasUnread = false">
-          <Icon name="ep:close" />
         </button>
       </div>
     </div>

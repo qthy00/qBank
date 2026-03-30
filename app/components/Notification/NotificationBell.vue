@@ -2,6 +2,7 @@
   <div class="notification-bell relative">
     <!-- 铃铛图标 -->
     <el-badge
+        ref="badgeRef" v-click-outside="onClickOutside"
       :value="unreadCount"
       :hidden="unreadCount === 0"
       :max="99"
@@ -27,16 +28,13 @@
 
     <!-- 消息下拉面板 -->
     <el-popover
-      v-model:visible="popoverVisible"
+        ref="popoverRef"
+        :virtual-ref="badgeRef"
+        virtual-triggering
       :width="360"
       trigger="click"
       placement="bottom-end"
-      popper-class="notification-popover"
     >
-      <template #reference>
-        <span class="hidden">trigger</span>
-      </template>
-
       <div class="notification-panel">
         <!-- 头部 -->
         <div class="flex items-center justify-between p-3 border-b border-gray-100">
@@ -135,6 +133,8 @@
 import type { NotificationVO, NotificationType } from '~/types/notification'
 import { useNotificationStore } from '~/stores/notification'
 import { formatPast } from '~/utils/formatTime'
+import type {PopoverInstance} from "element-plus";
+import { ClickOutside as vClickOutside } from 'element-plus'
 
 interface Props {
   isScrolled?: boolean
@@ -145,7 +145,6 @@ const _props = withDefaults(defineProps<Props>(), {
 })
 
 const notificationStore = useNotificationStore()
-const router = useRouter()
 const message = useMessage()
 
 const popoverVisible = ref(false)
@@ -170,6 +169,12 @@ const typeIconClassMap: Record<NotificationType, string> = {
 const getTypeIcon = (type: NotificationType) => typeIconMap[type] || 'ep:bell'
 const getTypeIconClass = (type: NotificationType) => typeIconClassMap[type] || 'bg-gray-100 text-gray-600'
 
+const badgeRef = ref()
+const popoverRef = ref<PopoverInstance>()
+const onClickOutside = () => {
+  popoverRef.value?.hide()
+}
+
 /* ==================== 事件处理 ==================== */
 const handleClick = () => {
   popoverVisible.value = true
@@ -185,7 +190,7 @@ const handleMessageClick = async (item: NotificationVO) => {
 
   /* 如果有跳转链接 */
   if (item.actionUrl) {
-    router.push(item.actionUrl)
+    navigateTo(item.actionUrl)
     popoverVisible.value = false
   } else {
     /* 显示消息详情 */
@@ -199,7 +204,7 @@ const markAllAsRead = async () => {
 }
 
 const goToMessageCenter = () => {
-  router.push('/account/messages')
+  navigateTo('/account/messages')
   popoverVisible.value = false
 }
 

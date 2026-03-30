@@ -193,10 +193,10 @@ onMounted(async () => {
   <div class="min-h-screen bg-gray-100">
     <!-- 导航 -->
     <Navbar/>
-    <!-- 公告栏 -->
-    <AnnouncementBar />
     <!-- 菜单部分 -->
     <MainMenu/>
+    <!-- 公告栏 -->
+    <AnnouncementBar />
     <!-- 内容部分 -->
     <!-- 页面轮播图,列表 -->
     <div class="container  mx-auto my-5">
