@@ -239,6 +239,7 @@ export default defineNuxtConfig({
         '/qb/**': { ssr: false },
         '/study/**': { ssr: false },
         '/order/**': { ssr: false },
+        '/ranking/**': { ssr: false },
         // API缓存
         '/api/**': { cache: { maxAge: 60 * 5 } },
     }

@@ -6,13 +6,14 @@
   <el-menu-item index="/account/messages">
     <Icon name="ep:bell" class="mr-1" />
     <template #title>
-      <span>消息中心</span>
-      <el-badge
-        v-if="notificationStore.unreadCount > 0"
-        :value="notificationStore.unreadCount"
-        :max="99"
-        class="ml-2"
-      />
+        <el-badge
+            :value="notificationStore.unreadCount"
+            :offset="[10, 20]"
+            :max="99"
+            class="ml-2"
+        >
+          <span>消息中心</span>
+        </el-badge>
     </template>
   </el-menu-item>
   <el-menu-item index="/account/mistakes">

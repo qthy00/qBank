@@ -222,6 +222,11 @@ onUnmounted(() => {
 </script>
 
 <style scoped>
+
+:deep(.el-badge__content.is-fixed){
+  top: 10px;
+}
+
 .bell-icon {
   position: relative;
 }

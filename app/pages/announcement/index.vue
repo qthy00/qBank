@@ -1,7 +1,6 @@
 <script setup lang="ts">
 import { AnnouncementApi } from '~/api/announcement'
 import type { AnnouncementVO, HomeAnnouncementVO } from '~/types/announcement'
-import { AnnouncementTypeEnum } from '~/types/announcement'
 
 useHead({
   title: '公告中心'
@@ -16,28 +15,28 @@ const homeAnnouncements = ref<HomeAnnouncementVO[]>([])
 const currentPage = ref(1)
 const pageSize = ref(10)
 const total = ref(0)
-const activeType = ref<number | null>(null)
+const activeType = ref<string>()
 
 /* ==================== 计算属性 ==================== */
 const typeOptions = [
-  { value: null, label: '全部', icon: 'ep:notification' },
-  { value: AnnouncementTypeEnum.SYSTEM, label: '系统公告', icon: 'ep:monitor' },
-  { value: AnnouncementTypeEnum.ACTIVITY, label: '活动通知', icon: 'ep:present' },
-  { value: AnnouncementTypeEnum.UPDATE, label: '更新日志', icon: 'ep:refresh' }
+  { value: undefined, label: '全部', icon: 'ep:notification' },
+  { value: 'SYSTEM', label: '系统公告', icon: 'ep:monitor' },
+  { value: 'ACTIVITY', label: '活动通知', icon: 'ep:present' },
+  { value: 'UPDATE', label: '更新日志', icon: 'ep:refresh' }
 ]
 
-const getTypeLabel = (type: number) => {
+const getTypeLabel = (type: string) => {
   const option = typeOptions.find(o => o.value === type)
   return option?.label || '其他'
 }
 
-const getTypeTagClass = (type: number) => {
+const getTypeTagClass = (type: string) => {
   switch (type) {
-    case AnnouncementTypeEnum.SYSTEM:
+    case 'SYSTEM':
       return 'type-system'
-    case AnnouncementTypeEnum.ACTIVITY:
+    case 'ACTIVITY':
       return 'type-activity'
-    case AnnouncementTypeEnum.UPDATE:
+    case 'UPDATE':
       return 'type-update'
     default:
       return 'type-other'
@@ -49,7 +48,7 @@ const loadAnnouncements = async () => {
   loading.value = true
   try {
     const data = await AnnouncementApi.getAnnouncementList({
-      type: activeType.value || undefined,
+      noticeType: activeType.value || undefined,
       pageNo: currentPage.value,
       pageSize: pageSize.value
     })
@@ -72,7 +71,7 @@ const loadHomeAnnouncements = async () => {
   }
 }
 
-const handleTypeChange = (type: number | null) => {
+const handleTypeChange = (type?: string) => {
   activeType.value = type
   currentPage.value = 1
   loadAnnouncements()
@@ -105,7 +104,7 @@ onMounted(() => {
     <div class="page-header">
       <div class="header-content">
         <div class="header-icon">
-          <Icon name="ep:bullhorn" />
+          <Icon name="mdi:bullhorn" />
         </div>
         <div class="header-text">
           <h1 class="page-title">公告中心</h1>
@@ -115,26 +114,6 @@ onMounted(() => {
     </div>
 
     <div class="container">
-      <!-- 重要公告滚动栏 -->
-      <div v-if="homeAnnouncements.length > 0" class="top-announcements">
-        <div class="top-label">
-          <Icon name="ep:top" />
-          <span>重要公告</span>
-        </div>
-        <div class="top-list">
-          <div
-            v-for="item in homeAnnouncements"
-            :key="item.id"
-            class="top-item"
-            @click="goToDetail(item.id)"
-          >
-            <span v-if="item.isTop" class="top-badge">置顶</span>
-            <span class="top-title">{{ item.title }}</span>
-            <Icon name="ep:arrow-right" class="top-arrow" />
-          </div>
-        </div>
-      </div>
-
       <!-- 类型筛选 -->
       <div class="filter-section">
         <div class="filter-tabs">
@@ -163,16 +142,16 @@ onMounted(() => {
             <div class="title-section">
               <span
                 class="type-tag"
-                :class="getTypeTagClass(item.type)"
+                :class="getTypeTagClass(item.noticeType)"
               >
-                {{ getTypeLabel(item.type) }}
+                {{ getTypeLabel(item.noticeType) }}
               </span>
               <h3 class="announcement-title">
                 <span v-if="item.isTop" class="top-mark">置顶</span>
                 {{ item.title }}
               </h3>
             </div>
-            <span class="publish-time">{{ formatDate(item.publishTime) }}</span>
+            <span class="publish-time">{{ formatDate(item.updateTime) }}</span>
           </div>
 
           <p class="announcement-summary">{{ item.summary }}</p>

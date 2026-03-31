@@ -40,7 +40,7 @@ export interface Announcement {
   /** 公告内容 */
   content: string
   /** 公告类型 */
-  type: number
+  noticeType: string
   /** 公告状态 */
   status: number
   /** 是否置顶 */
@@ -48,7 +48,7 @@ export interface Announcement {
   /** 浏览次数 */
   viewCount: number
   /** 发布时间 */
-  publishTime: number
+  updateTime: number
   /** 创建时间 */
   createTime: number
 }
@@ -70,7 +70,7 @@ export interface AnnouncementVO extends Announcement {
  */
 export interface AnnouncementListReqVO {
   /** 公告类型 */
-  type?: number
+  noticeType?: string
   /** 页码 */
   pageNo?: number
   /** 每页数量 */
