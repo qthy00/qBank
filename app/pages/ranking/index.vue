@@ -158,7 +158,7 @@
 <script setup lang="ts">
 import { ref, computed, onMounted } from 'vue'
 import type { RankingType, TimeDimension, RankingItemVO, RankingStatsVO } from '~/types/ranking'
-import { getMockRankingList, getMockRankingStats } from '~/api/ranking/mock'
+import { RankingApi } from '~/api/ranking'
 import RankingList from './components/RankingList.vue'
 import UserRankCard from './components/UserRankCard.vue'
 
@@ -215,7 +215,7 @@ const updateTimeText = computed(() => {
 const fetchRankingData = async () => {
   loading.value = true
   try {
-    const data = await getMockRankingList(
+    const data = await RankingApi.getRankingList(
       currentType.value,
       currentDimension.value,
       10
@@ -228,7 +228,7 @@ const fetchRankingData = async () => {
 }
 
 const fetchStats = async () => {
-  const data = await getMockRankingStats()
+  const data = await RankingApi.getRankingStats()
   stats.value = data
 }
 

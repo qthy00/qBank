@@ -5,7 +5,12 @@ import type {
   DocumentDetailVO,
   DocumentCategoryVO,
   ExamTypeVO,
-  YearOptionVO,DocumentType
+  YearOptionVO,
+  DocumentType,
+  MajorVO,
+  LevelOptionVO,
+  MaterialTypeOptionVO,
+  StatusOptionVO,
 } from "~/types/document";
 
 import {
@@ -15,6 +20,10 @@ import {
   getMockExamTypes,
   getMockYearOptions,
   incrementMockDownloadCount,
+  getMockMajors,
+  getMockLevelOptions,
+  getMockMaterialTypes,
+  getMockStatusOptions,
 } from "./mock";
 
 /**
@@ -26,6 +35,16 @@ const useMock = () => import.meta.dev
  * 文档下载相关API
  */
 export const DocumentApi = {
+
+  /**
+   * 获取大类列表
+   */
+  getMajors: async (): Promise<MajorVO[]> => {
+    if (useMock()) {
+      return getMockMajors()
+    }
+    return await httpGet('DocumentMajors', '/member/document/major/list')
+  },
 
   /**
    * 获取文档列表
@@ -66,12 +85,13 @@ export const DocumentApi = {
 
   /**
    * 获取考试类型列表
+   * @param majorCode 大类编码（可选）
    */
-  getExamTypes: async (): Promise<ExamTypeVO[]> => {
+  getExamTypes: async (majorCode?: string): Promise<ExamTypeVO[]> => {
     if (useMock()) {
-      return getMockExamTypes()
+      return getMockExamTypes(majorCode)
     }
-    return await httpGet('ExamTypes', '/member/exam/type/list')
+    return await httpGet('ExamTypes', '/member/exam/type/list', { query: { majorCode } })
   },
 
   /**
@@ -82,6 +102,36 @@ export const DocumentApi = {
       return getMockYearOptions()
     }
     return await httpGet('YearOptions', '/member/document/year/options')
+  },
+
+  /**
+   * 获取等级选项
+   */
+  getLevelOptions: async (): Promise<LevelOptionVO[]> => {
+    if (useMock()) {
+      return getMockLevelOptions()
+    }
+    return await httpGet('LevelOptions', '/member/document/level/options')
+  },
+
+  /**
+   * 获取资料类型选项
+   */
+  getMaterialTypes: async (): Promise<MaterialTypeOptionVO[]> => {
+    if (useMock()) {
+      return getMockMaterialTypes()
+    }
+    return await httpGet('MaterialTypes', '/member/document/material-type/options')
+  },
+
+  /**
+   * 获取状态选项
+   */
+  getStatusOptions: async (): Promise<StatusOptionVO[]> => {
+    if (useMock()) {
+      return getMockStatusOptions()
+    }
+    return await httpGet('StatusOptions', '/member/document/status/options')
   },
 
   /**
