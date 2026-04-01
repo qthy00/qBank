@@ -83,7 +83,7 @@ onUnmounted(() => {
 <template>
   <div
     v-if="hasUnread"
-    class="announcement-bar"
+    class="container mx-auto"
     @mouseenter="handleMouseEnter"
     @mouseleave="handleMouseLeave"
   >
@@ -119,18 +119,20 @@ onUnmounted(() => {
 <style scoped lang="scss">
 /* 公告栏 */
 .announcement-bar {
-  background: linear-gradient(90deg, #fff8e6 0%, #fff 50%, #fff8e6 100%);
-  border-bottom: 1px solid #ffe4b3;
+
 }
 
 .bar-container {
-  max-width: 1200px;
+  //max-width: 1200px;
   margin: 0 auto;
   padding: 0 24px;
   height: 44px;
   display: flex;
   align-items: center;
   gap: 16px;
+
+  background: linear-gradient(90deg, #fff8e6 0%, #fff 50%, #fff8e6 100%);
+  border-bottom: 1px solid #ffe4b3;
 }
 
 /* 左侧图标 */
