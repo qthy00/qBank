@@ -34,8 +34,7 @@ const fetchDocumentDetail = async () => {
         title: data.title
       })
     }
-  } catch (error) {
-    console.error('获取文档详情失败:', error)
+  } catch {
     message.error('文档不存在')
     router.push('/document')
   } finally {

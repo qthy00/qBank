@@ -68,18 +68,6 @@ const {data: hotDocuments} = await useAsyncData(
       return data.list
     }
 )
-
-/* const { data: categories, pending: loading, error } = await useAsyncData(
-    'qbank-cover-categories',
-    async () => {
-      const {mockCategoriesWithChildren} = await import('~/api/qbank/mock')
-      return mockCategoriesWithChildren as CategoryWithChildren[]
-    },
-    {
-      server: false,
-      default: () => [],
-    }
-) */
 const subCategories = computed(() => {
   const data = categories.value.filter(c => c.id === activeMajor.value)
   if (!data || !data[0] || !data[0].children) {
@@ -93,9 +81,8 @@ const fetchYearOptions = async () => {
   try {
     const data = await DocumentApi.getYearOptions()
     yearOptions.value = [{ id: 0, word: undefined }, ...data]
-    console.log( '年份选项:', data)
-  } catch (error) {
-    console.error('获取年份选项失败:', error)
+  } catch {
+    // 获取年份选项失败时静默处理
   }
 }
 
@@ -106,8 +93,8 @@ const fetchDocumentList = async () => {
     const data = await DocumentApi.getDocumentList(queryParams)
     documentList.value = data.list || []
     total.value = data.total || 0
-  } catch (error) {
-    console.error('获取文档列表失败:', error)
+  } catch {
+    // 获取文档列表失败时静默处理
   } finally {
     loading.value = false
   }

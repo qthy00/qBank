@@ -9,58 +9,51 @@ const message = useMessage()
 const announcement = ref<AnnouncementVO | null>(null)
 const loading = ref(false)
 
+/* ==================== 类型配置 ==================== */
+interface TypeConfig {
+  label: string
+  icon: string
+  color: string
+  gradient: string
+}
+
+const typeConfigMap: Record<string, TypeConfig> = {
+  SYSTEM: {
+    label: '系统公告',
+    icon: 'ep:monitor',
+    color: '#409eff',
+    gradient: 'linear-gradient(135deg, #409eff 0%, #66b1ff 100%)'
+  },
+  ACTIVITY: {
+    label: '活动通知',
+    icon: 'ep:present',
+    color: '#e6a23c',
+    gradient: 'linear-gradient(135deg, #e6a23c 0%, #f5c878 100%)'
+  },
+  UPDATE: {
+    label: '更新日志',
+    icon: 'ep:refresh',
+    color: '#67c23a',
+    gradient: 'linear-gradient(135deg, #67c23a 0%, #95d475 100%)'
+  }
+}
+
+const defaultTypeConfig: TypeConfig = {
+  label: '其他',
+  icon: 'ep:notification',
+  color: '#909399',
+  gradient: 'linear-gradient(135deg, #909399 0%, #c0c4cc 100%)'
+}
+
+const getTypeConfig = (type: string): TypeConfig => {
+  return typeConfigMap[type] || defaultTypeConfig
+}
+
 /* ==================== 计算属性 ==================== */
-const getTypeLabel = (type: string) => {
-  switch (type) {
-    case 'SYSTEM':
-      return '系统公告'
-    case 'ACTIVITY':
-      return '活动通知'
-    case 'UPDATE':
-      return '更新日志'
-    default:
-      return '其他'
-  }
-}
-
-const getTypeIcon = (type: string ) => {
-  switch (type) {
-    case 'SYSTEM':
-      return 'ep:monitor'
-    case 'ACTIVITY':
-      return 'ep:present'
-    case 'UPDATE':
-      return 'ep:refresh'
-    default:
-      return 'ep:notification'
-  }
-}
-
-const getTypeColor = (type: string) => {
-  switch (type) {
-    case "SYSTEM":
-      return '#409eff'
-    case 'ACTIVITY':
-      return '#e6a23c'
-    case 'UPDATE':
-      return '#67c23a'
-    default:
-      return '#909399'
-  }
-}
-
-const getTypeGradient = (type: string) => {
-  switch (type) {
-    case 'SYSTEM':
-      return 'linear-gradient(135deg, #409eff 0%, #66b1ff 100%)'
-    case 'ACTIVITY':
-      return 'linear-gradient(135deg, #e6a23c 0%, #f5c878 100%)'
-    case 'UPDATE':
-      return 'linear-gradient(135deg, #67c23a 0%, #95d475 100%)'
-    default:
-      return 'linear-gradient(135deg, #909399 0%, #c0c4cc 100%)'
-  }
-}
+const typeStyles = computed(() => {
+  if (!announcement.value) return defaultTypeConfig
+  return getTypeConfig(announcement.value.noticeType)
+})
 
 /* ==================== 方法 ==================== */
 const loadAnnouncement = async () => {
@@ -121,12 +114,12 @@ onMounted(() => {
     <!-- 头部横幅 -->
     <div
       class="page-header"
-      :style="{ background: announcement ? getTypeGradient(announcement.noticeType) : 'linear-gradient(135deg, #409eff 0%, #66b1ff 100%)' }"
+      :style="{ background: typeStyles.gradient }"
     >
       <div class="header-content">
         <div class="header-icon-wrapper">
           <div class="header-icon">
-            <Icon :name="announcement ? getTypeIcon(announcement.noticeType) : 'ep:notification'" />
+            <Icon :name="typeStyles.icon" />
           </div>
           <div v-if="announcement?.isTop" class="top-indicator">
             <Icon name="ep:top" />
@@ -135,8 +128,8 @@ onMounted(() => {
         </div>
         <div class="header-text">
           <div class="type-badge">
-            <Icon :name="announcement ? getTypeIcon(announcement.noticeType) : 'ep:notification'" />
-            <span>{{ announcement ? getTypeLabel(announcement.noticeType) : '公告详情' }}</span>
+            <Icon :name="typeStyles.icon" />
+            <span>{{ typeStyles.label }}</span>
           </div>
           <h1 class="page-title">{{ announcement?.title || '公告详情' }}</h1>
         </div>
@@ -180,13 +173,13 @@ onMounted(() => {
             </div>
             <div class="meta-divider" />
             <div class="meta-item">
-              <div class="meta-icon" :style="{ color: getTypeColor(announcement.noticeType) }">
-                <Icon :name="getTypeIcon(announcement.noticeType)" />
+              <div class="meta-icon" :style="{ color: typeStyles.color }">
+                <Icon :name="typeStyles.icon" />
               </div>
               <div class="meta-info">
                 <span class="meta-label">公告类型</span>
-                <span class="meta-value" :style="{ color: getTypeColor(announcement.noticeType) }">
-                  {{ getTypeLabel(announcement.noticeType) }}
+                <span class="meta-value" :style="{ color: typeStyles.color }">
+                  {{ typeStyles.label }}
                 </span>
               </div>
             </div>
