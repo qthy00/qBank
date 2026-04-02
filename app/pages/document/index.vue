@@ -22,6 +22,11 @@ useHead({
 })
 
 /* ==================== 状态定义 ==================== */
+const authStore = useAuthStore()
+const userStore = useUserStore()
+const { user } = storeToRefs(userStore)
+const { isLogin } = storeToRefs(authStore)
+const {openModal} = useModal()
 
 /* 大类筛选 */
 const majors = ref<MajorVO[]>([])
@@ -626,54 +631,104 @@ onMounted(() => {
 <!--          </div>-->
 
           <!-- 用户信息卡片 -->
-          <div class="bg-white rounded-xl shadow-sm border border-(--color-border) p-4">
-            <div class="flex items-center justify-between">
-              <div class="flex items-center gap-3">
-                <div class="w-10 h-10 bg-blue-100 rounded-full flex items-center justify-center">
-                  <Icon name="ep:user" class="text-xl text-blue-500" />
+          <ClientOnly>
+            <template v-if="authStore.isLogin">
+              <div class="bg-white rounded-xl shadow-sm border border-(--color-border) p-4">
+                <!-- 用户基本信息 -->
+                <div class="flex items-center gap-3">
+                  <el-avatar :size="48" :src="user?.avatar" class="shrink-0" />
+                  <div class="flex-1 min-w-0">
+                    <div class="flex items-center gap-2">
+                      <span class="font-medium text-(--color-text-primary) truncate">{{ user?.nickname || '新用户' }}</span>
+                    </div>
+                    <div class="flex items-center gap-2 mt-1">
+                      <el-tag size="small" type="primary" effect="plain">
+                        {{ user?.level?.name || '普通会员' }}
+                      </el-tag>
+                    </div>
+                  </div>
                 </div>
-                <span class="font-medium text-(--color-text-primary)">未登录</span>
+                <!-- 积分/下载币信息 -->
+                <div class="mt-4 grid grid-cols-2 gap-2">
+                  <div class="bg-gray-50 rounded-lg p-3 text-center">
+                    <div class="text-lg font-bold text-(--color-btn-primary)">{{ user?.point || 0 }}</div>
+                    <div class="text-xs text-(--color-text-secondary) mt-0.5">我的积分</div>
+                  </div>
+                  <div class="bg-gray-50 rounded-lg p-3 text-center">
+                    <div class="text-lg font-bold text-orange-500">{{ user?.experience || 0 }}</div>
+                    <div class="text-xs text-(--color-text-secondary) mt-0.5">我的经验</div>
+                  </div>
+                </div>
+                <!-- 快捷入口 -->
+                <div class="mt-4 pt-4 border-t border-(--color-border)">
+                  <div class="grid grid-cols-3 gap-2">
+                    <a href="/account/profile" class="flex flex-col items-center gap-1 p-2 rounded-lg hover:bg-gray-50 transition-colors">
+                      <Icon name="ep:user-filled" class="text-xl text-(--color-btn-primary)" />
+                      <span class="text-xs text-(--color-text-secondary)">个人中心</span>
+                    </a>
+                    <a href="/account/favorites" class="flex flex-col items-center gap-1 p-2 rounded-lg hover:bg-gray-50 transition-colors">
+                      <Icon name="ep:star-filled" class="text-xl text-yellow-500" />
+                      <span class="text-xs text-(--color-text-secondary)">我的收藏</span>
+                    </a>
+                    <a href="/account/orders" class="flex flex-col items-center gap-1 p-2 rounded-lg hover:bg-gray-50 transition-colors">
+                      <Icon name="ep:shopping-cart" class="text-xl text-green-500" />
+                      <span class="text-xs text-(--color-text-secondary)">我的订单</span>
+                    </a>
+                  </div>
+                </div>
               </div>
-              <a href="/account" class="text-sm text-(--color-btn-primary) hover:underline flex items-center">
-                我的资料
-                <Icon name="ep:arrow-right" />
-              </a>
-            </div>
-            <div class="mt-3 pt-3 border-t border-(--color-border)">
-              <p class="text-sm text-(--color-text-secondary)">
-                权益介绍：可下载免费资料，用下载币兑换精品...
-                <Icon name="ep:arrow-right" class="text-xs" />
-              </p>
-            </div>
-          </div>
+            </template>
+            <template v-else>
+              <div class="bg-white rounded-xl shadow-sm border border-(--color-border) p-4">
+                <div class="flex items-center justify-between">
+                  <div class="flex items-center gap-3">
+                    <div class="w-10 h-10 bg-blue-100 rounded-full flex items-center justify-center">
+                      <Icon name="ep:user" class="text-xl text-blue-500" />
+                    </div>
+                    <span class="font-medium text-(--color-text-primary) cursor-pointer hover:text-(--color-btn-primary) transition-colors" @click="openModal('login')">立即登录</span>
+                  </div>
+                  <a href="/account" class="text-sm text-(--color-btn-primary) hover:underline flex items-center">
+                    我的资料
+                    <Icon name="ep:arrow-right" />
+                  </a>
+                </div>
+                <div class="mt-3 pt-3 border-t border-(--color-border)">
+                  <p class="text-sm text-(--color-text-secondary)">
+                    权益介绍：可下载免费资料，用下载币兑换精品...
+                    <Icon name="ep:arrow-right" class="text-xs" />
+                  </p>
+                </div>
+              </div>
+            </template>
+          </ClientOnly>
 
           <!-- 下载币 -->
-          <div class="bg-white rounded-xl shadow-sm border border-(--color-border) p-4">
-            <div class="flex items-center gap-2 mb-3">
-              <span class="font-medium text-(--color-text-primary)">获取更多下载币</span>
-              <Icon name="material-symbols:coin" class="text-yellow-500 text-xl" />
-            </div>
-            <div class="space-y-3">
-              <div class="flex items-center justify-between">
-                <div class="flex items-center gap-2">
-                  <Icon name="ep:user" class="text-(--color-text-secondary)" />
-                  <span class="text-sm text-(--color-text-secondary)">邀请好友得30下载币</span>
-                </div>
-                <button class="px-3 py-1 text-xs text-(--color-btn-primary) border border-(--color-btn-primary) rounded-full hover:bg-(--color-btn-primary) hover:text-white transition-colors">
-                  邀请好友
-                </button>
-              </div>
-              <div class="flex items-center justify-between">
-                <div class="flex items-center gap-2">
-                  <Icon name="ep:document" class="text-(--color-text-secondary)" />
-                  <span class="text-sm text-(--color-text-secondary)">兑换下载币</span>
-                </div>
-                <button class="px-3 py-1 text-xs text-(--color-btn-primary) border border-(--color-btn-primary) rounded-full hover:bg-(--color-btn-primary) hover:text-white transition-colors">
-                  去兑换
-                </button>
-              </div>
-            </div>
-          </div>
+<!--          <div class="bg-white rounded-xl shadow-sm border border-(&#45;&#45;color-border) p-4">-->
+<!--            <div class="flex items-center gap-2 mb-3">-->
+<!--              <span class="font-medium text-(&#45;&#45;color-text-primary)">获取更多下载币</span>-->
+<!--              <Icon name="material-symbols:coin" class="text-yellow-500 text-xl" />-->
+<!--            </div>-->
+<!--            <div class="space-y-3">-->
+<!--              <div class="flex items-center justify-between">-->
+<!--                <div class="flex items-center gap-2">-->
+<!--                  <Icon name="ep:user" class="text-(&#45;&#45;color-text-secondary)" />-->
+<!--                  <span class="text-sm text-(&#45;&#45;color-text-secondary)">邀请好友得30下载币</span>-->
+<!--                </div>-->
+<!--                <button class="px-3 py-1 text-xs text-(&#45;&#45;color-btn-primary) border border-(&#45;&#45;color-btn-primary) rounded-full hover:bg-(&#45;&#45;color-btn-primary) hover:text-white transition-colors">-->
+<!--                  邀请好友-->
+<!--                </button>-->
+<!--              </div>-->
+<!--              <div class="flex items-center justify-between">-->
+<!--                <div class="flex items-center gap-2">-->
+<!--                  <Icon name="ep:document" class="text-(&#45;&#45;color-text-secondary)" />-->
+<!--                  <span class="text-sm text-(&#45;&#45;color-text-secondary)">兑换下载币</span>-->
+<!--                </div>-->
+<!--                <button class="px-3 py-1 text-xs text-(&#45;&#45;color-btn-primary) border border-(&#45;&#45;color-btn-primary) rounded-full hover:bg-(&#45;&#45;color-btn-primary) hover:text-white transition-colors">-->
+<!--                  去兑换-->
+<!--                </button>-->
+<!--              </div>-->
+<!--            </div>-->
+<!--          </div>-->
 
           <!-- 热门资料排行榜 -->
           <div class="bg-white rounded-xl shadow-sm border border-(--color-border) p-4">

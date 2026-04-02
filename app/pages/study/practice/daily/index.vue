@@ -335,7 +335,7 @@ onUnmounted(() => {
         <div class="flex items-center justify-between">
           <div class="flex items-center gap-3">
             <div class="w-10 h-10 rounded-xl bg-gradient-to-br from-blue-500 to-indigo-600 flex items-center justify-center shadow-lg shadow-blue-200">
-              <Icon name="ep:calendar-check" class="text-xl text-white" />
+              <Icon name="mdi:calendar-check" class="text-xl text-white" />
             </div>
             <div>
               <h1 class="text-xl font-bold text-gray-800">每日练习</h1>

@@ -37,7 +37,7 @@
     <span>学习笔记</span>
   </el-menu-item>
   <el-menu-item index="/account/checkin">
-    <Icon name="ep:calendar-check" class="mr-1" />
+    <Icon name="mdi:calendar-check" class="mr-1" />
     <span>学习打卡</span>
   </el-menu-item>
   <el-menu-item index="/account/favorites">
