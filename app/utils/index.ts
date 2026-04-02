@@ -128,8 +128,8 @@ export const generateUUID = () => {
  *
  * @param cellValue 字段值
  */
-// @ts-expect-error - element plus file size formatter
 export const fileSizeFormatter = (cellValue: string | number) => {
+  if (!cellValue) return ''
   const fileSize = cellValue
   const unitArr = ['Bytes', 'KB', 'MB', 'GB', 'TB', 'PB', 'EB', 'ZB', 'YB']
   const srcSize = parseFloat(fileSize as string)
@@ -526,4 +526,17 @@ export function numberToChinese(num: number): string {
   }
 
   return result;
+}
+
+
+/* 格式化下载次数 */
+export const formatCount = (count?: number): string => {
+  if (!count) return '0'
+  if (count >= 10000) {
+    return (count / 10000).toFixed(1) + 'w'
+  }
+  if (count >= 1000) {
+    return (count / 1000).toFixed(1) + 'k'
+  }
+  return count.toString()
 }

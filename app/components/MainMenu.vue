@@ -29,8 +29,8 @@ const _handleSearch = () => {
           <div class="w-[38px] flex-shrink-0"/>
           <div
               class="group relative flex flex-col items-center text-sm text-(--color-text-primary) hover:text-(--color-text-hover) cursor-pointer px-2 flex-shrink-0">
-            <a
-                href="#"
+            <NuxtLink
+                to="/"
                 class="group flex flex-col items-center text-(--color-text) hover:text-(--color-text-hover)">
               <i class="hy-ico-shouye ic-20"/>
               <span class="mt-2 relative leading-5">
@@ -38,7 +38,7 @@ const _handleSearch = () => {
                     <span
                         class="absolute left-0 -bottom-0 w-full h-0.5 bg-(--color-text-hover) scale-x-0 group-hover:scale-x-100 origin-left transition-transform duration-300"/>
                   </span>
-            </a>
+            </NuxtLink>
           </div>
           <div
               class="group relative flex flex-col items-center text-sm text-(--color-text-primary) hover:text-(--color-text-hover) cursor-pointer px-2 flex-shrink-0">
@@ -109,7 +109,7 @@ const _handleSearch = () => {
           <div
               class="group relative flex flex-col items-center text-sm text-(--color-text-primary) hover:text-(--color-text-hover) cursor-pointer px-2 flex-shrink-0">
             <a
-                href="./16-app下载" target="_blank"
+                href="#" target="_blank"
                 class="group flex flex-col items-center text-(--color-text) hover:text-(--color-text-hover)">
               <i class="hy-ico-app ic-20"/>
               <span class="mt-2 relative leading-5">

@@ -27,7 +27,7 @@ export interface DocumentVO {
   description?: string
   coverImage?: string
   fileUrl?: string
-  fileSize?: number
+  fileSize: number
   fileType?: string
   downloadCount: number
   viewCount: number
@@ -66,24 +66,12 @@ export interface DocumentVO {
  */
 export interface DocumentListReqVO {
   keyword?: string
-  docType?: DocumentType
-  categoryId?: number
-  /* 大类编码 */
-  majorCode?: string
-  /* 考试类型编码 */
-  examType?: string
-  year?: number
-  /* 等级筛选 */
-  level?: DocumentLevel
-  /* 资料类型 */
-  materialType?: string
-  /* 状态 */
-  status?: DocumentStatus
-  isFree?: boolean
+  catalogId?: number
+  tags?: number[]
   /* 排序方式：comprehensive-综合, newest-最新, downloads-下载最多, price_asc-价格从低到高, price_desc-价格从高到低 */
-  sort?: string
-  page?: number
-  limit?: number
+  sortType?: string
+  pageNo: number
+  pageSize: number
 }
 
 /**
@@ -139,8 +127,8 @@ export interface ExamTypeVO {
  * 年份筛选
  */
 export interface YearOptionVO {
-  year: number
-  count?: number
+  id: number
+  word?: string
 }
 
 /**

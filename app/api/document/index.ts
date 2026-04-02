@@ -37,24 +37,12 @@ const useMock = () => import.meta.dev
 export const DocumentApi = {
 
   /**
-   * 获取大类列表
-   */
-  getMajors: async (): Promise<MajorVO[]> => {
-    if (useMock()) {
-      return getMockMajors()
-    }
-    return await httpGet('DocumentMajors', '/member/document/major/list')
-  },
-
-  /**
    * 获取文档列表
    * @param params 查询参数
+   * @param server
    */
-  getDocumentList: async (params: DocumentListReqVO): Promise<DocumentListRespVO> => {
-    if (useMock()) {
-      return getMockDocumentList(params)
-    }
-    return await httpGet('DocumentList', '/member/document/page', { query: params })
+  getDocumentList: async (params: DocumentListReqVO, server: boolean = false): Promise<DocumentListRespVO> => {
+    return await httpGet('DocumentList', '/cms/docs/page', { query: params },  server)
   },
 
   /**
@@ -98,41 +86,9 @@ export const DocumentApi = {
    * 获取年份选项
    */
   getYearOptions: async (): Promise<YearOptionVO[]> => {
-    if (useMock()) {
-      return getMockYearOptions()
-    }
-    return await httpGet('YearOptions', '/member/document/year/options')
+    return await httpGet('YearOptions', '/cms/tag/list-by-group-code', {query: {groupCode: 'YEAR'}})
   },
 
-  /**
-   * 获取等级选项
-   */
-  getLevelOptions: async (): Promise<LevelOptionVO[]> => {
-    if (useMock()) {
-      return getMockLevelOptions()
-    }
-    return await httpGet('LevelOptions', '/member/document/level/options')
-  },
-
-  /**
-   * 获取资料类型选项
-   */
-  getMaterialTypes: async (): Promise<MaterialTypeOptionVO[]> => {
-    if (useMock()) {
-      return getMockMaterialTypes()
-    }
-    return await httpGet('MaterialTypes', '/member/document/material-type/options')
-  },
-
-  /**
-   * 获取状态选项
-   */
-  getStatusOptions: async (): Promise<StatusOptionVO[]> => {
-    if (useMock()) {
-      return getMockStatusOptions()
-    }
-    return await httpGet('StatusOptions', '/member/document/status/options')
-  },
 
   /**
    * 增加文档下载次数

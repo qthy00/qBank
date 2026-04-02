@@ -1,6 +1,7 @@
 <script setup lang="ts">
 import {DocumentApi} from '~/api/document'
 import type {DocumentDetailVO} from '~/types/document'
+import {fileSizeFormatter, formatCount} from "~/utils";
 
 definePageMeta({
   layout: 'default'
@@ -75,26 +76,6 @@ const handleDownload = async () => {
   } catch {
     message.error('下载失败')
   }
-}
-
-/* 格式化文件大小 */
-const formatFileSize = (bytes?: number): string => {
-  if (!bytes) return '0 B'
-  const k = 1024
-  const sizes = ['B', 'KB', 'MB', 'GB']
-  const i = Math.floor(Math.log(bytes) / Math.log(k))
-  return parseFloat((bytes / Math.pow(k, i)).toFixed(1)) + ' ' + sizes[i]
-}
-
-/* 格式化下载次数 */
-const formatDownloadCount = (count: number): string => {
-  if (count >= 10000) {
-    return (count / 10000).toFixed(1) + 'w'
-  }
-  if (count >= 1000) {
-    return (count / 1000).toFixed(1) + 'k'
-  }
-  return count.toString()
 }
 
 /* 初始化 */
@@ -203,7 +184,7 @@ onMounted(() => {
                       </div>
                       <div>
                         <div class="text-xs text-(--color-text-tertiary)">文件大小</div>
-                        <div class="font-semibold text-(--color-text-primary)">{{ formatFileSize(document?.fileSize) }}</div>
+                        <div class="font-semibold text-(--color-text-primary)">{{ fileSizeFormatter(document?.fileSize) }}</div>
                       </div>
                     </div>
                     <div class="flex items-center gap-3 p-3 bg-(--color-bg-container) rounded-lg">
@@ -221,7 +202,7 @@ onMounted(() => {
                       </div>
                       <div>
                         <div class="text-xs text-(--color-text-tertiary)">下载次数</div>
-                        <div class="font-semibold text-(--color-text-primary)">{{ formatDownloadCount(document?.downloadCount || 0) }}</div>
+                        <div class="font-semibold text-(--color-text-primary)">{{ formatCount(document?.downloadCount || 0) }}</div>
                       </div>
                     </div>
                     <div class="flex items-center gap-3 p-3 bg-(--color-bg-container) rounded-lg">
@@ -385,7 +366,7 @@ onMounted(() => {
                       <span v-else class="px-2 py-0.5 text-xs text-white bg-(--color-danger) rounded-full">
                         ¥{{ item.price }}
                       </span>
-                      <span class="text-xs text-(--color-text-tertiary)">{{ formatDownloadCount(item.downloadCount) }}下载</span>
+                      <span class="text-xs text-(--color-text-tertiary)">{{ formatCount(item.downloadCount) }}下载</span>
                     </div>
                   </div>
                 </div>

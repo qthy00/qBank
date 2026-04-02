@@ -2,15 +2,10 @@
 import {DocumentApi} from '~/api/document'
 import type {
   DocumentVO,
-  DocumentCategoryVO,
-  ExamTypeVO,
-  YearOptionVO,
-  DocumentType,
-  MajorVO,
-  LevelOptionVO,
-  MaterialTypeOptionVO,
-  StatusOptionVO,
+  YearOptionVO
 } from '~/types/document'
+import {CmsCategoryApi} from "~/api/category";
+import {fileSizeFormatter, formatCount} from "~/utils";
 
 
 definePageMeta({
@@ -25,39 +20,15 @@ useHead({
 const authStore = useAuthStore()
 const userStore = useUserStore()
 const { user } = storeToRefs(userStore)
-const { isLogin } = storeToRefs(authStore)
 const {openModal} = useModal()
 
 /* 大类筛选 */
-const majors = ref<MajorVO[]>([])
-const activeMajor = ref<string>('building')
-
+const activeMajor = ref<number>()
 /* 考试类型筛选 */
-const examTypes = ref<ExamTypeVO[]>([])
-const activeExamType = ref<string>('yijian')
-
-/* 分类数据 */
-const categories = ref<DocumentCategoryVO[]>([])
-const activeCategory = ref<number>(0)
-
-/* 等级筛选 */
-const levelOptions = ref<LevelOptionVO[]>([])
-const activeLevel = ref<string>('')
-
-/* 资料类型筛选 */
-const materialTypes = ref<MaterialTypeOptionVO[]>([])
-const activeMaterialType = ref<string>('')
-
-/* 状态筛选 */
-const statusOptions = ref<StatusOptionVO[]>([])
-const activeStatus = ref<string>('')
-
+const activeExamType = ref<number>(0)
 /* 年份筛选 */
 const yearOptions = ref<YearOptionVO[]>([])
-const activeYear = ref<number>(0)
-
-/* 当前文档类型 */
-const activeTab = ref<DocumentType>('real')
+const activeYear = ref<number>()
 
 /* 排序选项 */
 const sortOptions = [
@@ -74,92 +45,55 @@ const loading = ref(false)
 const documentList = ref<DocumentVO[]>([])
 const total = ref(0)
 
-/* 热门资料排行 */
-const hotDocuments = ref<DocumentVO[]>([])
-
 /* 查询参数 */
 const queryParams = reactive({
-  page: 1,
-  limit: 12,
-  docType: 'real' as DocumentType,
-  categoryId: undefined as number | undefined,
-  majorCode: 'building' as string | undefined,
-  examType: 'yijian' as string | undefined,
-  year: undefined as number | undefined,
-  level: undefined as string | undefined,
-  materialType: undefined as string | undefined,
-  status: undefined as string | undefined,
+  pageNo: 1,
+  pageSize: 12,
+  catalogId: undefined as number | undefined,
+  tags: [],
   sort: 'comprehensive' as string | undefined,
-  keyword: '',
+  keyword: undefined as string | undefined,
 })
 
 /* ==================== 方法定义 ==================== */
 
 /* 获取大类列表 */
-const fetchMajors = async () => {
-  try {
-    const data = await DocumentApi.getMajors()
-    majors.value = data
-  } catch (error) {
-    console.error('获取大类失败:', error)
-  }
-}
+const {data: categories} = await CmsCategoryApi.getCategoryList()
+const {data: hotDocuments} = await useAsyncData(
+    async () => {
+      const data = await DocumentApi.getDocumentList({
+        pageNo: 1,
+        pageSize: 6
+      })
+      return data.list
+    }
+)
 
-/* 获取考试类型 */
-const fetchExamTypes = async () => {
-  try {
-    const data = await DocumentApi.getExamTypes(activeMajor.value)
-    examTypes.value = data
-  } catch (error) {
-    console.error('获取考试类型失败:', error)
+/* const { data: categories, pending: loading, error } = await useAsyncData(
+    'qbank-cover-categories',
+    async () => {
+      const {mockCategoriesWithChildren} = await import('~/api/qbank/mock')
+      return mockCategoriesWithChildren as CategoryWithChildren[]
+    },
+    {
+      server: false,
+      default: () => [],
+    }
+) */
+const subCategories = computed(() => {
+  const data = categories.value.filter(c => c.id === activeMajor.value)
+  if (!data || !data[0] || !data[0].children) {
+    return []
   }
-}
-
-/* 获取分类列表 */
-const fetchCategories = async () => {
-  try {
-    const data = await DocumentApi.getDocumentCategories(activeTab.value)
-    categories.value = [{ id: 0, name: '全部' }, ...data]
-  } catch (error) {
-    console.error('获取分类失败:', error)
-  }
-}
-
-/* 获取等级选项 */
-const fetchLevelOptions = async () => {
-  try {
-    const data = await DocumentApi.getLevelOptions()
-    levelOptions.value = [{ value: '', label: '全部等级' }, ...data]
-  } catch (error) {
-    console.error('获取等级选项失败:', error)
-  }
-}
-
-/* 获取资料类型选项 */
-const fetchMaterialTypes = async () => {
-  try {
-    const data = await DocumentApi.getMaterialTypes()
-    materialTypes.value = [{ value: '', label: '全部类型' }, ...data]
-  } catch (error) {
-    console.error('获取资料类型失败:', error)
-  }
-}
-
-/* 获取状态选项 */
-const fetchStatusOptions = async () => {
-  try {
-    const data = await DocumentApi.getStatusOptions()
-    statusOptions.value = [{ value: '', label: '全部状态' }, ...data]
-  } catch (error) {
-    console.error('获取状态选项失败:', error)
-  }
-}
+  return data[0].children
+})
 
 /* 获取年份选项 */
 const fetchYearOptions = async () => {
   try {
     const data = await DocumentApi.getYearOptions()
-    yearOptions.value = [{ year: 0, count: 0 }, ...data]
+    yearOptions.value = [{ id: 0, word: undefined }, ...data]
+    console.log( '年份选项:', data)
   } catch (error) {
     console.error('获取年份选项失败:', error)
   }
@@ -179,131 +113,54 @@ const fetchDocumentList = async () => {
   }
 }
 
-/* 获取热门文档 */
-const fetchHotDocuments = async () => {
-  try {
-    const data = await DocumentApi.getDocumentList({
-      page: 1,
-      limit: 10,
-      docType: activeTab.value,
-      sort: 'downloads',
-    })
-    hotDocuments.value = data.list?.slice(0, 5) || []
-  } catch (error) {
-    console.error('获取热门文档失败:', error)
-  }
-}
-
 /* 切换大类 */
-const handleMajorChange = (code: string) => {
-  activeMajor.value = code
-  queryParams.majorCode = code
-  queryParams.page = 1
-  /* 重新获取考试类型 */
-  fetchExamTypes()
+const handleMajorChange = (catalogId: number) => {
+  activeMajor.value = catalogId
+  queryParams.catalogId = catalogId
+  queryParams.pageNo = 1
   fetchDocumentList()
 }
 
 /* 切换考试类型 */
-const handleExamTypeChange = (code: string) => {
-  activeExamType.value = code
-  queryParams.examType = code
-  queryParams.page = 1
+const handleExamTypeChange = (catalogId: number) => {
+  activeExamType.value = catalogId
+  queryParams.catalogId = catalogId
+  queryParams.pageNo = 1
   fetchDocumentList()
 }
 
-/* 切换分类 */
-const handleCategoryChange = (categoryId: number) => {
-  activeCategory.value = categoryId
-  queryParams.categoryId = categoryId === 0 ? undefined : categoryId
-  queryParams.page = 1
-  fetchDocumentList()
-}
-
-/* 切换等级 */
-const handleLevelChange = (value: string) => {
-  activeLevel.value = value
-  queryParams.level = value || undefined
-  queryParams.page = 1
-  fetchDocumentList()
-}
-
-/* 切换资料类型 */
-const handleMaterialTypeChange = (value: string) => {
-  activeMaterialType.value = value
-  queryParams.materialType = value || undefined
-  queryParams.page = 1
-  fetchDocumentList()
-}
-
-/* 切换状态 */
-const handleStatusChange = (value: string) => {
-  activeStatus.value = value
-  queryParams.status = value || undefined
-  queryParams.page = 1
-  fetchDocumentList()
-}
 
 /* 切换年份 */
-const handleYearChange = (year: number) => {
-  activeYear.value = year
-  queryParams.year = year || undefined
-  queryParams.page = 1
-  fetchDocumentList()
-}
-
-/* 切换文档类型 */
-const handleTabChange = (tab: DocumentType) => {
-  activeTab.value = tab
-  queryParams.docType = tab
-  queryParams.page = 1
-  fetchCategories()
+const handleYearChange = () => {
+  if(activeYear.value){
+    queryParams.tags = [activeYear.value]
+  }
+  queryParams.pageNo = 1
   fetchDocumentList()
 }
 
 /* 搜索 */
 const handleSearch = () => {
-  queryParams.page = 1
+  queryParams.pageNo = 1
   fetchDocumentList()
 }
 
 /* 分页 */
 const handlePageChange = (page: number) => {
-  queryParams.page = page
+  queryParams.pageNo = page
   fetchDocumentList()
 }
 
 /* 排序变化 */
 const handleSortChange = () => {
   queryParams.sort = activeSort.value
-  queryParams.page = 1
+  queryParams.pageNo = 1
   fetchDocumentList()
 }
 
 /* 查看详情 */
 const handleViewDetail = (id: number) => {
   navigateTo(`/document/${id}`)
-}
-
-/* 格式化文件大小 */
-const formatFileSize = (bytes?: number): string => {
-  if (!bytes) return '0 B'
-  const k = 1024
-  const sizes = ['B', 'KB', 'MB', 'GB']
-  const i = Math.floor(Math.log(bytes) / Math.log(k))
-  return parseFloat((bytes / Math.pow(k, i)).toFixed(2)) + ' ' + sizes[i]
-}
-
-/* 格式化下载次数 */
-const formatDownloadCount = (count?: number): string => {
-  if (!count) return '0'
-  if (count >= 10000) {
-    return (count / 10000).toFixed(1) + 'w'
-  }
-  if (count >= 1000) {
-    return (count / 1000).toFixed(1) + 'k'
-  }
-  return count.toString()
 }
 
 /* 获取排名样式 */
@@ -316,20 +173,14 @@ const getRankStyle = (index: number) => {
 
 /* 获取当前大类名称 */
 const currentMajorName = computed(() => {
-  return majors.value.find(m => m.code === activeMajor.value)?.name || ''
+  return categories.value.find(m => m.id === activeMajor.value)?.name || ''
 })
 
 /* 初始化 */
 onMounted(() => {
-  fetchMajors()
-  fetchExamTypes()
-  fetchCategories()
-  fetchLevelOptions()
-  fetchMaterialTypes()
-  fetchStatusOptions()
+  activeMajor.value = categories.value ? categories.value[0].id : 0
   fetchYearOptions()
   fetchDocumentList()
-  fetchHotDocuments()
 })
 </script>
 
@@ -357,16 +208,15 @@ onMounted(() => {
                 <span class="text-sm font-medium text-(--color-text-secondary) pt-1.5 shrink-0 w-12">大类</span>
                 <div class="flex items-center gap-2 flex-wrap">
                   <button
-                    v-for="major in majors"
-                    :key="major.code"
-                    :class="activeMajor === major.code
+                      v-for="(catalog, index) in categories" :key="index"
+                    :class="activeMajor === catalog.id
                       ? 'bg-(--color-btn-primary) text-white'
                       : 'text-(--color-text-secondary) hover:text-(--color-btn-primary)'
                     "
                     class="px-3 py-1 text-sm rounded-full transition-all duration-200"
-                    @click="handleMajorChange(major.code)"
+                    @click="handleMajorChange(catalog.id)"
                   >
-                    {{ major.name }}
+                    {{ catalog.name }}
                   </button>
                 </div>
               </div>
@@ -376,111 +226,92 @@ onMounted(() => {
                 <span class="text-sm font-medium text-(--color-text-secondary) pt-1.5 shrink-0 w-12">考试</span>
                 <div class="flex items-center gap-2 flex-wrap">
                   <button
-                    v-for="exam in examTypes"
-                    :key="exam.code"
-                    :class="activeExamType === exam.code
+                    :class="activeExamType === 0
                       ? 'bg-(--color-btn-primary) text-white'
                       : 'text-(--color-text-secondary) hover:text-(--color-btn-primary)'
                     "
                     class="px-3 py-1 text-sm rounded-full transition-all duration-200"
-                    @click="handleExamTypeChange(exam.code)"
+                    @click="handleExamTypeChange(0)"
+                  >
+                    全部
+                    </button>
+                  <button
+                    v-for="exam in subCategories"
+                    :key="exam.id"
+                    :class="activeExamType === exam.id
+                      ? 'bg-(--color-btn-primary) text-white'
+                      : 'text-(--color-text-secondary) hover:text-(--color-btn-primary)'
+                    "
+                    class="px-3 py-1 text-sm rounded-full transition-all duration-200"
+                    @click="handleExamTypeChange(exam.id)"
                   >
                     {{ exam.name }}
                   </button>
                 </div>
               </div>
 
-              <!-- 科目 -->
-              <div class="flex items-start gap-3">
-                <span class="text-sm font-medium text-(--color-text-secondary) pt-1.5 shrink-0 w-12">科目</span>
-                <div class="flex items-center gap-2 flex-wrap">
-                  <button
-                    :class="activeCategory === 0
-                      ? 'bg-(--color-btn-primary) text-white'
-                      : 'text-(--color-text-secondary) hover:text-(--color-btn-primary)'
-                    "
-                    class="px-3 py-1 text-sm rounded-full transition-all duration-200"
-                    @click="handleCategoryChange(0)"
-                  >
-                    全部
-                  </button>
-                  <button
-                    v-for="category in categories.slice(1)"
-                    :key="category.id"
-                    :class="activeCategory === category.id
-                      ? 'bg-(--color-btn-primary) text-white'
-                      : 'text-(--color-text-secondary) hover:text-(--color-btn-primary)'
-                    "
-                    class="px-3 py-1 text-sm rounded-full transition-all duration-200"
-                    @click="handleCategoryChange(category.id)"
-                  >
-                    {{ category.name }}
-                  </button>
-                </div>
-              </div>
+<!--              &lt;!&ndash; 等级 &ndash;&gt;-->
+<!--              <div class="flex items-start gap-3">-->
+<!--                <span class="text-sm font-medium text-(&#45;&#45;color-text-secondary) pt-1.5 shrink-0 w-12">等级</span>-->
+<!--                <div class="flex items-center gap-2 flex-wrap">-->
+<!--                  <button-->
+<!--                    v-for="level in levelOptions"-->
+<!--                    :key="level.value"-->
+<!--                    :class="activeLevel === level.value-->
+<!--                      ? 'bg-(&#45;&#45;color-btn-primary) text-white'-->
+<!--                      : 'text-(&#45;&#45;color-text-secondary) hover:text-(&#45;&#45;color-btn-primary)'-->
+<!--                    "-->
+<!--                    class="px-3 py-1 text-sm rounded-full transition-all duration-200"-->
+<!--                    @click="handleLevelChange(level.value)"-->
+<!--                  >-->
+<!--                    {{ level.label }}-->
+<!--                  </button>-->
+<!--                </div>-->
+<!--              </div>-->
 
-              <!-- 等级 -->
-              <div class="flex items-start gap-3">
-                <span class="text-sm font-medium text-(--color-text-secondary) pt-1.5 shrink-0 w-12">等级</span>
-                <div class="flex items-center gap-2 flex-wrap">
-                  <button
-                    v-for="level in levelOptions"
-                    :key="level.value"
-                    :class="activeLevel === level.value
-                      ? 'bg-(--color-btn-primary) text-white'
-                      : 'text-(--color-text-secondary) hover:text-(--color-btn-primary)'
-                    "
-                    class="px-3 py-1 text-sm rounded-full transition-all duration-200"
-                    @click="handleLevelChange(level.value)"
-                  >
-                    {{ level.label }}
-                  </button>
-                </div>
-              </div>
+<!--              &lt;!&ndash; 类型 &ndash;&gt;-->
+<!--              <div class="flex items-start gap-3">-->
+<!--                <span class="text-sm font-medium text-(&#45;&#45;color-text-secondary) pt-1.5 shrink-0 w-12">类型</span>-->
+<!--                <div class="flex items-center gap-2 flex-wrap">-->
+<!--                  <button-->
+<!--                    v-for="type in materialTypes.slice(0, 8)"-->
+<!--                    :key="type.value"-->
+<!--                    :class="activeMaterialType === type.value-->
+<!--                      ? 'bg-(&#45;&#45;color-btn-primary) text-white'-->
+<!--                      : 'text-(&#45;&#45;color-text-secondary) hover:text-(&#45;&#45;color-btn-primary)'-->
+<!--                    "-->
+<!--                    class="px-3 py-1 text-sm rounded-full transition-all duration-200"-->
+<!--                    @click="handleMaterialTypeChange(type.value)"-->
+<!--                  >-->
+<!--                    {{ type.label }}-->
+<!--                  </button>-->
+<!--                </div>-->
+<!--              </div>-->
 
-              <!-- 类型 -->
-              <div class="flex items-start gap-3">
-                <span class="text-sm font-medium text-(--color-text-secondary) pt-1.5 shrink-0 w-12">类型</span>
-                <div class="flex items-center gap-2 flex-wrap">
-                  <button
-                    v-for="type in materialTypes.slice(0, 8)"
-                    :key="type.value"
-                    :class="activeMaterialType === type.value
-                      ? 'bg-(--color-btn-primary) text-white'
-                      : 'text-(--color-text-secondary) hover:text-(--color-btn-primary)'
-                    "
-                    class="px-3 py-1 text-sm rounded-full transition-all duration-200"
-                    @click="handleMaterialTypeChange(type.value)"
-                  >
-                    {{ type.label }}
-                  </button>
-                </div>
-              </div>
-
-              <!-- 状态 -->
-              <div class="flex items-start gap-3">
-                <span class="text-sm font-medium text-(--color-text-secondary) pt-1.5 shrink-0 w-12">状态</span>
-                <div class="flex items-center gap-2 flex-wrap">
-                  <button
-                    v-for="status in statusOptions"
-                    :key="status.value"
-                    :class="activeStatus === status.value
-                      ? 'bg-(--color-btn-primary) text-white'
-                      : 'text-(--color-text-secondary) hover:text-(--color-btn-primary)'
-                    "
-                    class="px-3 py-1 text-sm rounded-full transition-all duration-200"
-                    @click="handleStatusChange(status.value)"
-                  >
-                    {{ status.label }}
-                  </button>
-                </div>
-              </div>
+<!--              &lt;!&ndash; 状态 &ndash;&gt;-->
+<!--              <div class="flex items-start gap-3">-->
+<!--                <span class="text-sm font-medium text-(&#45;&#45;color-text-secondary) pt-1.5 shrink-0 w-12">状态</span>-->
+<!--                <div class="flex items-center gap-2 flex-wrap">-->
+<!--                  <button-->
+<!--                    v-for="status in statusOptions"-->
+<!--                    :key="status.value"-->
+<!--                    :class="activeStatus === status.value-->
+<!--                      ? 'bg-(&#45;&#45;color-btn-primary) text-white'-->
+<!--                      : 'text-(&#45;&#45;color-text-secondary) hover:text-(&#45;&#45;color-btn-primary)'-->
+<!--                    "-->
+<!--                    class="px-3 py-1 text-sm rounded-full transition-all duration-200"-->
+<!--                    @click="handleStatusChange(status.value)"-->
+<!--                  >-->
+<!--                    {{ status.label }}-->
+<!--                  </button>-->
+<!--                </div>-->
+<!--              </div>-->
             </div>
 
             <!-- 搜索和排序 -->
             <div class="px-5 py-3 bg-gray-50 border-t border-(--color-border) flex items-center justify-between">
               <div class="flex items-center gap-3">
-                <el-select v-model="activeSort" size="small" class="w-28" @change="handleSortChange">
+                <el-select v-model="activeSort" size="small" class="!w-28" @change="handleSortChange">
                   <el-option
                     v-for="opt in sortOptions"
                     :key="opt.value"
@@ -488,15 +319,12 @@ onMounted(() => {
                     :value="opt.value"
                   />
                 </el-select>
-                <el-select size="small" class="w-28" placeholder="全部主题">
-                  <el-option label="全部主题" value="" />
-                </el-select>
-                <el-select size="small" class="w-28" placeholder="全部考期">
+                <el-select v-model="activeYear" size="small" class="!w-28" placeholder="全部年份" @change="handleYearChange">
                   <el-option
                     v-for="year in yearOptions"
-                    :key="year.year"
-                    :label="year.year ? year.year + '年' : '全部考期'"
-                    :value="year.year"
+                    :key="year.id"
+                    :label="year.word ? year.word + '年' : '全部年份'"
+                    :value="year.id"
                   />
                 </el-select>
               </div>
@@ -524,24 +352,6 @@ onMounted(() => {
 
             <!-- 文档组（按主题分组） -->
             <div class="bg-white rounded-xl shadow-sm border border-(--color-border)">
-              <!-- 组标题 -->
-              <div class="px-5 py-4 border-b border-(--color-border)">
-                <div class="flex items-center justify-between">
-                  <div class="flex items-center gap-2">
-                    <Icon name="ep:remove" class="text-red-500 text-xl" />
-                    <h3 class="font-bold text-(--color-text-primary)">摸底测试！3月模考大赛试卷及答案</h3>
-                  </div>
-                  <button class="text-sm text-(--color-text-secondary) hover:text-(--color-btn-primary) flex items-center gap-1">
-                    收起
-                    <Icon name="ep:arrow-up" />
-                  </button>
-                </div>
-                <div class="flex items-center gap-4 mt-2 text-sm text-(--color-text-secondary)">
-                  <span>共 {{ documentList.length }} 套</span>
-                  <span>/</span>
-                  <span>下载数: {{ formatDownloadCount(documentList.reduce((sum, doc) => sum + doc.downloadCount, 0)) }}</span>
-                </div>
-              </div>
 
               <!-- 文档项列表 -->
               <div class="divide-y divide-(--color-border)">
@@ -578,8 +388,8 @@ onMounted(() => {
                       <span v-if="doc.isFree" class="text-red-500 font-medium">免费</span>
                       <span v-else-if="doc.isVip" class="text-orange-500 font-medium">VIP</span>
                       <span v-else class="text-red-500 font-medium">¥{{ doc.price }}</span>
-                      <span>{{ formatFileSize(doc.fileSize) }}</span>
-                      <span>下载数: {{ formatDownloadCount(doc.downloadCount) }}</span>
+                      <span>{{ fileSizeFormatter(doc.fileSize) }}</span>
+                      <span>下载数: {{ formatCount(doc.downloadCount) }}</span>
                       <span
                         v-if="doc.categoryName"
                         class="px-2 py-0.5 text-xs text-red-500 border border-red-500 rounded"
@@ -606,8 +416,8 @@ onMounted(() => {
           <!-- 分页 -->
           <div v-if="total > 0" class="flex items-center justify-center pt-4">
             <el-pagination
-              v-model:current-page="queryParams.page"
-              :page-size="queryParams.limit"
+              v-model:current-page="queryParams.pageNo"
+              :page-size="queryParams.pageSize"
               :total="total"
               layout="prev, pager, next"
               prev-text="上一页"
@@ -753,7 +563,7 @@ onMounted(() => {
                     <span v-if="doc.isFree" class="text-red-500">免费</span>
                     <span v-else-if="doc.isVip" class="text-orange-500">VIP专享</span>
                     <span v-else class="text-red-500">¥{{ doc.price }}</span>
-                    <span>下载数: {{ formatDownloadCount(doc.downloadCount) }}</span>
+                    <span>下载数: {{ formatCount(doc.downloadCount) }}</span>
                   </div>
                 </div>
               </div>

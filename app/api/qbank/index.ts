@@ -101,6 +101,10 @@ export const questionApi = {
   getHomeExamDetail: async (catalogId?: number, server: boolean = false): Promise<examsItemVO[]> => {
     return await httpGet('getHomeExamDetail', `/cms/qBank/exam-detail`, {query: {catalogId}}, server)
   },
+  /* 获取首页考试详情数据 */
+  getSubjectsByColumn: async (catalogId?: number, server: boolean = false): Promise<examsItemVO[]> => {
+    return await httpGet('getHomeExamDetail', `/cms/qBank/subjects-by-column`, {query: {catalogId}}, server)
+  },
 
   /* ==================== 题库列表相关接口（支持模拟数据） ==================== */
 
