@@ -95,6 +95,7 @@ async function refreshToken() {
     const {getRefreshToken, setTokens} = useToken()
 
     const refreshToken = getRefreshToken()
+    console.log('获取刷新TOKEN', refreshToken)
     if (!refreshToken) return null
 
     try {
@@ -108,6 +109,7 @@ async function refreshToken() {
                 'Current-Site': 4,
             }
         })
+        console.log('result==', result)
         if (result.data) {
             setTokens(result.data.accessToken, result.data.refreshToken)
             return result.data.accessToken
@@ -141,7 +143,9 @@ const handleError = (error: any, _url: string, _options: any) => {
         const statusCode = msg.match(/\d{3}/)?.[0]
         msg = statusCode ? $t('sys.apiRequestFailed') + statusCode : $t('sys.apiRequestFailed')
     }
-
+    if (import.meta.client){
+        console.log('请求出错啦！', msg)
+    }
     return Promise.reject(error)
 }
 
@@ -150,6 +154,7 @@ const handleError = (error: any, _url: string, _options: any) => {
  * 响应处理
  */
 async function handleResponse(data: any, originalRequest?: any) {
+    console.log('data===========', data.code)
     if (!data) {
         throw new Error('[HTTP]请求没有返回值')
     }
@@ -158,7 +163,7 @@ async function handleResponse(data: any, originalRequest?: any) {
     if (code === 0) return data.data
     // 获取错误信息
     const msg = data.msg || errorCode[code] || errorCode['default']
-
+    console.error('error===========', msg)
     if (import.meta.server) throw new Error(msg)
 
     if (ignoreMsgs.indexOf(msg) !== -1) {
@@ -186,10 +191,10 @@ async function handleResponse(data: any, originalRequest?: any) {
 
         try {
             const newToken = await refreshToken()
+            console.log('新的TOKEN====', newToken)
             if (newToken) {
                 // 刷新成功：重试队列中的所有请求
                 retryRequests.forEach((cb) => cb(newToken))
-
                 // 重试当前请求
                 if (originalRequest) {
                     originalRequest.headers.Authorization = `Bearer ${newToken}`
@@ -197,12 +202,12 @@ async function handleResponse(data: any, originalRequest?: any) {
                 }
             } else {
                 // 刷新失败：拒绝队列中的所有请求并引导登录
-                retryRequests.forEach((cb) => cb(''))
+                // retryRequests.forEach((cb) => cb(''))
                 return handleAuthorized()
             }
         } catch {
             // 异常时也要清空队列
-            retryRequests.forEach((cb) => cb(''))
+            // retryRequests.forEach((cb) => cb(''))
             return handleAuthorized()
         } finally {
             retryRequests = []
@@ -215,6 +220,7 @@ async function handleResponse(data: any, originalRequest?: any) {
         message.error($t('sys.api.errMsg901'))
         // throw new Error(msg)
     } else if (code !== 0) {
+        console.log('请求出错啦！！！', msg)
         message.error(msg)
         throw new Error(msg)
     }
@@ -225,7 +231,7 @@ async function handleResponse(data: any, originalRequest?: any) {
  * @param requestConfig 原请求配置
  */
 async function retryOriginalRequest(requestConfig: any) {
-    const res = await $fetch(requestConfig.url, {
+    const res:any = await $fetch(requestConfig.url, {
         method: requestConfig.method,
         headers: requestConfig.headers,
         body: requestConfig.body,
@@ -286,6 +292,7 @@ export async function useHttp(key: string | undefined,
         if (options?.$) {
             // 使用$fetch直接请求的情况
             try {
+                console.log('使用$fetch直接请求的情况', url)
                 const response = await $fetch(url, {
                     ...options,
                     signal: controller.signal
@@ -303,6 +310,7 @@ export async function useHttp(key: string | undefined,
                 return handleError(err, url, options)
             }
         } else {
+            console.log('使用useFetch请求的情况', url)
             return useFetch(url, {
                 ...options,
                 async onResponse({response}) {
@@ -312,6 +320,7 @@ export async function useHttp(key: string | undefined,
                 },
                 async onResponseError({response}) {
                     clearTimeout(timeoutId)
+                    console.log('HTTP错误=====', response)
                     if (import.meta.client) {
                         message.error(`HTTP错误：${response.status}`)
                     }

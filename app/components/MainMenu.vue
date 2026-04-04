@@ -6,10 +6,6 @@ const handleSearchToggle = () => {
   showSearch.value = !showSearch.value
 }
 
-const _handleSearch = () => {
-  console.log('搜索')
-}
-
 </script>
 
 <template>

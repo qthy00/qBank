@@ -330,7 +330,7 @@
 <Icon name="ep:document" />      <!-- 文档 -->
 <Icon name="ep:folder" />        <!-- 文件夹 -->
 <Icon name="ep:trophy" />        <!-- 奖杯/排行 -->
-<Icon name="ep:fire" />          <!-- 热门 -->
+<Icon name="mdi:fire" />          <!-- 热门 -->
 <Icon name="ep:share" />         <!-- 分享 -->
 <Icon name="ep:arrow-right" />   <!-- 箭头 -->
 <Icon name="ep:check" />         <!-- 勾选 -->
@@ -355,7 +355,7 @@
 <Icon name="ep:trophy" class="text-yellow-300" />
 
 <!-- 功能色图标 -->
-<Icon name="ep:fire" class="text-red-500" />
+<Icon name="mdi:fire" class="text-red-500" />
 <Icon name="ep:check" class="text-emerald-500" />
 ```
 
@@ -474,7 +474,7 @@ onMounted(fetchData)
           <!-- 热门推荐 -->
           <div class="bg-white rounded-2xl shadow-lg shadow-blue-100/50 border border-blue-100 p-5">
             <h3 class="font-bold text-slate-800 mb-4 flex items-center gap-2">
-              <Icon name="ep:fire" class="text-red-500" />
+              <Icon name="mdi:fire" class="text-red-500" />
               热门推荐
             </h3>
             <!-- ... -->

@@ -195,7 +195,7 @@ onMounted(() => {
       <div class="relative container mx-auto px-4 py-12 md:py-16">
         <div class="text-center">
           <div class="inline-flex items-center gap-2 px-4 py-2 bg-white/20 backdrop-blur-sm rounded-full mb-4">
-            <Icon name="ep:news" class="text-white text-lg"/>
+            <Icon name="mdi:newspaper-variant-multiple-outline" class="text-white text-lg"/>
             <span class="text-white/90 text-sm font-medium">实时更新</span>
           </div>
           <h1 class="text-3xl md:text-4xl font-bold text-white mb-3 tracking-tight">资讯中心</h1>
@@ -555,7 +555,7 @@ onMounted(() => {
           <!-- 热门资讯排行榜 -->
           <div class="bg-white rounded-xl shadow-lg shadow-blue-100/50 border border-blue-100 p-5">
             <div class="flex items-center gap-2 mb-4">
-              <Icon name="ep:fire" class="text-xl text-red-500"/>
+              <Icon name="mdi:fire" class="text-xl text-red-500"/>
               <h3 class="font-bold text-slate-800">热门资讯</h3>
             </div>
             <div class="space-y-4">

@@ -245,7 +245,7 @@ onUnmounted(() => {
           <!-- 看过的人都在学 -->
           <div class="bg-white rounded-2xl shadow-lg shadow-blue-100/50 border border-blue-100 p-5">
             <h3 class="font-bold text-slate-800 mb-4 flex items-center gap-2">
-              <Icon name="ep:fire" class="text-red-500" />
+              <Icon name="mdi:fire" class="text-red-500" />
               看过的人都在学
             </h3>
             <div class="space-y-4">
@@ -273,7 +273,7 @@ onUnmounted(() => {
             </h3>
             <div class="flex items-start gap-3">
               <div class="w-24 h-24 bg-gradient-to-br from-blue-50 to-cyan-50 rounded-xl flex items-center justify-center shrink-0">
-                <Icon name="ep:qr-code" class="text-4xl text-blue-400" />
+                <Icon name="mdi:qrcode" class="text-4xl text-blue-400" />
               </div>
               <div class="text-sm text-slate-500 space-y-1">
                 <p>免费领精品资料</p>

@@ -51,8 +51,8 @@ const queryParams = reactive({
   pageNo: 1,
   pageSize: 10,
   catalogId: undefined as number | undefined,
-  tags: [] as string[],
-  sort: 'comprehensive' as string | undefined,
+  tags: [] as number[],
+  sortType: 'comprehensive' as string | undefined,
   keyword: undefined as string | undefined,
 })
 
@@ -130,7 +130,7 @@ const handleExamTypeChange = (catalogId: number) => {
 /* 切换年份 */
 const handleYearChange = () => {
   if (activeYear.value) {
-    queryParams.tags = [String(activeYear.value)]
+    queryParams.tags = [activeYear.value]
   } else {
     queryParams.tags = []
   }
@@ -152,7 +152,7 @@ const handlePageChange = (page: number) => {
 
 /* 排序变化 */
 const handleSortChange = () => {
-  queryParams.sort = activeSort.value
+  queryParams.sortType = activeSort.value
   queryParams.pageNo = 1
   fetchDocumentList()
 }
@@ -480,7 +480,7 @@ onMounted(() => {
           <!-- 热门资料排行榜 -->
           <div class="bg-white rounded-xl shadow-lg shadow-blue-100/50 border border-blue-100 p-5">
             <div class="flex items-center gap-2 mb-4">
-              <Icon name="ep:fire" class="text-xl text-red-500"/>
+              <Icon name="mdi:fire" class="text-xl text-red-500"/>
               <h3 class="font-bold text-slate-800">热门资料</h3>
             </div>
             <div class="space-y-4">
@@ -521,7 +521,7 @@ onMounted(() => {
               <div class="grid grid-cols-2 gap-3">
                 <a href="/article"
                    class="flex flex-col items-center gap-2 p-3 rounded-lg bg-white/20 hover:bg-white/30 transition-colors">
-                  <Icon name="ep:news" class="text-2xl"/>
+                  <Icon name="mdi:newspaper-variant-multiple-outline" class="text-2xl"/>
                   <span class="text-sm">考试资讯</span>
                 </a>
                 <a href="/qBank"

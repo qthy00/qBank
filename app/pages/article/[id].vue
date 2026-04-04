@@ -155,7 +155,7 @@ watch(() => route.params.id, () => {
                   v-if="article?.isHot"
                   class="px-3 py-1.5 text-xs font-medium text-white bg-gradient-to-r from-orange-500 to-amber-500 rounded-full"
                 >
-                  <Icon name="ep:fire" class="mr-1" />
+                  <Icon name="mdi:fire" class="mr-1" />
                   热门
                 </span>
               </div>
