@@ -110,10 +110,10 @@ watch(() => route.params.id, () => {
 </script>
 
 <template>
-  <div class="min-h-screen bg-(--color-bg-container)">
-    <!-- 顶部渐变背景 -->
+  <div class="min-h-screen bg-gradient-to-br from-slate-50 via-blue-50 to-cyan-50">
+    <!-- 顶部渐变背景 - 蓝色系 -->
     <div class="relative h-48 overflow-hidden">
-      <div class="absolute inset-0 bg-gradient-to-br from-(--color-primary) via-(--color-primary-light) to-(--color-primary-lighter)"/>
+      <div class="absolute inset-0 bg-gradient-to-br from-blue-600 via-indigo-500 to-cyan-500"/>
       <div class="absolute inset-0 opacity-10">
         <div class="absolute top-0 right-0 w-96 h-96 bg-white rounded-full -translate-y-1/2 translate-x-1/2"/>
         <div class="absolute bottom-0 left-0 w-64 h-64 bg-white rounded-full translate-y-1/2 -translate-x-1/2"/>
@@ -133,27 +133,27 @@ watch(() => route.params.id, () => {
       <div class="grid grid-cols-1 lg:grid-cols-3 gap-6 pb-12">
         <!-- 左侧主要内容 -->
         <div class="lg:col-span-2">
-          <div v-loading="loading" class="bg-white rounded-2xl shadow-lg shadow-(--color-shadow)/50 overflow-hidden">
+          <div v-loading="loading" class="bg-white rounded-2xl shadow-lg shadow-blue-100/50 overflow-hidden border border-blue-100">
             <!-- 文章头部 -->
-            <div class="p-8 border-b border-(--color-border-light)">
+            <div class="p-8 border-b border-slate-100">
               <!-- 分类标签 -->
               <div class="flex items-center gap-3 mb-4">
                 <span
                   v-if="article?.categoryName"
-                  class="px-4 py-1.5 text-sm font-medium text-white bg-(--color-primary) rounded-full shadow-md shadow-(--color-primary)/30"
+                  class="px-4 py-1.5 text-sm font-medium text-white bg-gradient-to-r from-blue-500 to-cyan-500 rounded-full shadow-md shadow-blue-500/30"
                 >
                   {{ article.categoryName }}
                 </span>
                 <span
                   v-if="article?.isTop"
-                  class="px-3 py-1.5 text-xs font-medium text-white bg-(--color-danger) rounded-full"
+                  class="px-3 py-1.5 text-xs font-medium text-white bg-red-500 rounded-full"
                 >
                   <Icon name="ep:top" class="mr-1" />
                   置顶
                 </span>
                 <span
                   v-if="article?.isHot"
-                  class="px-3 py-1.5 text-xs font-medium text-white bg-(--color-warning) rounded-full"
+                  class="px-3 py-1.5 text-xs font-medium text-white bg-gradient-to-r from-orange-500 to-amber-500 rounded-full"
                 >
                   <Icon name="ep:fire" class="mr-1" />
                   热门
@@ -161,28 +161,28 @@ watch(() => route.params.id, () => {
               </div>
 
               <!-- 标题 -->
-              <h1 class="text-2xl font-bold text-(--color-text-primary) mb-6 leading-tight">
+              <h1 class="text-2xl font-bold text-slate-800 mb-6 leading-tight">
                 {{ article?.title }}
               </h1>
 
               <!-- 元信息 -->
-              <div class="flex items-center gap-6 text-sm text-(--color-text-secondary)">
+              <div class="flex items-center gap-6 text-sm text-slate-500">
                 <span v-if="article?.author" class="flex items-center gap-2">
-                  <div class="w-8 h-8 rounded-full bg-(--color-primary-light) flex items-center justify-center">
-                    <Icon name="ep:user" class="text-(--color-primary)" />
+                  <div class="w-8 h-8 rounded-full bg-blue-100 flex items-center justify-center">
+                    <Icon name="ep:user" class="text-blue-500" />
                   </div>
                   {{ article.author }}
                 </span>
                 <span v-if="article?.publishTime" class="flex items-center gap-2">
-                  <Icon name="ep:clock" class="text-(--color-primary)" />
+                  <Icon name="ep:clock" class="text-blue-500" />
                   {{ formatDate(article.publishTime) }}
                 </span>
                 <span class="flex items-center gap-2">
-                  <Icon name="ep:view" class="text-(--color-primary)" />
+                  <Icon name="ep:view" class="text-blue-500" />
                   {{ article?.viewCount || 0 }} 阅读
                 </span>
                 <span v-if="article?.source" class="flex items-center gap-2">
-                  <Icon name="ep:link" class="text-(--color-primary)" />
+                  <Icon name="ep:link" class="text-blue-500" />
                   来源：{{ article.source }}
                 </span>
               </div>
@@ -203,16 +203,16 @@ watch(() => route.params.id, () => {
               <div class="prose prose-lg max-w-none article-content" v-html="article?.content"/>
 
               <!-- 标签 -->
-              <div v-if="article?.tags && article.tags.length > 0" class="mt-10 pt-6 border-t border-(--color-border-light)">
+              <div v-if="article?.tags && article.tags.length > 0" class="mt-10 pt-6 border-t border-slate-100">
                 <div class="flex items-center gap-3 flex-wrap">
-                  <span class="text-sm text-(--color-text-secondary)">
+                  <span class="text-sm text-slate-500">
                     <Icon name="ep:price-tag" class="mr-1" />
                     标签：
                   </span>
                   <span
                     v-for="tag in article.tags"
                     :key="tag"
-                    class="px-4 py-1.5 text-sm text-(--color-primary) bg-(--color-primary-light) rounded-full hover:bg-(--color-primary) hover:text-white cursor-pointer transition-all duration-300"
+                    class="px-4 py-1.5 text-sm text-blue-600 bg-blue-50 rounded-full hover:bg-blue-500 hover:text-white cursor-pointer transition-all duration-300"
                   >
                     {{ tag }}
                   </span>
@@ -221,12 +221,12 @@ watch(() => route.params.id, () => {
             </div>
 
             <!-- 文章底部导航 -->
-            <div class="px-8 py-5 bg-(--color-bg-container) border-t border-(--color-border-light)">
+            <div class="px-8 py-5 bg-slate-50 border-t border-slate-100">
               <div class="flex items-center justify-between">
                 <!-- 上一篇 -->
                 <button
                   v-if="article?.prevArticle"
-                  class="flex items-center gap-2 text-sm text-(--color-text-secondary) hover:text-(--color-primary) transition-colors group"
+                  class="flex items-center gap-2 text-sm text-slate-500 hover:text-blue-600 transition-colors group"
                   @click="handleViewDetail(article.prevArticle.id)"
                 >
                   <Icon name="ep:arrow-left" class="group-hover:-translate-x-1 transition-transform" />
@@ -236,7 +236,7 @@ watch(() => route.params.id, () => {
                 <!-- 下一篇 -->
                 <button
                   v-if="article?.nextArticle"
-                  class="flex items-center gap-2 text-sm text-(--color-text-secondary) hover:text-(--color-primary) transition-colors group"
+                  class="flex items-center gap-2 text-sm text-slate-500 hover:text-blue-600 transition-colors group"
                   @click="handleViewDetail(article.nextArticle.id)"
                 >
                   <span class="line-clamp-1 max-w-xs">{{ article.nextArticle.title }}</span>
@@ -250,46 +250,46 @@ watch(() => route.params.id, () => {
         <!-- 右侧侧边栏 -->
         <div class="lg:col-span-1 space-y-6">
           <!-- 分享卡片 -->
-          <div class="bg-white rounded-2xl shadow-lg shadow-(--color-shadow)/50 p-6">
-            <h3 class="text-lg font-semibold text-(--color-text-primary) mb-5 flex items-center gap-2">
-              <Icon name="ep:share" class="text-(--color-primary)" />
+          <div class="bg-white rounded-2xl shadow-lg shadow-blue-100/50 p-6 border border-blue-100">
+            <h3 class="text-lg font-semibold text-slate-800 mb-5 flex items-center gap-2">
+              <Icon name="ep:share" class="text-blue-500" />
               分享资讯
             </h3>
             <div class="grid grid-cols-3 gap-3">
               <button
-                class="flex flex-col items-center gap-2 p-4 rounded-xl hover:bg-(--color-success-light) transition-colors group"
+                class="flex flex-col items-center gap-2 p-4 rounded-xl hover:bg-green-50 transition-colors group"
                 @click="handleShare('wechat')"
               >
-                <div class="w-12 h-12 rounded-full bg-(--color-success-light) flex items-center justify-center group-hover:bg-(--color-success) transition-colors">
-                  <Icon name="fa:weixin" class="text-(--color-success) group-hover:text-white text-xl transition-colors" />
+                <div class="w-12 h-12 rounded-full bg-green-100 flex items-center justify-center group-hover:bg-green-500 transition-colors">
+                  <Icon name="fa:weixin" class="text-green-500 group-hover:text-white text-xl transition-colors" />
                 </div>
-                <span class="text-xs text-(--color-text-secondary)">微信</span>
+                <span class="text-xs text-slate-500">微信</span>
               </button>
               <button
-                class="flex flex-col items-center gap-2 p-4 rounded-xl hover:bg-(--color-danger-light) transition-colors group"
+                class="flex flex-col items-center gap-2 p-4 rounded-xl hover:bg-red-50 transition-colors group"
                 @click="handleShare('weibo')"
               >
-                <div class="w-12 h-12 rounded-full bg-(--color-danger-light) flex items-center justify-center group-hover:bg-(--color-danger) transition-colors">
-                  <Icon name="ri:weibo-fill" class="text-(--color-danger) group-hover:text-white text-xl transition-colors" />
+                <div class="w-12 h-12 rounded-full bg-red-100 flex items-center justify-center group-hover:bg-red-500 transition-colors">
+                  <Icon name="ri:weibo-fill" class="text-red-500 group-hover:text-white text-xl transition-colors" />
                 </div>
-                <span class="text-xs text-(--color-text-secondary)">微博</span>
+                <span class="text-xs text-slate-500">微博</span>
               </button>
               <button
-                class="flex flex-col items-center gap-2 p-4 rounded-xl hover:bg-(--color-primary-light) transition-colors group"
+                class="flex flex-col items-center gap-2 p-4 rounded-xl hover:bg-blue-50 transition-colors group"
                 @click="handleShare('link')"
               >
-                <div class="w-12 h-12 rounded-full bg-(--color-primary-light) flex items-center justify-center group-hover:bg-(--color-primary) transition-colors">
-                  <Icon name="ep:link" class="text-(--color-primary) group-hover:text-white text-xl transition-colors" />
+                <div class="w-12 h-12 rounded-full bg-blue-100 flex items-center justify-center group-hover:bg-blue-500 transition-colors">
+                  <Icon name="ep:link" class="text-blue-500 group-hover:text-white text-xl transition-colors" />
                 </div>
-                <span class="text-xs text-(--color-text-secondary)">复制链接</span>
+                <span class="text-xs text-slate-500">复制链接</span>
               </button>
             </div>
           </div>
 
           <!-- 相关资讯 -->
-          <div class="bg-white rounded-2xl shadow-lg shadow-(--color-shadow)/50 p-6">
-            <h3 class="text-lg font-semibold text-(--color-text-primary) mb-5 flex items-center gap-2">
-              <Icon name="ep:reading" class="text-(--color-primary)" />
+          <div class="bg-white rounded-2xl shadow-lg shadow-blue-100/50 p-6 border border-blue-100">
+            <h3 class="text-lg font-semibold text-slate-800 mb-5 flex items-center gap-2">
+              <Icon name="ep:reading" class="text-blue-500" />
               相关资讯
             </h3>
             <div class="space-y-4">
@@ -300,22 +300,22 @@ watch(() => route.params.id, () => {
                 @click="handleViewDetail(item.id)"
               >
                 <div class="flex gap-3">
-                  <div class="w-20 h-14 rounded-lg overflow-hidden bg-(--color-bg-container) flex-shrink-0">
+                  <div class="w-20 h-14 rounded-lg overflow-hidden bg-slate-100 flex-shrink-0">
                     <img
                       v-if="item.coverImage"
                       :src="item.coverImage"
                       :alt="item.title"
                       class="w-full h-full object-cover group-hover:scale-110 transition-transform duration-300"
                     >
-                    <div v-else class="w-full h-full flex items-center justify-center text-(--color-primary)">
+                    <div v-else class="w-full h-full flex items-center justify-center text-blue-500">
                       <Icon name="ep:picture" class="text-sm" />
                     </div>
                   </div>
                   <div class="flex-1 min-w-0">
-                    <h4 class="text-sm font-medium text-(--color-text-primary) line-clamp-2 group-hover:text-(--color-primary) transition-colors">
+                    <h4 class="text-sm font-medium text-slate-700 line-clamp-2 group-hover:text-blue-600 transition-colors">
                       {{ item.title }}
                     </h4>
-                    <span class="text-xs text-(--color-text-tertiary) mt-1">
+                    <span class="text-xs text-slate-400 mt-1">
                       {{ item.publishTime ? formatDate(item.publishTime) : '' }}
                     </span>
                   </div>
@@ -325,11 +325,11 @@ watch(() => route.params.id, () => {
           </div>
 
           <!-- 返回列表 -->
-          <div class="bg-gradient-to-r from-(--color-primary) to-(--color-primary-light) rounded-2xl shadow-lg shadow-(--color-primary)/30 p-6 text-white">
+          <div class="bg-gradient-to-r from-blue-500 to-cyan-500 rounded-2xl shadow-lg shadow-blue-200 p-6 text-white">
             <h3 class="text-lg font-semibold mb-2">查看更多资讯</h3>
             <p class="text-sm text-white/80 mb-4">浏览更多考试动态和备考资讯</p>
             <button
-              class="w-full flex items-center justify-center gap-2 px-4 py-3 bg-white text-(--color-primary) rounded-xl hover:bg-white/90 transition-colors font-medium"
+              class="w-full flex items-center justify-center gap-2 px-4 py-3 bg-white text-blue-600 rounded-xl hover:bg-white/90 transition-colors font-medium"
               @click="handleBack"
             >
               <Icon name="ep:arrow-left" />

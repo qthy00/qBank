@@ -1,29 +1,36 @@
 <template>
-  <div class="ranking-page min-h-screen bg-gray-50">
-    <!-- 页面头部 -->
-    <div class="page-header bg-(--color-bg-container) shadow-sm">
-      <div class="container mx-auto px-4 py-6">
+  <div class="ranking-page min-h-screen bg-gradient-to-br from-slate-50 via-blue-50 to-cyan-50">
+    <!-- 页面头部 - 蓝色渐变 -->
+    <div class="relative overflow-hidden">
+      <div class="absolute inset-0 bg-gradient-to-br from-blue-600 via-indigo-500 to-cyan-500"/>
+      <!-- 装饰图案 -->
+      <div class="absolute inset-0">
+        <div class="absolute top-10 left-10 w-32 h-32 bg-white/10 rounded-full blur-2xl"/>
+        <div class="absolute top-20 right-20 w-48 h-48 bg-cyan-300/20 rounded-full blur-3xl"/>
+        <div class="absolute bottom-10 left-1/3 w-24 h-24 bg-blue-300/20 rounded-full blur-2xl"/>
+      </div>
+
+      <div class="relative container mx-auto px-4 py-8">
         <div class="flex flex-col md:flex-row md:items-center md:justify-between gap-4">
           <div>
-            <h1 class="text-2xl font-bold text-(--color-text-primary) flex items-center gap-2">
-              <Icon name="ep:trophy" class="text-(--color-btn-primary)" />
+            <h1 class="text-3xl font-bold text-white flex items-center gap-3">
+              <Icon name="ep:trophy" class="text-yellow-300 text-2xl" />
               学习排行榜
             </h1>
-            <p class="text-(--color-text-secondary) mt-1">
+            <p class="text-white/80 mt-2">
               与学友们一起PK，看看谁是最强学习者！
             </p>
           </div>
 
           <!-- 统计信息 -->
-          <div class="flex items-center gap-6">
-            <div class="text-center">
-              <div class="text-2xl font-bold text-(--color-btn-primary)">{{ stats.totalParticipants }}</div>
-              <div class="text-xs text-(--color-text-secondary)">总参与人数</div>
+          <div class="flex items-center gap-6 text-white">
+            <div class="text-center bg-white/10 backdrop-blur-sm rounded-xl px-4 py-2">
+              <div class="text-2xl font-bold">{{ stats.totalParticipants }}</div>
+              <div class="text-xs text-white/70">总参与人数</div>
             </div>
-            <div class="w-px h-10 bg-(--color-border)" />
-            <div class="text-center">
-              <div class="text-2xl font-bold text-green-500">{{ stats.todayActiveUsers }}</div>
-              <div class="text-xs text-(--color-text-secondary)">今日活跃</div>
+            <div class="text-center bg-white/10 backdrop-blur-sm rounded-xl px-4 py-2">
+              <div class="text-2xl font-bold text-green-300">{{ stats.todayActiveUsers }}</div>
+              <div class="text-xs text-white/70">今日活跃</div>
             </div>
           </div>
         </div>
@@ -36,15 +43,15 @@
         <!-- 左侧：榜单切换和时间选择 -->
         <div class="lg:col-span-2 space-y-6">
           <!-- 榜单类型切换 -->
-          <el-card shadow="never" class="type-selector">
+          <el-card shadow="never" class="type-selector border border-blue-100">
             <div class="flex flex-wrap gap-3">
               <button
                 v-for="type in rankingTypes"
                 :key="type.type"
                 class="type-btn flex items-center gap-2 px-4 py-2 rounded-full border transition-all duration-300"
                 :class="currentType === type.type
-                  ? 'bg-(--color-btn-primary) text-white border-(--color-btn-primary)'
-                  : 'bg-white text-(--color-text-primary) border-(--color-border) hover:border-(--color-btn-primary)'
+                  ? 'bg-gradient-to-r from-blue-500 to-cyan-500 text-white border-transparent shadow-lg shadow-blue-500/30'
+                  : 'bg-white text-slate-600 border-slate-200 hover:border-blue-400'
                 "
                 @click="handleTypeChange(type.type)"
               >
@@ -55,17 +62,18 @@
           </el-card>
 
           <!-- 时间维度选择 -->
-          <el-card shadow="never" class="dimension-selector">
+          <el-card shadow="never" class="dimension-selector border border-blue-100">
             <div class="flex items-center justify-between">
               <div class="flex items-center gap-2">
-                <Icon name="ep:calendar" class="text-(--color-text-secondary)" />
-                <span class="text-(--color-text-primary)">时间维度</span>
+                <Icon name="ep:calendar" class="text-blue-500" />
+                <span class="text-slate-700 font-medium">时间维度</span>
               </div>
               <el-radio-group v-model="currentDimension" size="default" @change="handleDimensionChange">
                 <el-radio-button
                   v-for="dim in timeDimensions"
                   :key="dim.dimension"
                   :value="dim.dimension"
+                  class="dimension-btn"
                 >
                   {{ dim.name }}
                 </el-radio-button>
@@ -97,21 +105,21 @@
           />
 
           <!-- 榜单说明 -->
-          <el-card shadow="never" class="ranking-rules">
+          <el-card shadow="never" class="ranking-rules border border-blue-100">
             <template #header>
               <div class="flex items-center gap-2">
-                <Icon name="ep:info-filled" class="text-(--color-btn-primary)" />
-                <span class="font-bold">榜单说明</span>
+                <Icon name="ep:info-filled" class="text-blue-500" />
+                <span class="font-bold text-slate-800">榜单说明</span>
               </div>
             </template>
 
             <div class="space-y-4">
               <div class="rule-item">
                 <div class="flex items-center gap-2 mb-2">
-                  <Icon name="ep:document" class="text-(--color-btn-primary)" />
-                  <span class="font-medium text-(--color-text-primary)">做题数榜</span>
+                  <Icon name="ep:document" class="text-blue-500" />
+                  <span class="font-medium text-slate-700">做题数榜</span>
                 </div>
-                <p class="text-sm text-(--color-text-secondary) pl-6">
+                <p class="text-sm text-slate-500 pl-6">
                   统计用户在选定时间内完成的题目数量，做题越多排名越高。
                 </p>
               </div>
@@ -120,10 +128,10 @@
 
               <div class="rule-item">
                 <div class="flex items-center gap-2 mb-2">
-                  <Icon name="ep:check" class="text-green-500" />
-                  <span class="font-medium text-(--color-text-primary)">正确率榜</span>
+                  <Icon name="ep:check" class="text-emerald-500" />
+                  <span class="font-medium text-slate-700">正确率榜</span>
                 </div>
-                <p class="text-sm text-(--color-text-secondary) pl-6">
+                <p class="text-sm text-slate-500 pl-6">
                   统计用户答题的正确率，需完成至少100道题方可上榜。
                 </p>
               </div>
@@ -133,9 +141,9 @@
               <div class="rule-item">
                 <div class="flex items-center gap-2 mb-2">
                   <Icon name="ep:timer" class="text-orange-500" />
-                  <span class="font-medium text-(--color-text-primary)">学习时长榜</span>
+                  <span class="font-medium text-slate-700">学习时长榜</span>
                 </div>
-                <p class="text-sm text-(--color-text-secondary) pl-6">
+                <p class="text-sm text-slate-500 pl-6">
                   统计用户在题库中实际学习的时间，停留时间计入统计。
                 </p>
               </div>
@@ -143,10 +151,10 @@
           </el-card>
 
           <!-- 更新提示 -->
-          <el-card shadow="never" class="update-info">
+          <el-card shadow="never" class="update-info border border-blue-100">
             <div class="flex items-center justify-between text-sm">
-              <span class="text-(--color-text-secondary)">榜单更新时间</span>
-              <span class="text-(--color-text-primary)">{{ updateTimeText }}</span>
+              <span class="text-slate-500">榜单更新时间</span>
+              <span class="text-slate-700 font-medium">{{ updateTimeText }}</span>
             </div>
           </el-card>
         </div>
@@ -262,8 +270,12 @@ useHead({
 </script>
 
 <style scoped lang="scss">
-.page-header {
-  border-bottom: 1px solid var(--color-border);
+.type-selector,
+.dimension-selector,
+.ranking-rules,
+.update-info {
+  border-radius: 12px;
+  overflow: hidden;
 }
 
 .type-btn {
@@ -271,36 +283,48 @@ useHead({
 
   &:hover {
     transform: translateY(-2px);
-    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+    box-shadow: 0 4px 12px rgba(59, 130, 246, 0.15);
+  }
+}
+
+.dimension-selector {
+  :deep(.el-radio-button__inner) {
+    transition: all 0.3s ease;
   }
 }
 
 .ranking-rules {
   :deep(.el-card__header) {
-    padding: 12px 16px;
-    border-bottom: 1px solid var(--color-border);
+    padding: 16px 20px;
+    border-bottom: 1px solid #e2e8f0;
+    background: linear-gradient(135deg, #f8fafc 0%, #f1f5f9 100%);
   }
 }
 
 .rule-item {
   transition: all 0.3s ease;
+  padding: 8px;
+  border-radius: 8px;
+  margin: -8px;
 
   &:hover {
-    background: var(--color-bg-container-hover);
-    border-radius: 8px;
-    padding: 8px;
-    margin: -8px;
+    background: #f8fafc;
   }
 }
 
-@media (max-width: 768px) {
-  .page-header {
-    .container {
-      padding-top: 16px;
-      padding-bottom: 16px;
-    }
-  }
+/* 时间维度按钮样式 */
+:deep(.dimension-selector .el-radio-button__orig-radio:checked + .el-radio-button__inner) {
+  background: linear-gradient(135deg, #3b82f6 0%, #06b6d4 100%);
+  border-color: transparent;
+  color: white;
+  box-shadow: 0 4px 12px rgba(59, 130, 246, 0.3);
+}
 
+:deep(.dimension-selector .el-radio-button__inner:hover) {
+  color: #3b82f6;
+}
+
+@media (max-width: 768px) {
   .dimension-selector {
     :deep(.el-radio-group) {
       display: flex;

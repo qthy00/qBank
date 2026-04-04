@@ -1,34 +1,53 @@
 <template>
-  <div class="smart-exam-page">
-    <div class="page-header">
-      <h1 class="page-title">
-        <Icon name="ep:magic-stick" class="title-icon" />
-        智能组卷
-      </h1>
-      <p class="page-desc">根据您的薄弱知识点，自动生成针对性练习</p>
+  <div class="smart-exam-page min-h-screen bg-gradient-to-br from-slate-50 via-blue-50 to-cyan-50">
+    <!-- 页面头部 - 蓝色渐变 -->
+    <div class="relative overflow-hidden py-12">
+      <div class="absolute inset-0 bg-gradient-to-br from-blue-600 via-indigo-500 to-cyan-500"/>
+      <!-- 装饰图案 -->
+      <div class="absolute inset-0">
+        <div class="absolute top-10 left-10 w-32 h-32 bg-white/10 rounded-full blur-2xl"/>
+        <div class="absolute top-20 right-20 w-48 h-48 bg-cyan-300/20 rounded-full blur-3xl"/>
+        <div class="absolute bottom-10 left-1/3 w-24 h-24 bg-blue-300/20 rounded-full blur-2xl"/>
+      </div>
+
+      <div class="relative container mx-auto px-4 text-center">
+        <div class="inline-flex items-center gap-2 px-4 py-2 bg-white/20 backdrop-blur-sm rounded-full mb-4">
+          <Icon name="ep:magic-stick" class="text-white text-lg"/>
+          <span class="text-white/90 text-sm font-medium">AI 智能推荐</span>
+        </div>
+        <h1 class="text-3xl md:text-4xl font-bold text-white mb-3">智能组卷</h1>
+        <p class="text-white/80 text-base md:text-lg max-w-2xl mx-auto">
+          根据您的薄弱知识点，自动生成针对性练习，高效提升学习效果
+        </p>
+      </div>
     </div>
 
-    <div class="page-content">
+    <!-- 页面内容 -->
+    <div class="container mx-auto px-4 py-8 -mt-4">
       <el-row :gutter="24">
         <!-- 左侧：薄弱知识点 -->
-        <el-col :lg="16" :md="24" class="mb-4">
-          <el-card>
+        <el-col :lg="16" :md="24" class="mb-6">
+          <el-card class="border border-blue-100 shadow-lg shadow-blue-100/30" :body-style="{ padding: '20px' }">
             <template #header>
-              <div class="card-header">
-                <span class="header-title">
-                  <Icon name="ep:warning-filled" class="header-icon" />
-                  薄弱知识点分析
-                </span>
-                <div class="header-actions">
+              <div class="flex items-center justify-between py-2">
+                <div class="flex items-center gap-2">
+                  <div class="w-8 h-8 rounded-lg bg-gradient-to-br from-blue-500 to-cyan-500 flex items-center justify-center">
+                    <Icon name="ep:warning-filled" class="text-white text-sm"/>
+                  </div>
+                  <span class="font-bold text-slate-800 text-lg">薄弱知识点分析</span>
+                </div>
+                <div class="flex items-center gap-2">
                   <el-button
                     type="primary"
                     link
+                    class="text-blue-600"
                     @click="selectAll"
                   >
                     全选
                   </el-button>
                   <el-button
                     link
+                    class="text-slate-500"
                     @click="deselectAll"
                   >
                     取消全选
@@ -50,13 +69,13 @@
 
         <!-- 右侧：组卷配置 -->
         <el-col :lg="8" :md="24">
-          <el-card>
+          <el-card class="border border-blue-100 shadow-lg shadow-blue-100/30" :body-style="{ padding: '20px' }">
             <template #header>
-              <div class="card-header">
-                <span class="header-title">
-                  <Icon name="ep:setting" class="header-icon" />
-                  组卷配置
-                </span>
+              <div class="flex items-center gap-2 py-2">
+                <div class="w-8 h-8 rounded-lg bg-gradient-to-br from-cyan-500 to-blue-500 flex items-center justify-center">
+                  <Icon name="ep:setting" class="text-white text-sm"/>
+                </div>
+                <span class="font-bold text-slate-800 text-lg">组卷配置</span>
               </div>
             </template>
 
@@ -68,14 +87,16 @@
           </el-card>
 
           <!-- 历史记录入口 -->
-          <el-card class="mt-4" shadow="hover">
-            <div class="history-entry" @click="goToHistory">
-              <Icon name="ep:history" class="history-icon" />
-              <div class="history-info">
-                <div class="history-title">智能练习记录</div>
-                <div class="history-desc">查看历史练习记录和错题分析</div>
+          <el-card class="mt-4 border border-blue-100 shadow-lg shadow-blue-100/30 cursor-pointer hover:shadow-xl transition-shadow" :body-style="{ padding: '16px' }" @click="goToHistory">
+            <div class="flex items-center gap-4">
+              <div class="w-12 h-12 rounded-xl bg-gradient-to-br from-blue-100 to-cyan-100 flex items-center justify-center">
+                <Icon name="ep:history" class="text-2xl text-blue-600"/>
               </div>
-              <Icon name="ep:arrow-right" class="history-arrow" />
+              <div class="flex-1">
+                <div class="font-medium text-slate-800">智能练习记录</div>
+                <div class="text-sm text-slate-500">查看历史练习记录和错题分析</div>
+              </div>
+              <Icon name="ep:arrow-right" class="text-xl text-slate-400"/>
             </div>
           </el-card>
         </el-col>
@@ -88,40 +109,41 @@
       title="智能组卷成功"
       width="600px"
       destroy-on-close
+      class="smart-exam-dialog"
     >
       <div v-if="examResult" class="exam-result">
-        <div class="result-title">{{ examResult.examName }}</div>
+        <div class="text-xl font-bold text-slate-800 text-center mb-6">{{ examResult.examName }}</div>
 
         <!-- 统计信息 -->
-        <div class="result-stats">
-          <div class="stat-row">
-            <div class="stat-item">
-              <div class="stat-value">{{ examResult.stats.totalCount }}</div>
-              <div class="stat-label">总题数</div>
+        <div class="bg-gradient-to-br from-blue-50 to-cyan-50 rounded-xl p-5 mb-6">
+          <div class="flex justify-around mb-4 pb-4 border-b border-blue-100">
+            <div class="text-center">
+              <div class="text-2xl font-bold text-blue-600">{{ examResult.stats.totalCount }}</div>
+              <div class="text-sm text-slate-500">总题数</div>
             </div>
-            <div class="stat-item">
-              <div class="stat-value">{{ examResult.stats.weakPointCount }}</div>
-              <div class="stat-label">覆盖知识点</div>
+            <div class="text-center">
+              <div class="text-2xl font-bold text-cyan-600">{{ examResult.stats.weakPointCount }}</div>
+              <div class="text-sm text-slate-500">覆盖知识点</div>
             </div>
-            <div class="stat-item">
-              <div class="stat-value">{{ examResult.stats.estimatedTime }}</div>
-              <div class="stat-label">预计用时(分钟)</div>
+            <div class="text-center">
+              <div class="text-2xl font-bold text-indigo-600">{{ examResult.stats.estimatedTime }}</div>
+              <div class="text-sm text-slate-500">预计用时(分钟)</div>
             </div>
           </div>
 
-          <div class="stat-detail">
-            <div class="detail-item">
-              <span class="detail-label">题型分布：</span>
-              <span class="detail-value">
+          <div class="space-y-2 text-sm">
+            <div class="flex items-center gap-2">
+              <span class="text-slate-500">题型分布：</span>
+              <span class="text-slate-700">
                 单选{{ examResult.stats.singleCount }} /
                 多选{{ examResult.stats.multiCount }} /
                 判断{{ examResult.stats.judgeCount }} /
                 填空{{ examResult.stats.fillCount }}
               </span>
             </div>
-            <div class="detail-item">
-              <span class="detail-label">难度分布：</span>
-              <span class="detail-value">
+            <div class="flex items-center gap-2">
+              <span class="text-slate-500">难度分布：</span>
+              <span class="text-slate-700">
                 简单{{ examResult.stats.easyCount }} /
                 中等{{ examResult.stats.mediumCount }} /
                 困难{{ examResult.stats.hardCount }}
@@ -131,14 +153,14 @@
         </div>
 
         <!-- 知识点预览 -->
-        <div class="knowledge-preview">
-          <div class="preview-title">涉及薄弱知识点</div>
-          <div class="preview-list">
+        <div class="mb-4">
+          <div class="font-medium text-slate-700 mb-3">涉及薄弱知识点</div>
+          <div class="flex flex-wrap gap-2">
             <el-tag
               v-for="q in examResult.questions.slice(0, 5)"
               :key="q.knowledgePointId"
               size="small"
-              class="preview-tag"
+              class="bg-blue-50 text-blue-700 border-blue-200"
             >
               {{ q.knowledgePointName }}
             </el-tag>
@@ -151,7 +173,7 @@
 
       <template #footer>
         <el-button @click="resultDialogVisible = false">取消</el-button>
-        <el-button type="primary" @click="startExam">
+        <el-button type="primary" class="bg-gradient-to-r from-blue-500 to-cyan-500 border-0" @click="startExam">
           开始练习
         </el-button>
       </template>
@@ -286,57 +308,13 @@ onMounted(() => {
 
 <style scoped lang="scss">
 .smart-exam-page {
-  padding: 24px;
-  max-width: 1400px;
-  margin: 0 auto;
-}
-
-/* 页面头部 */
-.page-header {
-  text-align: center;
-  margin-bottom: 32px;
-
-  .page-title {
-    font-size: 28px;
-    font-weight: bold;
-    margin-bottom: 8px;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    gap: 8px;
-
-    .title-icon {
-      color: var(--el-color-primary);
-    }
-  }
-
-  .page-desc {
-    color: var(--el-text-color-secondary);
-    font-size: 14px;
-  }
+  padding-bottom: 32px;
 }
 
 /* 卡片头部 */
-.card-header {
-  display: flex;
-  justify-content: space-between;
-  align-items: center;
-
-  .header-title {
-    font-weight: 500;
-    display: flex;
-    align-items: center;
-    gap: 8px;
-
-    .header-icon {
-      color: var(--el-color-warning);
-    }
-  }
-
-  .header-actions {
-    display: flex;
-    gap: 8px;
-  }
+:deep(.el-card__header) {
+  padding: 0;
+  border-bottom: 1px solid #e2e8f0;
 }
 
 /* 历史记录入口 */
@@ -344,118 +322,37 @@ onMounted(() => {
   display: flex;
   align-items: center;
   gap: 16px;
-  padding: 8px;
-  cursor: pointer;
-  border-radius: 8px;
-  transition: background 0.3s;
 
   &:hover {
-    background: var(--el-fill-color-light);
-
     .history-arrow {
       transform: translateX(4px);
+      color: #3b82f6;
     }
-  }
-
-  .history-icon {
-    font-size: 32px;
-    color: var(--el-color-primary);
-  }
-
-  .history-info {
-    flex: 1;
-
-    .history-title {
-      font-weight: 500;
-      margin-bottom: 4px;
-    }
-
-    .history-desc {
-      font-size: 12px;
-      color: var(--el-text-color-secondary);
-    }
-  }
-
-  .history-arrow {
-    font-size: 20px;
-    color: var(--el-text-color-secondary);
-    transition: transform 0.3s;
   }
 }
 
-/* 组卷结果 */
-.exam-result {
-  .result-title {
-    font-size: 18px;
-    font-weight: bold;
-    text-align: center;
-    margin-bottom: 24px;
-  }
+.history-arrow {
+  transition: all 0.3s;
+}
 
-  .result-stats {
-    background: var(--el-fill-color-light);
-    border-radius: 8px;
-    padding: 16px;
-    margin-bottom: 24px;
+/* 弹窗样式 */
+:deep(.smart-exam-dialog .el-dialog__header) {
+  margin-right: 0;
+  padding: 20px;
+  border-bottom: 1px solid #e2e8f0;
+}
 
-    .stat-row {
-      display: flex;
-      justify-content: space-around;
-      margin-bottom: 16px;
-      padding-bottom: 16px;
-      border-bottom: 1px solid var(--el-border-color-lighter);
+:deep(.smart-exam-dialog .el-dialog__title) {
+  font-weight: bold;
+  color: #1f2937;
+}
 
-      .stat-item {
-        text-align: center;
+:deep(.smart-exam-dialog .el-dialog__body) {
+  padding: 20px;
+}
 
-        .stat-value {
-          font-size: 24px;
-          font-weight: bold;
-          color: var(--el-color-primary);
-          margin-bottom: 4px;
-        }
-
-        .stat-label {
-          font-size: 12px;
-          color: var(--el-text-color-secondary);
-        }
-      }
-    }
-
-    .stat-detail {
-      .detail-item {
-        margin-bottom: 8px;
-
-        &:last-child {
-          margin-bottom: 0;
-        }
-
-        .detail-label {
-          color: var(--el-text-color-secondary);
-        }
-
-        .detail-value {
-          color: var(--el-text-color-primary);
-        }
-      }
-    }
-  }
-
-  .knowledge-preview {
-    .preview-title {
-      font-weight: 500;
-      margin-bottom: 12px;
-    }
-
-    .preview-list {
-      display: flex;
-      flex-wrap: wrap;
-      gap: 8px;
-
-      .preview-tag {
-        margin-right: 0;
-      }
-    }
-  }
+:deep(.smart-exam-dialog .el-dialog__footer) {
+  padding: 16px 20px;
+  border-top: 1px solid #e2e8f0;
 }
 </style>
