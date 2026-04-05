@@ -2,7 +2,7 @@
 import {DocumentApi} from '~/api/document'
 import type {
   DocumentVO,
-  YearOptionVO
+  TagOptionVO
 } from '~/types/document'
 import {CmsCategoryApi} from "~/api/category";
 import {fileSizeFormatter, formatCount} from "~/utils";
@@ -28,7 +28,7 @@ const activeMajor = ref<number>()
 /* 考试类型筛选 */
 const activeExamType = ref<number>(0)
 /* 年份筛选 */
-const yearOptions = ref<YearOptionVO[]>([])
+const yearOptions = ref<TagOptionVO[]>([])
 const activeYear = ref<number>()
 
 /* 排序选项 */
@@ -88,7 +88,7 @@ const subCategories = computed(() => {
 /* 获取年份选项 */
 const fetchYearOptions = async () => {
   try {
-    const data = await DocumentApi.getYearOptions()
+    const data = await DocumentApi.getInfoTags('YEAR')
     yearOptions.value = [{id: 0, word: undefined}, ...data]
   } catch {
     // 获取年份选项失败时静默处理

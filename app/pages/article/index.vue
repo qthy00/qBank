@@ -1,6 +1,8 @@
 <script setup lang="ts">
 import {ArticleApi} from '~/api/article'
-import type {ArticleVO, ArticleCategoryVO} from '~/types/article'
+import type {ArticleVO} from '~/types/article'
+import {CmsCategoryApi} from "~/api/category";
+import {DocumentApi} from "~/api/document";
 
 definePageMeta({
   layout: 'default'
@@ -11,10 +13,12 @@ useHead({
 })
 
 const route = useRoute()
-const router = useRouter()
 const authStore = useAuthStore()
 const userStore = useUserStore()
 const {user} = storeToRefs(userStore)
+
+const tagId = Number(route.query.tag) || 0
+const categoryId = Number(route.query.category) || 0
 
 /* 分类配色方案 - 活泼多彩 */
 const categoryColors: Record<number, { bg: string; text: string; border: string; gradient: string }> = {
@@ -63,48 +67,48 @@ const getRankStyle = (index: number) => {
 }
 
 /* 分类数据 */
-const categories = ref<ArticleCategoryVO[]>([
-  {id: 0, name: '全部'},
-])
-const activeCategory = ref(0)
-
-/* 获取分类列表 */
-const fetchCategories = async () => {
-  try {
-    const data = await ArticleApi.getArticleCategories()
-    categories.value = [{id: 0, name: '全部'}, ...data]
-  } catch (error) {
-    console.error('获取分类列表失败:', error)
+const {data: categories} = await CmsCategoryApi.getCategoryList()
+const activeCategory = ref<number>(0)
+/* 考试类型筛选 */
+const activeExamType = ref<number>(0)
+const activeTag = ref<number>(0)
+const subCategories = computed(() => {
+  const data = categories.value.filter(c => c.id === activeCategory.value)
+  if (!data || !data[0] || !data[0].children) {
+    return []
   }
-}
+  return data[0].children
+})
+
+const {data: tags} = await useAsyncData(
+    async () => {
+      const data = await DocumentApi.getInfoTags("")
+      return [{id: 0, word: undefined}, ...data]
+    }
+)
 
 /* 列表数据 */
 const loading = ref(false)
 const articleList = ref<ArticleVO[]>([])
 const total = ref(0)
 
-/* 热门资讯 */
-const hotArticles = ref<ArticleVO[]>([])
-
 /* 获取热门资讯 */
-const fetchHotArticles = async () => {
-  try {
-    const data = await ArticleApi.getArticleList({
-      page: 1,
-      limit: 5,
-    })
-    hotArticles.value = data.list?.slice(0, 5) || []
-  } catch (error) {
-    console.error('获取热门资讯失败:', error)
-  }
-}
-
+const {data: hotArticles} = await useAsyncData(
+    async () => {
+      const data = await DocumentApi.getDocumentList({
+        pageNo: 1,
+        pageSize: 5
+      })
+      return data.list?.slice(0, 5) || []
+    }
+)
 /* 查询参数 */
 const queryParams = reactive({
-  page: 1,
-  limit: 10,
-  categoryId: undefined as number | undefined,
-  keyword: '',
+  pageNo: 1,
+  pageSize: 10,
+  catalogId: undefined as number | undefined,
+  tags: [] as number[],
+  keyword: undefined as string | undefined,
 })
 
 /* 获取资讯列表 */
@@ -121,29 +125,44 @@ const fetchArticleList = async () => {
   }
 }
 
-/* 切换分类 */
-const handleCategoryChange = (categoryId: number) => {
-  activeCategory.value = categoryId
-  queryParams.categoryId = categoryId === 0 ? undefined : categoryId
-  queryParams.page = 1
+/* 切换大类 */
+const handleCategoryChange = (catalogId: number) => {
+  activeCategory.value = catalogId
+  queryParams.catalogId = catalogId
+  queryParams.pageNo = 1
+  activeExamType.value = 0
+  fetchArticleList()
+}
+/* 切换考试类型 */
+const handleExamTypeChange = (catalogId: number) => {
+  activeExamType.value = catalogId
+  queryParams.catalogId = catalogId
+  queryParams.pageNo = 1
+  fetchArticleList()
+}
+
+const handleTagChange = (tagId: number) => {
+  activeTag.value = tagId
+  queryParams.tags = tagId === 0 ? [] : [tagId]
+  queryParams.pageNo = 1
   fetchArticleList()
 }
 
 /* 搜索 */
 const handleSearch = () => {
-  queryParams.page = 1
+  queryParams.pageNo = 1
   fetchArticleList()
 }
 
 /* 分页 */
 const handlePageChange = (page: number) => {
-  queryParams.page = page
+  queryParams.pageNo = page
   fetchArticleList()
 }
 
 /* 查看详情 */
 const handleViewDetail = (id: number) => {
-  router.push(`/article/${id}`)
+  navigateTo(`/article/${id}`)
 }
 
 /* 格式化浏览量 */
@@ -159,15 +178,15 @@ const formatViewCount = (count: number): string => {
 
 /* 初始化 */
 onMounted(() => {
-  /* 从URL获取分类参数 */
-  const categoryId = Number(route.query.category) || 0
-  activeCategory.value = categoryId
-  queryParams.categoryId = categoryId === 0 ? undefined : categoryId
 
+  /* 从URL获取分类参数 */
+
+  activeTag.value = tagId
+  queryParams.tags = tagId === 0 ? [] : [tagId]
+  queryParams.catalogId = categoryId === 0 ? undefined : categoryId
+  activeCategory.value = categoryId === 0 ? undefined : categories.value[0].id
   /* 获取分类和列表 */
-  fetchCategories()
-  fetchArticleList()
-  fetchHotArticles()
+  // fetchArticleList()
 })
 </script>
 
@@ -208,23 +227,77 @@ onMounted(() => {
       <!-- 搜索和筛选区域 - 彩色卡片 -->
       <div class="bg-white rounded-2xl shadow-xl shadow-blue-100/50 overflow-hidden mb-8 border border-blue-100">
         <!-- 分类标签栏 - 多彩标签 -->
-        <div class="px-4 md:px-6 py-5 border-b border-slate-100">
-          <div class="flex flex-wrap items-center gap-3">
-            <span class="text-sm font-medium text-slate-500 mr-2 flex-shrink-0">
-              <Icon name="ep:folder" class="inline mr-1"/>
-              分类：
-            </span>
-            <div class="flex flex-wrap items-center gap-2">
+        <div class="px-4 md:px-6 py-5 border-b border-slate-100 space-y-4">
+          <!-- 大类 - 彩色标签 -->
+          <div class="flex items-start gap-3">
+            <span class="text-sm font-medium text-slate-500 pt-1.5 shrink-0 w-12">大类</span>
+            <div class="flex items-center gap-2 flex-wrap">
               <button
-                  v-for="category in categories"
-                  :key="category.id"
+                  v-for="(catalog, index) in categories" :key="index"
+                  :class="activeCategory === catalog.id
+                      ? 'bg-gradient-to-r from-blue-500 to-cyan-500 text-white shadow-lg shadow-blue-500/30'
+                      : 'bg-slate-100 text-slate-600 hover:bg-slate-200'
+                    "
                   class="px-4 py-2 text-sm font-medium rounded-full transition-all duration-300 transform hover:scale-105"
-                  :class="activeCategory === category.id
-                  ? `${getCategoryColor(category.id).bg} text-white shadow-lg shadow-blue-500/30`
-                  : 'bg-slate-100 text-slate-600 hover:bg-slate-200'"
-                  @click="handleCategoryChange(category.id)"
+                  @click="handleCategoryChange(catalog.id)"
               >
-                {{ category.name }}
+                {{ catalog.name }}
+              </button>
+            </div>
+          </div>
+          <!-- 考试 -->
+          <div class="flex items-start gap-3">
+            <span class="text-sm font-medium text-slate-500 pt-1.5 shrink-0 w-12">考试</span>
+            <div class="flex items-center gap-2 flex-wrap">
+              <button
+                  :class="activeExamType === 0
+                      ? 'bg-gradient-to-r from-blue-500 to-cyan-500 text-white shadow-lg shadow-blue-500/30'
+                      : 'bg-slate-100 text-slate-600 hover:bg-slate-200'
+                    "
+                  class="px-3 py-1.5 text-sm font-medium rounded-full transition-all duration-200"
+                  @click="handleExamTypeChange(0)"
+              >
+                全部
+              </button>
+              <button
+                  v-for="exam in subCategories"
+                  :key="exam.id"
+                  :class="activeExamType === exam.id
+                      ? 'bg-gradient-to-r from-blue-500 to-cyan-500 text-white shadow-lg shadow-blue-500/30'
+                      : 'bg-slate-100 text-slate-600 hover:bg-slate-200'
+                    "
+                  class="px-3 py-1.5 text-sm font-medium rounded-full transition-all duration-200"
+                  @click="handleExamTypeChange(exam.id)"
+              >
+                {{ exam.name }}
+              </button>
+            </div>
+          </div>
+          <!-- 考试 -->
+          <div class="flex items-start gap-3">
+            <span class="text-sm font-medium text-slate-500 pt-1.5 shrink-0 w-12">分类</span>
+            <div class="flex items-center gap-2 flex-wrap">
+              <button
+                  :class="activeExamType === 0
+                      ? 'bg-gradient-to-r from-blue-500 to-cyan-500 text-white shadow-lg shadow-blue-500/30'
+                      : 'bg-slate-100 text-slate-600 hover:bg-slate-200'
+                    "
+                  class="px-3 py-1.5 text-sm font-medium rounded-full transition-all duration-200"
+                  @click="handleExamTypeChange(0)"
+              >
+                全部
+              </button>
+              <button
+                  v-for="tag in tags"
+                  :key="tag.id"
+                  :class="activeTag === tag.id
+                      ? 'bg-gradient-to-r from-blue-500 to-cyan-500 text-white shadow-lg shadow-blue-500/30'
+                      : 'bg-slate-100 text-slate-600 hover:bg-slate-200'
+                    "
+                  class="px-3 py-1.5 text-sm font-medium rounded-full transition-all duration-200"
+                  @click="handleTagChange(tag.id)"
+              >
+                {{ tag.word }}
               </button>
             </div>
           </div>
@@ -279,7 +352,7 @@ onMounted(() => {
                   v-for="(article, index) in articleList"
                   :key="article.id"
                   class="group bg-white rounded-xl overflow-hidden cursor-pointer transition-all duration-300 hover:shadow-2xl hover:shadow-blue-200/50 border-2 border-transparent hover:border-blue-200"
-                  :class="`hover:bg-gradient-to-br ${getCategoryColor(article.categoryId || 0).gradient}`"
+                  :class="`hover:bg-gradient-to-br ${getCategoryColor(article.categoryId || 0)?.gradient}`"
                   :style="{ animationDelay: `${index * 50}ms` }"
                   @click="handleViewDetail(article.id)"
               >
@@ -300,7 +373,7 @@ onMounted(() => {
                     <!-- 彩色分类标签 -->
                     <div v-if="article.categoryName" class="absolute top-3 left-3">
                     <span
-                        :class="`${getCategoryColor(article.categoryId || 0).bg} text-white backdrop-blur-sm px-3 py-1.5 text-xs font-medium rounded-full shadow-lg`">
+                        :class="`${getCategoryColor(article.categoryId || 0)?.bg} text-white backdrop-blur-sm px-3 py-1.5 text-xs font-medium rounded-full shadow-lg`">
                       {{ article.categoryName }}
                     </span>
                     </div>
@@ -375,7 +448,7 @@ onMounted(() => {
                     <!-- 彩色分类标签 -->
                     <div v-if="article.categoryName" class="absolute top-3 left-3">
                     <span
-                        :class="`${getCategoryColor(article.categoryId || 0).bg} text-white backdrop-blur-sm px-3 py-1.5 text-xs font-medium rounded-full shadow-lg`">
+                        :class="`${getCategoryColor(article.categoryId || 0)?.bg} text-white backdrop-blur-sm px-3 py-1.5 text-xs font-medium rounded-full shadow-lg`">
                       {{ article.categoryName }}
                     </span>
                     </div>
@@ -427,8 +500,8 @@ onMounted(() => {
           <!-- 分页 - 彩色 -->
           <div v-if="total > 0" class="flex items-center justify-center mt-10">
             <el-pagination
-                v-model:current-page="queryParams.page"
-                :page-size="queryParams.limit"
+                v-model:current-page="queryParams.pageNo"
+                :page-size="queryParams.pageSize"
                 :total="total"
                 layout="prev, pager, next"
                 prev-text="上一页"

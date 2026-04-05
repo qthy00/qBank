@@ -14,7 +14,7 @@ export interface ArticleVO {
   author?: string
   source?: string
   viewCount: number
-  publishTime: string
+  publishTime: number
   categoryId?: number
   categoryName?: string
   tags?: string[]

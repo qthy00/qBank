@@ -126,7 +126,7 @@ export interface ExamTypeVO {
 /**
  * 年份筛选
  */
-export interface YearOptionVO {
+export interface TagOptionVO {
   id: number
   word?: string
 }

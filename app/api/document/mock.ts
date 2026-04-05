@@ -6,7 +6,7 @@ import type {
   DocumentDetailVO,
   DocumentCategoryVO,
   ExamTypeVO,
-  YearOptionVO,
+  TagOptionVO,
   DocumentListRespVO,
   DocumentType,
   MajorVO,
@@ -59,17 +59,6 @@ export const mockExamTypes: ExamTypeVO[] = [
   { code: 'jiaozi', name: '教师资格', majorCode: 'teacher', count: 156 },
   { code: 'yixue', name: '执业医师', majorCode: 'medical', count: 89 },
   { code: 'hushi', name: '执业护士', majorCode: 'medical', count: 67 },
-]
-
-/* 年份选项 */
-export const mockYearOptions: YearOptionVO[] = [
-  { year: 2025, count: 12 },
-  { year: 2024, count: 48 },
-  { year: 2023, count: 52 },
-  { year: 2022, count: 45 },
-  { year: 2021, count: 38 },
-  { year: 2020, count: 32 },
-  { year: 2019, count: 28 },
 ]
 
 /* 等级选项 */
@@ -624,12 +613,6 @@ export const getMockExamTypes = (majorCode?: string): ExamTypeVO[] => {
   return types
 }
 
-/**
- * 获取年份选项（Mock）
- */
-export const getMockYearOptions = (): YearOptionVO[] => {
-  return mockYearOptions
-}
 
 /**
  * 获取等级选项（Mock）

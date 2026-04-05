@@ -5,25 +5,15 @@ import type {
   DocumentDetailVO,
   DocumentCategoryVO,
   ExamTypeVO,
-  YearOptionVO,
-  DocumentType,
-  MajorVO,
-  LevelOptionVO,
-  MaterialTypeOptionVO,
-  StatusOptionVO,
+  TagOptionVO,
+  DocumentType
 } from "~/types/document";
 
 import {
-  getMockDocumentList,
   getMockDocumentDetail,
   getMockDocumentCategories,
   getMockExamTypes,
-  getMockYearOptions,
   incrementMockDownloadCount,
-  getMockMajors,
-  getMockLevelOptions,
-  getMockMaterialTypes,
-  getMockStatusOptions,
 } from "./mock";
 
 /**
@@ -85,9 +75,14 @@ export const DocumentApi = {
   /**
    * 获取年份选项
    */
-  getYearOptions: async (): Promise<YearOptionVO[]> => {
+  getYearOptions: async (): Promise<TagOptionVO[]> => {
     return await httpGet('YearOptions', '/cms/tag/list-by-group-code', {query: {groupCode: 'YEAR'}})
   },
+
+  getInfoTags: async (groupCode:string, server: boolean = false): Promise<TagOptionVO[]> => {
+    return await httpGet('getInfoTags', '/cms/tag/list-by-group-code', {query: {groupCode}}, server)
+  },
+
 
 
   /**
