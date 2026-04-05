@@ -10,16 +10,21 @@ export interface ArticleVO {
   title: string
   summary?: string
   content?: string
-  coverImage?: string
+  logo?: string
   author?: string
   source?: string
   viewCount: number
-  publishTime: number
-  categoryId?: number
-  categoryName?: string
-  tags?: string[]
+  publishDate: number
+  catalogId?: number
+  catalogName?: string
+  tags?: TagVO[]
   isTop?: boolean
   isHot?: boolean
+}
+
+export interface TagVO {
+  id: number
+  word: string
 }
 
 /**

@@ -8,10 +8,11 @@ export const CmsCategoryApi = {
   /**
    * 查询栏目管理列表。
    * @param query 查询参数，包含分页、过滤条件等。
+   * @param server
    * @returns 返回栏目列表的数据。
    */
-  getCategoryList: async (query?: any) => {
-    return await httpGet('CategoryList',`/cms/category/tree`, {query}, true)
+  getCategoryList: async (query?: any, server: boolean = true) => {
+    return await httpGet('CategoryList',`/cms/category/tree`, {query}, server)
   },
 
   /**

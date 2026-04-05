@@ -1,8 +1,11 @@
 <script setup lang="ts">
 import {ArticleApi} from '~/api/article'
 import type {ArticleVO} from '~/types/article'
-import {CmsCategoryApi} from "~/api/category";
+
 import {DocumentApi} from "~/api/document";
+import IndustryGuide from '~/components/IndustryGuide.vue'
+import {formatCount} from "~/utils";
+import {useIndustryStore} from "~/stores/industry";
 
 definePageMeta({
   layout: 'default'
@@ -17,46 +20,12 @@ const authStore = useAuthStore()
 const userStore = useUserStore()
 const {user} = storeToRefs(userStore)
 
+/* ==================== 行业偏好管理（使用 Pinia Store）==================== */
+const industryStore = useIndustryStore()
+const {currentIndustry, currentExam, showGuide} = storeToRefs(industryStore)
+const {initPreference, selectExam, openGuide} = industryStore
 const tagId = Number(route.query.tag) || 0
 const categoryId = Number(route.query.category) || 0
-
-/* 分类配色方案 - 活泼多彩 */
-const categoryColors: Record<number, { bg: string; text: string; border: string; gradient: string }> = {
-  0: {
-    bg: 'bg-gradient-to-r from-blue-500 to-cyan-400',
-    text: 'text-blue-600',
-    border: 'border-blue-200',
-    gradient: 'from-blue-50 to-cyan-50'
-  },
-  1: {
-    bg: 'bg-gradient-to-r from-emerald-500 to-teal-400',
-    text: 'text-emerald-600',
-    border: 'border-emerald-200',
-    gradient: 'from-emerald-50 to-teal-50'
-  },
-  2: {
-    bg: 'bg-gradient-to-r from-amber-500 to-orange-400',
-    text: 'text-amber-600',
-    border: 'border-amber-200',
-    gradient: 'from-amber-50 to-orange-50'
-  },
-  3: {
-    bg: 'bg-gradient-to-r from-rose-500 to-pink-400',
-    text: 'text-rose-600',
-    border: 'border-rose-200',
-    gradient: 'from-rose-50 to-pink-50'
-  },
-  4: {
-    bg: 'bg-gradient-to-r from-violet-500 to-purple-400',
-    text: 'text-violet-600',
-    border: 'border-violet-200',
-    gradient: 'from-violet-50 to-purple-50'
-  },
-}
-
-const getCategoryColor = (categoryId: number) => {
-  return categoryColors[categoryId] || categoryColors[0]
-}
 
 /* 获取排名样式 */
 const getRankStyle = (index: number) => {
@@ -66,51 +35,49 @@ const getRankStyle = (index: number) => {
   return 'bg-gray-100 text-gray-500'
 }
 
-/* 分类数据 */
-const {data: categories} = await CmsCategoryApi.getCategoryList()
-const activeCategory = ref<number>(0)
 /* 考试类型筛选 */
-const activeExamType = ref<number>(0)
-const activeTag = ref<number>(0)
-const subCategories = computed(() => {
-  const data = categories.value.filter(c => c.id === activeCategory.value)
-  if (!data || !data[0] || !data[0].children) {
-    return []
-  }
-  return data[0].children
-})
+const activeTag = ref<number>(tagId)
 
 const {data: tags} = await useAsyncData(
     async () => {
-      const data = await DocumentApi.getInfoTags("")
-      return [{id: 0, word: undefined}, ...data]
+      const data = await DocumentApi.getInfoTags("news")
+      return [{id: 0, word: '全部'}, ...data]
     }
 )
-
 /* 列表数据 */
 const loading = ref(false)
 const articleList = ref<ArticleVO[]>([])
 const total = ref(0)
 
-/* 获取热门资讯 */
-const {data: hotArticles} = await useAsyncData(
-    async () => {
-      const data = await DocumentApi.getDocumentList({
-        pageNo: 1,
-        pageSize: 5
-      })
-      return data.list?.slice(0, 5) || []
-    }
-)
+
 /* 查询参数 */
 const queryParams = reactive({
   pageNo: 1,
   pageSize: 10,
-  catalogId: undefined as number | undefined,
-  tags: [] as number[],
-  keyword: undefined as string | undefined,
+  catalogId: categoryId === 0 ? undefined : categoryId,
+  tags: tagId === 0 ? [] : [tagId],
+  keyword: undefined as string | undefined
 })
 
+/* 获取热门资讯 */
+const {data: hotArticles} = await useAsyncData(
+    async () => {
+      const data = await ArticleApi.getArticleList({
+        ...queryParams,
+        pageSize: 5,
+        hasAttr: ['推荐'],
+      })
+      return data.list?.slice(0, 5) || []
+    }
+)
+const getHotsArticleList = async () => {
+  const data = await ArticleApi.getArticleList({
+    ...queryParams,
+    pageSize: 5,
+    hasAttr: ['推荐'],
+  })
+  hotArticles.value = data.list?.slice(0, 5) || []
+}
 /* 获取资讯列表 */
 const fetchArticleList = async () => {
   loading.value = true
@@ -123,22 +90,6 @@ const fetchArticleList = async () => {
   } finally {
     loading.value = false
   }
-}
-
-/* 切换大类 */
-const handleCategoryChange = (catalogId: number) => {
-  activeCategory.value = catalogId
-  queryParams.catalogId = catalogId
-  queryParams.pageNo = 1
-  activeExamType.value = 0
-  fetchArticleList()
-}
-/* 切换考试类型 */
-const handleExamTypeChange = (catalogId: number) => {
-  activeExamType.value = catalogId
-  queryParams.catalogId = catalogId
-  queryParams.pageNo = 1
-  fetchArticleList()
 }
 
 const handleTagChange = (tagId: number) => {
@@ -165,28 +116,37 @@ const handleViewDetail = (id: number) => {
   navigateTo(`/article/${id}`)
 }
 
-/* 格式化浏览量 */
-const formatViewCount = (count: number): string => {
-  if (count >= 10000) {
-    return (count / 10000).toFixed(1) + 'w'
-  }
-  if (count >= 1000) {
-    return (count / 1000).toFixed(1) + 'k'
-  }
-  return count.toString()
+/* 获取当前考试名称 */
+const currentExamName = computed(() => {
+  return currentExam.value?.name || '请选择考试'
+})
+
+/* 处理考试选择 */
+const handleExamSelect = (industry: any, exam: any) => {
+  selectExam(industry, exam)
+  queryParams.catalogId = exam.id
+  queryParams.pageNo = 1
+  fetchArticleList()
 }
+
+
+const isClientReady = ref(false)
 
 /* 初始化 */
 onMounted(() => {
+  isClientReady.value = true
 
-  /* 从URL获取分类参数 */
+  /* 初始化考试偏好 */
+  const hasPreference = initPreference()
 
-  activeTag.value = tagId
-  queryParams.tags = tagId === 0 ? [] : [tagId]
-  queryParams.catalogId = categoryId === 0 ? undefined : categoryId
-  activeCategory.value = categoryId === 0 ? undefined : categories.value[0].id
-  /* 获取分类和列表 */
-  // fetchArticleList()
+  if (hasPreference && currentIndustry.value && currentExam.value) {
+    /* 已选择过考试，使用该考试 */
+    queryParams.catalogId = currentExam.value.id
+    fetchArticleList()
+  } else {
+    openGuide()
+  }
+  getHotsArticleList()
 })
 </script>
 
@@ -224,69 +184,42 @@ onMounted(() => {
     </div>
 
     <div class="container mx-auto px-4 py-8">
+      <!-- 行业选择引导弹窗 -->
+      <IndustryGuide
+        v-model="showGuide"
+        @select="handleExamSelect"
+      />
+
       <!-- 搜索和筛选区域 - 彩色卡片 -->
       <div class="bg-white rounded-2xl shadow-xl shadow-blue-100/50 overflow-hidden mb-8 border border-blue-100">
         <!-- 分类标签栏 - 多彩标签 -->
         <div class="px-4 md:px-6 py-5 border-b border-slate-100 space-y-4">
-          <!-- 大类 - 彩色标签 -->
-          <div class="flex items-start gap-3">
-            <span class="text-sm font-medium text-slate-500 pt-1.5 shrink-0 w-12">大类</span>
-            <div class="flex items-center gap-2 flex-wrap">
+          <!-- 当前选择 - 显示行业和考试 + 切换按钮 -->
+          <div class="flex items-center gap-3">
+            <span class="text-sm font-medium text-slate-500 shrink-0">当前选择</span>
+            <div class="flex items-center gap-2">
+              <span class="px-4 py-2 text-sm font-medium rounded-full bg-gradient-to-r from-blue-500 to-cyan-500 text-white shadow-lg shadow-blue-500/30">
+                <template v-if="isClientReady">
+                  {{ currentIndustry?.name }} / {{ currentExamName }}
+                </template>
+                <template v-else>
+                  加载中...
+                </template>
+              </span>
               <button
-                  v-for="(catalog, index) in categories" :key="index"
-                  :class="activeCategory === catalog.id
-                      ? 'bg-gradient-to-r from-blue-500 to-cyan-500 text-white shadow-lg shadow-blue-500/30'
-                      : 'bg-slate-100 text-slate-600 hover:bg-slate-200'
-                    "
-                  class="px-4 py-2 text-sm font-medium rounded-full transition-all duration-300 transform hover:scale-105"
-                  @click="handleCategoryChange(catalog.id)"
+                class="px-3 py-1.5 text-sm text-blue-600 hover:text-blue-700 hover:bg-blue-50 rounded-full transition-all duration-200 flex items-center gap-1"
+                @click="openGuide"
               >
-                {{ catalog.name }}
+                <Icon name="ep:arrow-right" class="text-xs"/>
+                切换考试
               </button>
             </div>
           </div>
-          <!-- 考试 -->
-          <div class="flex items-start gap-3">
-            <span class="text-sm font-medium text-slate-500 pt-1.5 shrink-0 w-12">考试</span>
-            <div class="flex items-center gap-2 flex-wrap">
-              <button
-                  :class="activeExamType === 0
-                      ? 'bg-gradient-to-r from-blue-500 to-cyan-500 text-white shadow-lg shadow-blue-500/30'
-                      : 'bg-slate-100 text-slate-600 hover:bg-slate-200'
-                    "
-                  class="px-3 py-1.5 text-sm font-medium rounded-full transition-all duration-200"
-                  @click="handleExamTypeChange(0)"
-              >
-                全部
-              </button>
-              <button
-                  v-for="exam in subCategories"
-                  :key="exam.id"
-                  :class="activeExamType === exam.id
-                      ? 'bg-gradient-to-r from-blue-500 to-cyan-500 text-white shadow-lg shadow-blue-500/30'
-                      : 'bg-slate-100 text-slate-600 hover:bg-slate-200'
-                    "
-                  class="px-3 py-1.5 text-sm font-medium rounded-full transition-all duration-200"
-                  @click="handleExamTypeChange(exam.id)"
-              >
-                {{ exam.name }}
-              </button>
-            </div>
-          </div>
-          <!-- 考试 -->
+
+          <!-- 分类 -->
           <div class="flex items-start gap-3">
             <span class="text-sm font-medium text-slate-500 pt-1.5 shrink-0 w-12">分类</span>
             <div class="flex items-center gap-2 flex-wrap">
-              <button
-                  :class="activeExamType === 0
-                      ? 'bg-gradient-to-r from-blue-500 to-cyan-500 text-white shadow-lg shadow-blue-500/30'
-                      : 'bg-slate-100 text-slate-600 hover:bg-slate-200'
-                    "
-                  class="px-3 py-1.5 text-sm font-medium rounded-full transition-all duration-200"
-                  @click="handleExamTypeChange(0)"
-              >
-                全部
-              </button>
               <button
                   v-for="tag in tags"
                   :key="tag.id"
@@ -330,7 +263,7 @@ onMounted(() => {
                   @click="handleSearch"
               >
                 <Icon name="ep:search" class="text-sm"/>
-                <span>搜索</span>
+                <span class="w-10">搜索</span>
               </button>
             </div>
           </div>
@@ -343,16 +276,20 @@ onMounted(() => {
         <div class="lg:col-span-3">
           <div v-loading="loading" class="space-y-5">
             <!-- 空状态 -->
-            <el-empty v-if="articleList.length === 0 && !loading" description="暂无资讯"
-                      class="py-16 bg-white rounded-2xl shadow-lg"/>
+            <div v-if="articleList.length === 0 && !loading"
+                 class="py-16 bg-white rounded-2xl shadow-lg flex flex-col items-center justify-center">
+              <div class="w-32 h-32 mb-4 text-slate-300">
+                <Icon name="ep:document" class="w-full h-full"/>
+              </div>
+              <p class="text-slate-500 text-base">暂无资讯</p>
+            </div>
 
             <!-- 资讯卡片列表 -->
             <div class="space-y-5">
               <div
                   v-for="(article, index) in articleList"
                   :key="article.id"
-                  class="group bg-white rounded-xl overflow-hidden cursor-pointer transition-all duration-300 hover:shadow-2xl hover:shadow-blue-200/50 border-2 border-transparent hover:border-blue-200"
-                  :class="`hover:bg-gradient-to-br ${getCategoryColor(article.categoryId || 0)?.gradient}`"
+                  class="group bg-white rounded-xl overflow-hidden cursor-pointer transition-all duration-300 hover:shadow-2xl hover:shadow-blue-200/50 border-2 border-transparent hover:border-blue-200 hover:bg-gradient-to-br from-blue-50 to-cyan-50"
                   :style="{ animationDelay: `${index * 50}ms` }"
                   @click="handleViewDetail(article.id)"
               >
@@ -361,22 +298,23 @@ onMounted(() => {
                   <!-- 封面图片 - 彩色遮罩 -->
                   <div class="flex-shrink-0 w-52 h-36 relative overflow-hidden">
                     <img
-                        v-if="article.coverImage"
-                        :src="article.coverImage"
+                        v-if="article.logo"
+                        :src="article.logo"
                         :alt="article.title"
                         class="w-full h-full object-cover transition-transform duration-500 group-hover:scale-110"
                     >
-                    <div v-else
+                    <div
+                        v-else
                          class="w-full h-full flex items-center justify-center bg-gradient-to-br from-slate-100 to-slate-200">
                       <Icon name="ep:picture" class="text-4xl text-slate-300"/>
                     </div>
                     <!-- 彩色分类标签 -->
-                    <div v-if="article.categoryName" class="absolute top-3 left-3">
-                    <span
-                        :class="`${getCategoryColor(article.categoryId || 0)?.bg} text-white backdrop-blur-sm px-3 py-1.5 text-xs font-medium rounded-full shadow-lg`">
-                      {{ article.categoryName }}
-                    </span>
-                    </div>
+<!--                    <div v-if="article.catalogName" class="absolute top-3 left-3">-->
+<!--                    <span-->
+<!--                        class="bg-gradient-to-r from-violet-500 to-purple-400 text-white backdrop-blur-sm px-3 py-1.5 text-xs font-medium rounded-full shadow-lg">-->
+<!--                      {{ article.catalogName }}-->
+<!--                    </span>-->
+<!--                    </div>-->
                     <!-- 装饰角标 -->
                     <div class="absolute bottom-0 right-0 w-12 h-12 bg-gradient-to-tl from-white/20 to-transparent"/>
                   </div>
@@ -395,13 +333,13 @@ onMounted(() => {
                         <template v-if="article.tags">
                         <span
                             v-for="(tag, tagIndex) in article.tags.slice(0, 2)"
-                            :key="tag"
+                            :key="tag.id"
                             class="px-2.5 py-1 text-xs rounded-md font-medium"
                             :class="[
                             tagIndex === 0 ? 'bg-emerald-100 text-emerald-700' : 'bg-amber-100 text-amber-700'
                           ]"
                         >
-                          {{ tag }}
+                          {{ tag.word }}
                         </span>
                         </template>
                       </div>
@@ -410,11 +348,11 @@ onMounted(() => {
                       <div class="flex items-center gap-4 text-xs text-slate-400">
                       <span class="flex items-center gap-1.5">
                         <Icon name="ep:view" class="text-blue-400"/>
-                        {{ formatViewCount(article.viewCount || 0) }}
+                        {{ formatCount(article.viewCount || 0) }}
                       </span>
                         <span class="flex items-center gap-1.5">
                         <Icon name="ep:clock" class="text-cyan-400"/>
-                        {{ article.publishTime ? formatDate(article.publishTime) : '' }}
+                        {{ article.publishDate ? formatDate(article.publishDate) : '--' }}
                       </span>
                       </div>
                     </div>
@@ -436,8 +374,8 @@ onMounted(() => {
                   <!-- 封面图片 -->
                   <div class="w-full h-44 relative overflow-hidden">
                     <img
-                        v-if="article.coverImage"
-                        :src="article.coverImage"
+                        v-if="article.logo"
+                        :src="article.logo"
                         :alt="article.title"
                         class="w-full h-full object-cover"
                     >
@@ -446,12 +384,12 @@ onMounted(() => {
                       <Icon name="ep:picture" class="text-5xl text-slate-300"/>
                     </div>
                     <!-- 彩色分类标签 -->
-                    <div v-if="article.categoryName" class="absolute top-3 left-3">
-                    <span
-                        :class="`${getCategoryColor(article.categoryId || 0)?.bg} text-white backdrop-blur-sm px-3 py-1.5 text-xs font-medium rounded-full shadow-lg`">
-                      {{ article.categoryName }}
-                    </span>
-                    </div>
+<!--                    <div v-if="article.catalogName" class="absolute top-3 left-3">-->
+<!--                    <span-->
+<!--                        :class="`${getCategoryColor(article.categoryId || 0)?.bg} text-white backdrop-blur-sm px-3 py-1.5 text-xs font-medium rounded-full shadow-lg`">-->
+<!--                      {{ article.catalogName }}-->
+<!--                    </span>-->
+<!--                    </div>-->
                   </div>
 
                   <!-- 内容区 -->
@@ -466,13 +404,13 @@ onMounted(() => {
                       <template v-if="article.tags">
                       <span
                           v-for="(tag, tagIndex) in article.tags.slice(0, 2)"
-                          :key="tag"
+                          :key="tag.id"
                           class="px-2 py-0.5 text-xs rounded-md font-medium"
                           :class="[
                           tagIndex === 0 ? 'bg-emerald-100 text-emerald-700' : 'bg-amber-100 text-amber-700'
                         ]"
                       >
-                        {{ tag }}
+                        {{ tag.word }}
                       </span>
                       </template>
                     </div>
@@ -480,11 +418,11 @@ onMounted(() => {
                       <div class="flex items-center gap-3 text-xs text-slate-400">
                       <span class="flex items-center gap-1">
                         <Icon name="ep:view" class="text-blue-400"/>
-                        {{ formatViewCount(article.viewCount || 0) }}
+                        {{ formatCount(article.viewCount || 0) }}
                       </span>
                         <span class="flex items-center gap-1">
                         <Icon name="ep:clock" class="text-cyan-400"/>
-                        {{ article.publishTime ? formatDate(article.publishTime) : '' }}
+                        {{ article.publishDate ? formatDate(article.publishDate) : '' }}
                       </span>
                       </div>
                       <div class="w-7 h-7 rounded-full bg-blue-100 flex items-center justify-center">
@@ -648,10 +586,6 @@ onMounted(() => {
                   <p class="text-sm text-slate-700 line-clamp-2 group-hover:text-blue-600 transition-colors">
                     {{ article.title }}
                   </p>
-                  <div class="flex items-center gap-2 mt-1.5 text-xs text-slate-400">
-                    <Icon name="ep:view" class="text-xs"/>
-                    <span>{{ formatViewCount(article.viewCount || 0) }}</span>
-                  </div>
                 </div>
               </div>
             </div>

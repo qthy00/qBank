@@ -6,6 +6,7 @@ import type {
 } from '~/types/document'
 import {CmsCategoryApi} from "~/api/category";
 import {fileSizeFormatter, formatCount} from "~/utils";
+import IndustryGuide from '~/components/IndustryGuide.vue'
 
 
 definePageMeta({
@@ -21,9 +22,14 @@ const userStore = useUserStore()
 const {user} = storeToRefs(userStore)
 const {openModal} = useModal()
 
+/* ==================== 行业偏好管理（使用 Pinia Store）==================== */
+const industryStore = useIndustryStore()
+const {currentIndustry, currentExam, showGuide} = storeToRefs(industryStore)
+const {initPreference, selectExam, openGuide} = industryStore
+
 /* ==================== 状态定义 ==================== */
 
-/* 大类筛选 */
+/* 大类筛选 - 使用用户偏好的行业 */
 const activeMajor = ref<number>()
 /* 考试类型筛选 */
 const activeExamType = ref<number>(0)
@@ -77,13 +83,6 @@ const {data: hotDocuments} = await useAsyncData(
       return data.list?.slice(0, 5) || []
     }
 )
-const subCategories = computed(() => {
-  const data = categories.value.filter(c => c.id === activeMajor.value)
-  if (!data || !data[0] || !data[0].children) {
-    return []
-  }
-  return data[0].children
-})
 
 /* 获取年份选项 */
 const fetchYearOptions = async () => {
@@ -109,7 +108,7 @@ const fetchDocumentList = async () => {
   }
 }
 
-/* 切换大类 */
+/* 切换大类 - 仅内部使用，用户不能直接切换 */
 const handleMajorChange = (catalogId: number) => {
   activeMajor.value = catalogId
   queryParams.catalogId = catalogId
@@ -162,14 +161,37 @@ const handleViewDetail = (id: number) => {
   navigateTo(`/document/${id}`)
 }
 
-/* 获取当前大类名称 */
-const currentMajorName = computed(() => {
-  return categories.value.find(m => m.id === activeMajor.value)?.name || ''
+/* 获取当前考试名称 */
+const currentExamName = computed(() => {
+  return currentExam.value?.name || '请选择考试'
 })
+
+/* 处理考试选择 */
+const handleExamSelect = (industry: any, exam: any) => {
+  selectExam(industry, exam)
+  activeMajor.value = industry.id
+  queryParams.catalogId = exam.id
+  queryParams.pageNo = 1
+  fetchDocumentList()
+}
 
 /* 初始化 */
 onMounted(() => {
-  activeMajor.value = categories.value ? categories.value[0].id : 0
+  /* 初始化考试偏好 */
+  const hasPreference = initPreference(categories.value)
+
+  if (hasPreference && currentIndustry.value && currentExam.value) {
+    /* 已选择过考试，使用该考试 */
+    activeMajor.value = currentIndustry.value.id
+    queryParams.catalogId = currentExam.value.id
+  } else {
+    /* 未选择过，默认使用第一个行业的第一个考试 */
+    const firstCategory = categories.value?.[0]
+    const firstExam = firstCategory?.children?.[0]
+    activeMajor.value = firstCategory?.id || 0
+    queryParams.catalogId = firstExam?.id
+  }
+
   fetchYearOptions()
   fetchDocumentList()
 })
@@ -209,53 +231,30 @@ onMounted(() => {
     </div>
 
     <div class="container mx-auto px-4 py-8">
+      <!-- 行业选择引导弹窗 -->
+      <IndustryGuide
+        v-model="showGuide"
+        :categories="categories || []"
+        @select="handleExamSelect"
+      />
+
       <!-- 筛选卡片 - 彩色风格 -->
       <div class="bg-white rounded-2xl shadow-xl shadow-blue-100/50 overflow-hidden mb-8 border border-blue-100">
         <!-- 筛选内容 -->
         <div class="p-5 space-y-4">
-          <!-- 大类 - 彩色标签 -->
-          <div class="flex items-start gap-3">
-            <span class="text-sm font-medium text-slate-500 pt-1.5 shrink-0 w-12">大类</span>
-            <div class="flex items-center gap-2 flex-wrap">
+          <!-- 当前选择 - 显示行业和考试 + 切换按钮 -->
+          <div class="flex items-center gap-3">
+            <span class="text-sm font-medium text-slate-500 shrink-0">当前选择</span>
+            <div class="flex items-center gap-2">
+              <span class="px-4 py-2 text-sm font-medium rounded-full bg-gradient-to-r from-blue-500 to-cyan-500 text-white shadow-lg shadow-blue-500/30">
+                {{ currentIndustry?.name }} / {{ currentExamName }}
+              </span>
               <button
-                  v-for="(catalog, index) in categories" :key="index"
-                  :class="activeMajor === catalog.id
-                      ? 'bg-gradient-to-r from-blue-500 to-cyan-500 text-white shadow-lg shadow-blue-500/30'
-                      : 'bg-slate-100 text-slate-600 hover:bg-slate-200'
-                    "
-                  class="px-4 py-2 text-sm font-medium rounded-full transition-all duration-300 transform hover:scale-105"
-                  @click="handleMajorChange(catalog.id)"
+                class="px-3 py-1.5 text-sm text-blue-600 hover:text-blue-700 hover:bg-blue-50 rounded-full transition-all duration-200 flex items-center gap-1"
+                @click="openGuide"
               >
-                {{ catalog.name }}
-              </button>
-            </div>
-          </div>
-
-          <!-- 考试 -->
-          <div class="flex items-start gap-3">
-            <span class="text-sm font-medium text-slate-500 pt-1.5 shrink-0 w-12">考试</span>
-            <div class="flex items-center gap-2 flex-wrap">
-              <button
-                  :class="activeExamType === 0
-                      ? 'bg-gradient-to-r from-blue-500 to-cyan-500 text-white shadow-lg shadow-blue-500/30'
-                      : 'bg-slate-100 text-slate-600 hover:bg-slate-200'
-                    "
-                  class="px-3 py-1.5 text-sm font-medium rounded-full transition-all duration-200"
-                  @click="handleExamTypeChange(0)"
-              >
-                全部
-              </button>
-              <button
-                  v-for="exam in subCategories"
-                  :key="exam.id"
-                  :class="activeExamType === exam.id
-                      ? 'bg-gradient-to-r from-blue-500 to-cyan-500 text-white shadow-lg shadow-blue-500/30'
-                      : 'bg-slate-100 text-slate-600 hover:bg-slate-200'
-                    "
-                  class="px-3 py-1.5 text-sm font-medium rounded-full transition-all duration-200"
-                  @click="handleExamTypeChange(exam.id)"
-              >
-                {{ exam.name }}
+                <Icon name="ep:arrow-right" class="text-xs"/>
+                切换考试
               </button>
             </div>
           </div>

@@ -44,10 +44,10 @@ export const ArticleApi = {
    */
   getArticleList: async (params: ArticleListReqVO): Promise<ArticleListRespVO> => {
     /* 开发环境使用 Mock 数据 */
-    if (useMock()) {
-      return getMockArticleList(params)
-    }
-    return await httpGet('ArticleList', '/cms/content/list', { query: params })
+    // if (useMock()) {
+    //   return getMockArticleList(params)
+    // }
+    return await httpGet('ArticleList', '/cms/article/page', { query: params })
   },
 
   /**
