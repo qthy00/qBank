@@ -1,15 +1,9 @@
 <script setup lang="ts">
 import {ArticleApi} from '~/api/article'
-import type {ArticleVO} from '~/types/article'
-
 import {DocumentApi} from "~/api/document";
 import IndustryGuide from '~/components/IndustryGuide.vue'
 import {formatCount} from "~/utils";
-import {useIndustryStore} from "~/stores/industry";
 
-definePageMeta({
-  layout: 'default'
-})
 
 useHead({
   title: '资讯中心'
@@ -19,13 +13,14 @@ const route = useRoute()
 const authStore = useAuthStore()
 const userStore = useUserStore()
 const {user} = storeToRefs(userStore)
-
+const { isLogin } = storeToRefs(authStore)
+const {openModal} = useModal()
 /* ==================== 行业偏好管理（使用 Pinia Store）==================== */
 const industryStore = useIndustryStore()
 const {currentIndustry, currentExam, showGuide} = storeToRefs(industryStore)
 const {initPreference, selectExam, openGuide} = industryStore
 const tagId = Number(route.query.tag) || 0
-const categoryId = Number(route.query.category) || 0
+const categoryId = Number(route.query.category) || 1
 
 /* 获取排名样式 */
 const getRankStyle = (index: number) => {
@@ -46,18 +41,21 @@ const {data: tags} = await useAsyncData(
     }
 )
 
+/* 查询参数 */
+const queryParams = reactive({
+  pageNo: 1,
+  pageSize: 10,
+  catalogId: categoryId,
+  tags: tagId === 0 ? [] : [tagId],
+  keyword: undefined as string | undefined
+})
+
 /* 列表数据 - 使用 useAsyncData 实现 SSR */
 const total = ref(0)
 const { data: articleList, pending: loading, refresh: refreshArticleList } = await useAsyncData(
   'articleList',
   async () => {
-    const data = await ArticleApi.getArticleList({
-      page: queryParams.pageNo,
-      limit: queryParams.pageSize,
-      catalogId: queryParams.catalogId,
-      tags: queryParams.tags,
-      keyword: queryParams.keyword
-    })
+    const data = await ArticleApi.getArticleList(queryParams)
     total.value = data.total || 0
     return data.list || []
   },
@@ -66,14 +64,7 @@ const { data: articleList, pending: loading, refresh: refreshArticleList } = awa
   }
 )
 
-/* 查询参数 */
-const queryParams = reactive({
-  pageNo: 1,
-  pageSize: 10,
-  catalogId: categoryId === 0 ? undefined : categoryId,
-  tags: tagId === 0 ? [] : [tagId],
-  keyword: undefined as string | undefined
-})
+
 
 /* 获取热门资讯 */
 const {data: hotArticles, refresh: refreshHotArticles} = await useAsyncData(
@@ -128,6 +119,26 @@ const handleExamSelect = (industry: any, exam: any) => {
 
 const isClientReady = ref(false)
 
+/* 每日一练日期 - 仅在客户端计算 */
+const todayDate = computed(() => {
+  if (!isClientReady.value) return { day: '--', month: '--' }
+  const now = new Date()
+  return {
+    day: now.getDate(),
+    month: now.getMonth() + 1
+  }
+})
+
+const getArticleList = async () => {
+  const data = await ArticleApi.getArticleList(queryParams)
+  articleList.value = data.list || []
+  total.value = data.total || 0
+}
+
+
+/* 是否在客户端 */
+const isClient = computed(() => import.meta.client)
+
 /* 初始化 */
 onMounted(() => {
   isClientReady.value = true
@@ -135,10 +146,10 @@ onMounted(() => {
   /* 初始化考试偏好 */
   const hasPreference = initPreference()
 
-  if (hasPreference && currentIndustry.value && currentExam.value) {
+  if (hasPreference && currentExam.value) {
     /* 已选择过考试，使用该考试 */
     queryParams.catalogId = currentExam.value.id
-    refreshArticleList()
+    getArticleList()
     refreshHotArticles()
   } else {
     openGuide()
@@ -180,8 +191,9 @@ onMounted(() => {
     </div>
 
     <div class="container mx-auto px-4 py-8">
-      <!-- 行业选择引导弹窗 -->
+      <!-- 行业选择引导弹窗 - 仅在客户端渲染 -->
       <IndustryGuide
+        v-if="isClientReady"
         v-model="showGuide"
         @select="handleExamSelect"
       />
@@ -240,7 +252,9 @@ onMounted(() => {
                   class="w-8 h-8 rounded-lg bg-gradient-to-br from-blue-500 to-cyan-500 flex items-center justify-center">
                 <Icon name="ep:document" class="text-white text-sm"/>
               </div>
-              <span>共 <span class="text-blue-600 font-bold text-lg">{{ total }}</span> 篇资讯</span>
+              <ClientOnly>
+                <span>共 <span class="text-blue-600 font-bold text-lg">{{ total }}</span> 篇资讯</span>
+              </ClientOnly>
             </div>
             <div class="flex items-center gap-3">
               <el-input
@@ -269,64 +283,65 @@ onMounted(() => {
       <!-- 左右分栏布局 -->
       <div class="grid grid-cols-1 lg:grid-cols-4 gap-6">
         <!-- 左侧主要内容区 - 资讯列表 -->
-        <div class="lg:col-span-3">
-          <div v-loading="loading" class="space-y-5">
-            <!-- 空状态 -->
-            <div v-if="(!articleList || articleList.length === 0) && !loading"
-                 class="py-16 bg-white rounded-2xl shadow-lg flex flex-col items-center justify-center">
-              <div class="w-32 h-32 mb-4 text-slate-300">
-                <Icon name="ep:document" class="w-full h-full"/>
-              </div>
-              <p class="text-slate-500 text-base">暂无资讯</p>
-            </div>
-
-            <!-- 资讯卡片列表 -->
-            <div class="space-y-5">
+          <div class="lg:col-span-3">
+            <div v-loading="loading" class="space-y-5">
+              <!-- 空状态 -->
               <div
-                  v-for="(article, index) in (articleList || [])"
-                  :key="article.id"
-                  class="group bg-white rounded-xl overflow-hidden cursor-pointer transition-all duration-300 hover:shadow-2xl hover:shadow-blue-200/50 border-2 border-transparent hover:border-blue-200 hover:bg-gradient-to-br from-blue-50 to-cyan-50"
-                  :style="{ animationDelay: `${index * 50}ms` }"
-                  @click="handleViewDetail(article.id)"
-              >
-                <!-- 桌面端布局：横向 -->
-                <div class="hidden lg:flex">
-                  <!-- 封面图片 - 彩色遮罩 -->
-                  <div class="flex-shrink-0 w-52 h-36 relative overflow-hidden">
-                    <img
-                        v-if="article.logo"
-                        :src="article.logo"
-                        :alt="article.title"
-                        class="w-full h-full object-cover transition-transform duration-500 group-hover:scale-110"
-                    >
-                    <div
-                        v-else
-                         class="w-full h-full flex items-center justify-center bg-gradient-to-br from-slate-100 to-slate-200">
-                      <Icon name="ep:picture" class="text-4xl text-slate-300"/>
-                    </div>
-                    <!-- 彩色分类标签 -->
-<!--                    <div v-if="article.catalogName" class="absolute top-3 left-3">-->
-<!--                    <span-->
-<!--                        class="bg-gradient-to-r from-violet-500 to-purple-400 text-white backdrop-blur-sm px-3 py-1.5 text-xs font-medium rounded-full shadow-lg">-->
-<!--                      {{ article.catalogName }}-->
-<!--                    </span>-->
-<!--                    </div>-->
-                    <!-- 装饰角标 -->
-                    <div class="absolute bottom-0 right-0 w-12 h-12 bg-gradient-to-tl from-white/20 to-transparent"/>
-                  </div>
+                  v-if="(!articleList || articleList.length === 0) && !loading"
+                   class="py-16 bg-white rounded-2xl shadow-lg flex flex-col items-center justify-center">
+                <div class="w-32 h-32 mb-4 text-slate-300">
+                  <Icon name="ep:document" class="w-full h-full"/>
+                </div>
+                <p class="text-slate-500 text-base">暂无资讯</p>
+              </div>
 
-                  <!-- 内容区 -->
-                  <div class="flex-1 p-5 flex flex-col">
-                    <h3 class="text-lg font-bold text-slate-800 mb-2 line-clamp-1 group-hover:text-blue-600 transition-colors duration-300">
-                      {{ article.title }}
-                    </h3>
-                    <p class="text-sm text-slate-500 mb-4 line-clamp-2 flex-1 leading-relaxed">
-                      {{ article.summary || '暂无摘要' }}
-                    </p>
-                    <div class="flex items-center justify-between">
-                      <!-- 彩色标签 -->
-                      <div class="flex items-center gap-2">
-                        <template v-if="article.tags">
+              <!-- 资讯卡片列表 -->
+              <div :class="['space-y-5', { 'client-ready': isClientReady }]">
+                <div
+                    v-for="(article, index) in (articleList || [])"
+                    :key="article.id"
+                    class="group bg-white rounded-xl overflow-hidden cursor-pointer transition-all duration-300 hover:shadow-2xl hover:shadow-blue-200/50 border-2 border-transparent hover:border-blue-200 hover:bg-gradient-to-br from-blue-50 to-cyan-50"
+                    :style="{ animationDelay: `${index * 50}ms` }"
+                    @click="handleViewDetail(article.id)"
+                >
+                  <!-- 桌面端布局：横向 -->
+                  <div class="hidden lg:flex">
+                    <!-- 封面图片 - 彩色遮罩 -->
+                    <div class="flex-shrink-0 w-52 h-36 relative overflow-hidden">
+                      <img
+                          v-if="article.logo"
+                          :src="article.logo"
+                          :alt="article.title"
+                          class="w-full h-full object-cover transition-transform duration-500 group-hover:scale-110"
+                      >
+                      <div
+                          v-else
+                          class="w-full h-full flex items-center justify-center bg-gradient-to-br from-slate-100 to-slate-200">
+                        <Icon name="ep:picture" class="text-4xl text-slate-300"/>
+                      </div>
+                      <!-- 彩色分类标签 -->
+                      <!--                    <div v-if="article.catalogName" class="absolute top-3 left-3">-->
+                      <!--                    <span-->
+                      <!--                        class="bg-gradient-to-r from-violet-500 to-purple-400 text-white backdrop-blur-sm px-3 py-1.5 text-xs font-medium rounded-full shadow-lg">-->
+                      <!--                      {{ article.catalogName }}-->
+                      <!--                    </span>-->
+                      <!--                    </div>-->
+                      <!-- 装饰角标 -->
+                      <div class="absolute bottom-0 right-0 w-12 h-12 bg-gradient-to-tl from-white/20 to-transparent"/>
+                    </div>
+
+                    <!-- 内容区 -->
+                    <div class="flex-1 p-5 flex flex-col">
+                      <h3 class="text-lg font-bold text-slate-800 mb-2 line-clamp-1 group-hover:text-blue-600 transition-colors duration-300">
+                        {{ article.title }}
+                      </h3>
+                      <p class="text-sm text-slate-500 mb-4 line-clamp-2 flex-1 leading-relaxed">
+                        {{ article.summary || '暂无摘要' }}
+                      </p>
+                      <div class="flex items-center justify-between">
+                        <!-- 彩色标签 -->
+                        <div class="flex items-center gap-2">
+                          <template v-if="article.tags">
                         <span
                             v-for="(tag, tagIndex) in article.tags.slice(0, 2)"
                             :key="tag.id"
@@ -337,67 +352,67 @@ onMounted(() => {
                         >
                           {{ tag.word }}
                         </span>
-                        </template>
-                      </div>
+                          </template>
+                        </div>
 
-                      <!-- 浏览量和时间 -->
-                      <div class="flex items-center gap-4 text-xs text-slate-400">
+                        <!-- 浏览量和时间 -->
+                        <div class="flex items-center gap-4 text-xs text-slate-400">
                       <span class="flex items-center gap-1.5">
                         <Icon name="ep:view" class="text-blue-400"/>
                         {{ formatCount(article.viewCount || 0) }}
                       </span>
-                        <span class="flex items-center gap-1.5">
+                          <span class="flex items-center gap-1.5">
                         <Icon name="ep:clock" class="text-cyan-400"/>
                         {{ article.publishDate ? formatDate(article.publishDate) : '--' }}
                       </span>
+                        </div>
+                      </div>
+                    </div>
+
+                    <!-- 右侧箭头 - 彩色 -->
+                    <div
+                        class="w-14 flex items-center justify-center border-l border-slate-100 bg-gradient-to-b from-transparent via-slate-50 to-transparent">
+                      <div
+                          class="w-8 h-8 rounded-full bg-slate-100 group-hover:bg-blue-500 flex items-center justify-center transition-all duration-300">
+                        <Icon name="ep:arrow-right"
+                              class="text-slate-400 group-hover:text-white group-hover:translate-x-0.5 transition-all duration-300"/>
                       </div>
                     </div>
                   </div>
 
-                  <!-- 右侧箭头 - 彩色 -->
-                  <div
-                      class="w-14 flex items-center justify-center border-l border-slate-100 bg-gradient-to-b from-transparent via-slate-50 to-transparent">
-                    <div
-                        class="w-8 h-8 rounded-full bg-slate-100 group-hover:bg-blue-500 flex items-center justify-center transition-all duration-300">
-                      <Icon name="ep:arrow-right"
-                            class="text-slate-400 group-hover:text-white group-hover:translate-x-0.5 transition-all duration-300"/>
+                  <!-- 移动端/平板布局：纵向 -->
+                  <div class="flex lg:hidden flex-col">
+                    <!-- 封面图片 -->
+                    <div class="w-full h-44 relative overflow-hidden">
+                      <img
+                          v-if="article.logo"
+                          :src="article.logo"
+                          :alt="article.title"
+                          class="w-full h-full object-cover"
+                      >
+                      <div v-else
+                           class="w-full h-full flex items-center justify-center bg-gradient-to-br from-slate-100 to-slate-200">
+                        <Icon name="ep:picture" class="text-5xl text-slate-300"/>
+                      </div>
+                      <!-- 彩色分类标签 -->
+                      <!--                    <div v-if="article.catalogName" class="absolute top-3 left-3">-->
+                      <!--                    <span-->
+                      <!--                        :class="`${getCategoryColor(article.categoryId || 0)?.bg} text-white backdrop-blur-sm px-3 py-1.5 text-xs font-medium rounded-full shadow-lg`">-->
+                      <!--                      {{ article.catalogName }}-->
+                      <!--                    </span>-->
+                      <!--                    </div>-->
                     </div>
-                  </div>
-                </div>
 
-                <!-- 移动端/平板布局：纵向 -->
-                <div class="flex lg:hidden flex-col">
-                  <!-- 封面图片 -->
-                  <div class="w-full h-44 relative overflow-hidden">
-                    <img
-                        v-if="article.logo"
-                        :src="article.logo"
-                        :alt="article.title"
-                        class="w-full h-full object-cover"
-                    >
-                    <div v-else
-                         class="w-full h-full flex items-center justify-center bg-gradient-to-br from-slate-100 to-slate-200">
-                      <Icon name="ep:picture" class="text-5xl text-slate-300"/>
-                    </div>
-                    <!-- 彩色分类标签 -->
-<!--                    <div v-if="article.catalogName" class="absolute top-3 left-3">-->
-<!--                    <span-->
-<!--                        :class="`${getCategoryColor(article.categoryId || 0)?.bg} text-white backdrop-blur-sm px-3 py-1.5 text-xs font-medium rounded-full shadow-lg`">-->
-<!--                      {{ article.catalogName }}-->
-<!--                    </span>-->
-<!--                    </div>-->
-                  </div>
-
-                  <!-- 内容区 -->
-                  <div class="p-4">
-                    <h3 class="text-base font-bold text-slate-800 mb-2 line-clamp-2 group-hover:text-blue-600 transition-colors duration-300">
-                      {{ article.title }}
-                    </h3>
-                    <p class="text-sm text-slate-500 mb-3 line-clamp-2 leading-relaxed">
-                      {{ article.summary || '暂无摘要' }}
-                    </p>
-                    <div class="flex items-center gap-2 mb-3">
-                      <template v-if="article.tags">
+                    <!-- 内容区 -->
+                    <div class="p-4">
+                      <h3 class="text-base font-bold text-slate-800 mb-2 line-clamp-2 group-hover:text-blue-600 transition-colors duration-300">
+                        {{ article.title }}
+                      </h3>
+                      <p class="text-sm text-slate-500 mb-3 line-clamp-2 leading-relaxed">
+                        {{ article.summary || '暂无摘要' }}
+                      </p>
+                      <div class="flex items-center gap-2 mb-3">
+                        <template v-if="article.tags">
                       <span
                           v-for="(tag, tagIndex) in article.tags.slice(0, 2)"
                           :key="tag.id"
@@ -408,50 +423,51 @@ onMounted(() => {
                       >
                         {{ tag.word }}
                       </span>
-                      </template>
-                    </div>
-                    <div class="flex items-center justify-between pt-3 border-t border-slate-100">
-                      <div class="flex items-center gap-3 text-xs text-slate-400">
+                        </template>
+                      </div>
+                      <div class="flex items-center justify-between pt-3 border-t border-slate-100">
+                        <div class="flex items-center gap-3 text-xs text-slate-400">
                       <span class="flex items-center gap-1">
                         <Icon name="ep:view" class="text-blue-400"/>
                         {{ formatCount(article.viewCount || 0) }}
                       </span>
-                        <span class="flex items-center gap-1">
+                          <span class="flex items-center gap-1">
                         <Icon name="ep:clock" class="text-cyan-400"/>
                         {{ article.publishDate ? formatDate(article.publishDate) : '' }}
                       </span>
-                      </div>
-                      <div class="w-7 h-7 rounded-full bg-blue-100 flex items-center justify-center">
-                        <Icon name="ep:arrow-right" class="text-blue-500 text-xs"/>
+                        </div>
+                        <div class="w-7 h-7 rounded-full bg-blue-100 flex items-center justify-center">
+                          <Icon name="ep:arrow-right" class="text-blue-500 text-xs"/>
+                        </div>
                       </div>
                     </div>
                   </div>
                 </div>
               </div>
             </div>
+            <!-- 分页 - 彩色 -->
+            <ClientOnly>
+              <div v-if="total > 0" class="flex items-center justify-center mt-10">
+                <el-pagination
+                    v-model:current-page="queryParams.pageNo"
+                    :page-size="queryParams.pageSize"
+                    :total="total"
+                    layout="prev, pager, next"
+                    prev-text="上一页"
+                    next-text="下一页"
+                    class="custom-pagination"
+                    @change="handlePageChange"
+                />
+              </div>
+            </ClientOnly>
           </div>
-
-          <!-- 分页 - 彩色 -->
-          <div v-if="total > 0" class="flex items-center justify-center mt-10">
-            <el-pagination
-                v-model:current-page="queryParams.pageNo"
-                :page-size="queryParams.pageSize"
-                :total="total"
-                layout="prev, pager, next"
-                prev-text="上一页"
-                next-text="下一页"
-                class="custom-pagination"
-                @change="handlePageChange"
-            />
-          </div>
-        </div>
-
         <!-- 右侧侧边栏 - PC端显示，H5隐藏 -->
         <div class="hidden lg:block lg:col-span-1 space-y-6">
-          <!-- 用户信息卡片 -->
+          <!-- 用户信息卡片 - 仅在客户端渲染 -->
           <ClientOnly>
-            <div v-if="authStore.isLogin"
-                 class="bg-white rounded-xl shadow-lg shadow-blue-100/50 border border-blue-100 overflow-hidden">
+            <div
+                v-if="isLogin"
+                class="bg-white rounded-xl shadow-lg shadow-blue-100/50 border border-blue-100 overflow-hidden">
               <!-- 头部渐变 -->
               <div class="h-20 bg-gradient-to-r from-blue-500 to-cyan-500 relative">
                 <div class="absolute -bottom-8 left-4">
@@ -477,31 +493,33 @@ onMounted(() => {
                 </div>
                 <!-- 快捷入口 -->
                 <div class="grid grid-cols-3 gap-2 pt-4 border-t border-slate-100">
-                  <a href="/account/profile"
+                  <NuxtLink
+                      to="/account/profile"
                      class="flex flex-col items-center gap-1 p-2 rounded-lg hover:bg-blue-50 transition-colors">
                     <div class="w-10 h-10 rounded-full bg-blue-100 flex items-center justify-center">
                       <Icon name="ep:user-filled" class="text-xl text-blue-500"/>
                     </div>
                     <span class="text-xs text-slate-600">个人中心</span>
-                  </a>
-                  <a href="/account/favorites"
+                  </NuxtLink>
+                  <NuxtLink
+                      to="/account/favorites"
                      class="flex flex-col items-center gap-1 p-2 rounded-lg hover:bg-yellow-50 transition-colors">
                     <div class="w-10 h-10 rounded-full bg-yellow-100 flex items-center justify-center">
                       <Icon name="ep:star-filled" class="text-xl text-yellow-500"/>
                     </div>
                     <span class="text-xs text-slate-600">我的收藏</span>
-                  </a>
-                  <a href="/study/practice/daily"
+                  </NuxtLink>
+                  <NuxtLink
+                      to="/study/practice/daily"
                      class="flex flex-col items-center gap-1 p-2 rounded-lg hover:bg-green-50 transition-colors">
                     <div class="w-10 h-10 rounded-full bg-green-100 flex items-center justify-center">
                       <Icon name="ep:calendar" class="text-xl text-green-500"/>
                     </div>
                     <span class="text-xs text-slate-600">每日一练</span>
-                  </a>
+                  </NuxtLink>
                 </div>
               </div>
             </div>
-
             <!-- 未登录状态 -->
             <div v-else class="bg-white rounded-xl shadow-lg shadow-blue-100/50 border border-blue-100 p-5">
               <div class="text-center">
@@ -512,7 +530,7 @@ onMounted(() => {
                 <p class="text-sm text-slate-500 mb-4">登录后解锁更多学习功能</p>
                 <button
                     class="w-full py-2.5 bg-gradient-to-r from-blue-500 to-cyan-500 text-white rounded-lg hover:from-blue-600 hover:to-cyan-600 transition-all duration-300 shadow-lg shadow-blue-500/30"
-                    @click="useModal().openModal('login')"
+                    @click="openModal('login')"
                 >
                   立即登录
                 </button>
@@ -530,10 +548,12 @@ onMounted(() => {
                 </div>
               </div>
             </div>
+
           </ClientOnly>
 
-          <!-- 每日一练卡片 -->
-          <div class="bg-gradient-to-br from-emerald-500 to-teal-500 rounded-xl shadow-lg shadow-emerald-200 overflow-hidden text-white">
+
+          <!-- 每日一练卡片 - 仅在客户端渲染 -->
+          <div v-if="isClient && isClientReady" class="bg-gradient-to-br from-emerald-500 to-teal-500 rounded-xl shadow-lg shadow-emerald-200 overflow-hidden text-white">
             <div class="p-5">
               <div class="flex items-center gap-2 mb-3">
                 <Icon name="ep:calendar" class="text-xl"/>
@@ -542,8 +562,8 @@ onMounted(() => {
               <p class="text-white/90 text-sm mb-4">坚持每天练习，提升考试通过率</p>
               <div class="flex items-center justify-between mb-4">
                 <div class="text-center">
-                  <div class="text-2xl font-bold">{{ new Date().getDate() }}</div>
-                  <div class="text-xs text-white/80">{{ new Date().getMonth() + 1 }}月</div>
+                  <div class="text-2xl font-bold">{{ todayDate.day }}</div>
+                  <div class="text-xs text-white/80">{{ todayDate.month }}月</div>
                 </div>
                 <div class="flex-1 mx-4">
                   <div class="text-sm mb-1">今日练习进度</div>
@@ -552,10 +572,11 @@ onMounted(() => {
                   </div>
                 </div>
               </div>
-              <a href="/study/practice/daily"
+              <NuxtLink
+                  to="/study/practice/daily"
                  class="block w-full py-2.5 bg-white text-emerald-600 text-center rounded-lg font-medium hover:bg-white/90 transition-colors shadow-lg">
                 开始今日练习
-              </a>
+              </NuxtLink>
             </div>
           </div>
 
@@ -591,22 +612,22 @@ onMounted(() => {
           <div class="bg-white rounded-xl shadow-lg shadow-blue-100/50 border border-blue-100 p-5">
             <h3 class="font-bold text-slate-800 mb-4">学习工具</h3>
             <div class="grid grid-cols-2 gap-3">
-              <a href="/exam/smart" class="flex flex-col items-center gap-2 p-3 rounded-lg bg-gradient-to-br from-purple-50 to-pink-50 hover:from-purple-100 hover:to-pink-100 transition-colors">
+              <NuxtLink to="/exam/smart" class="flex flex-col items-center gap-2 p-3 rounded-lg bg-gradient-to-br from-purple-50 to-pink-50 hover:from-purple-100 hover:to-pink-100 transition-colors">
                 <Icon name="ep:edit" class="text-2xl text-purple-500"/>
                 <span class="text-xs text-slate-600">智能组卷</span>
-              </a>
-              <a href="/qBank" class="flex flex-col items-center gap-2 p-3 rounded-lg bg-gradient-to-br from-blue-50 to-cyan-50 hover:from-blue-100 hover:to-cyan-100 transition-colors">
+              </NuxtLink>
+              <NuxtLink to="/qBank" class="flex flex-col items-center gap-2 p-3 rounded-lg bg-gradient-to-br from-blue-50 to-cyan-50 hover:from-blue-100 hover:to-cyan-100 transition-colors">
                 <Icon name="ep:collection" class="text-2xl text-blue-500"/>
                 <span class="text-xs text-slate-600">题库练习</span>
-              </a>
-              <a href="/mistake" class="flex flex-col items-center gap-2 p-3 rounded-lg bg-gradient-to-br from-red-50 to-orange-50 hover:from-red-100 hover:to-orange-100 transition-colors">
+              </NuxtLink>
+              <NuxtLink to="/account/mistakes" class="flex flex-col items-center gap-2 p-3 rounded-lg bg-gradient-to-br from-red-50 to-orange-50 hover:from-red-100 hover:to-orange-100 transition-colors">
                 <Icon name="ep:close" class="text-2xl text-red-500"/>
                 <span class="text-xs text-slate-600">错题本</span>
-              </a>
-              <a href="/note" class="flex flex-col items-center gap-2 p-3 rounded-lg bg-gradient-to-br from-green-50 to-emerald-50 hover:from-green-100 hover:to-emerald-100 transition-colors">
+              </NuxtLink>
+              <NuxtLink to="/account/notes" class="flex flex-col items-center gap-2 p-3 rounded-lg bg-gradient-to-br from-green-50 to-emerald-50 hover:from-green-100 hover:to-emerald-100 transition-colors">
                 <Icon name="ep:notebook" class="text-2xl text-green-500"/>
                 <span class="text-xs text-slate-600">学习笔记</span>
-              </a>
+              </NuxtLink>
             </div>
           </div>
         </div>
@@ -674,8 +695,8 @@ onMounted(() => {
   }
 }
 
-.bg-white.rounded-xl {
+/* 仅在客户端应用动画 */
+.client-ready .bg-white.rounded-xl {
   animation: fadeInUp 0.5s ease-out forwards;
-  opacity: 0;
 }
 </style>

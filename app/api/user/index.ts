@@ -89,17 +89,11 @@ export interface DeviceQueryVO {
 
 // 获取用户权限信息
 export const getInfo = () => {
-  if (ENABLE_MOCK) {
-    return getMockUserPermissions()
-  }
   return httpGet('getInfo',  '/member/auth/get-permission-info' )
 }
 
 // 查询会员用户详情
 export const getUser = async () => {
-  if (ENABLE_MOCK) {
-    return getMockUser()
-  }
   return await httpGet('UserInfo', `/member/user/get`)
 }
 
@@ -191,16 +185,16 @@ export const fetchDevicePage = async (query: DeviceQueryVO) => {
 }
 
 // 获取工具访问权限
-export const getPackageAccess = async (toolId: number, server: boolean = true) => {
-  return await httpGet('getPackageAccess', `/member/tools/access/${toolId}`, {}, server)
+export const getPackageAccess = async (packageId: number, server: boolean = true) => {
+  return await httpGet('getPackageAccess', `/member/tools/access/${packageId}`, {}, server)
 }
 
 // 获取用户访问权限的题库列表
-export const getPackageAccessList = async (toolId: number, server: boolean = true): Promise<PackageAccessVO[]> => {
+export const getPackageAccessList = async (server: boolean = true): Promise<PackageAccessVO[]> => {
   return await httpGet('getPackageAccessList', `/member/tools/access/list`, {}, server)
 }
 
 // 更新用户访问使用次数
-export const updateToolAccess = async (toolId: number) => {
-  return await httpGet('updateToolAccess', `/member/tools/access/update/${toolId}`)
+export const updateToolAccess = async (packageId: number) => {
+  return await httpGet('updateToolAccess', `/member/tools/access/update/${packageId}`)
 }

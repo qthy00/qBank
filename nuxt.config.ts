@@ -165,12 +165,7 @@ export default defineNuxtConfig({
         ],
     },
     build: {
-        transpile: ['fabric'],
-        // 代码分割优化
-        splitChunks: {
-            pages: true,
-            vendor: true,
-        },
+        transpile: ['fabric']
     },
     // 实验性功能优化
     experimental: {
@@ -179,7 +174,7 @@ export default defineNuxtConfig({
         // 启用头部优化
         headNext: true,
         // 启用payload压缩
-        payloadExtraction: true,
+        payloadExtraction: true
     },
     plugins: [
         '~/plugins/fabric.client.ts',
@@ -213,7 +208,7 @@ export default defineNuxtConfig({
         routeRules: {
             "/api/**": {
                 // 本地mock API，不代理
-                proxy: false,
+                // proxy: false,
             },
             "/app-api/**": {
                 // proxy: `http://127.0.0.1:38080/app-api/**`,
@@ -231,8 +226,8 @@ export default defineNuxtConfig({
         '/': { prerender: true },
         '/about': { prerender: true },
         '/contact': { prerender: true },
-        '/article/**': { isr: 3600 },
-        '/document/**': { isr: 3600 },
+        '/article/**': { ssr: false },
+        '/document/**': { ssr: false },
         '/qbank': { isr: 1800 },
         // 客户端渲染路由
         '/account/**': { ssr: false },
@@ -242,5 +237,25 @@ export default defineNuxtConfig({
         '/ranking/**': { ssr: false },
         // API缓存
         '/api/**': { cache: { maxAge: 60 * 5 } },
-    }
+    },
+    features: {
+        devLogs: false,  // 完全禁用，不会在 HTML 中输出 data-nuxt-logs 脚本
+        inlineStyles: false,
+    },
+    webpack: {
+        extractCSS: true,
+        optimization: {
+            splitChunks: {
+                cacheGroups: {
+                    styles: {
+                        name: 'styles',
+                        test: /\.(css|vue)$/,
+                        chunks: 'all',
+                        enforce: true,
+                    },
+                },
+            },
+        },
+    },
+
 })

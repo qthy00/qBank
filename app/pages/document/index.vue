@@ -1,41 +1,43 @@
 <script setup lang="ts">
 import {DocumentApi} from '~/api/document'
 import type {
-  DocumentVO,
   TagOptionVO
 } from '~/types/document'
-import {CmsCategoryApi} from "~/api/category";
 import {fileSizeFormatter, formatCount} from "~/utils";
 import IndustryGuide from '~/components/IndustryGuide.vue'
 
-
-definePageMeta({
-  layout: 'default'
-})
 
 useHead({
   title: '文档下载'
 })
 
+const route = useRoute()
 const authStore = useAuthStore()
 const userStore = useUserStore()
 const {user} = storeToRefs(userStore)
+const { isLogin } = storeToRefs(authStore)
 const {openModal} = useModal()
 
 /* ==================== 行业偏好管理（使用 Pinia Store）==================== */
 const industryStore = useIndustryStore()
 const {currentIndustry, currentExam, showGuide} = storeToRefs(industryStore)
 const {initPreference, selectExam, openGuide} = industryStore
-
+const tagId = Number(route.query.tag) || 0
+const categoryId = Number(route.query.category) || 1
 /* ==================== 状态定义 ==================== */
 
-/* 大类筛选 - 使用用户偏好的行业 */
-const activeMajor = ref<number>()
-/* 考试类型筛选 */
-const activeExamType = ref<number>(0)
 /* 年份筛选 */
 const yearOptions = ref<TagOptionVO[]>([])
 const activeYear = ref<number>()
+const activeTag = ref<number>(tagId)
+
+const {data: tags} = await useAsyncData(
+    'articleTags',
+    async () => {
+      const data = await DocumentApi.getInfoTags("document")
+      return [{id: 0, word: '全部'}, ...data]
+    }
+)
 
 /* 排序选项 */
 const sortOptions = [
@@ -48,16 +50,14 @@ const sortOptions = [
 const activeSort = ref<string>('comprehensive')
 
 /* 列表数据 */
-const loading = ref(false)
-const documentList = ref<DocumentVO[]>([])
 const total = ref(0)
 
 /* 查询参数 */
 const queryParams = reactive({
   pageNo: 1,
   pageSize: 10,
-  catalogId: undefined as number | undefined,
-  tags: [] as number[],
+  catalogId: categoryId,
+  tags: tagId === 0 ? [] : [tagId],
   sortType: 'comprehensive' as string | undefined,
   keyword: undefined as string | undefined,
 })
@@ -73,8 +73,7 @@ const getRankStyle = (index: number) => {
 /* ==================== 方法定义 ==================== */
 
 /* 获取大类列表 */
-const {data: categories} = await CmsCategoryApi.getCategoryList()
-const {data: hotDocuments} = await useAsyncData(
+const {data: hotDocuments, refresh: refreshHotDocuments} = await useAsyncData(
     async () => {
       const data = await DocumentApi.getDocumentList({
         pageNo: 1,
@@ -94,37 +93,28 @@ const fetchYearOptions = async () => {
   }
 }
 
+const { data: documentList, pending: loading, refresh: refreshDocumentList } = await useAsyncData(
+    'DocumentList',
+    async () => {
+      const data = await DocumentApi.getDocumentList(queryParams)
+      total.value = data.total || 0
+      return data.list || []
+    },
+    {
+      watch: [() => queryParams.pageNo, () => queryParams.catalogId, () => queryParams.tags, () => queryParams.keyword]
+    }
+)
+
 /* 获取文档列表 */
 const fetchDocumentList = async () => {
-  loading.value = true
   try {
     const data = await DocumentApi.getDocumentList(queryParams)
     documentList.value = data.list || []
     total.value = data.total || 0
   } catch {
     // 获取文档列表失败时静默处理
-  } finally {
-    loading.value = false
   }
 }
-
-/* 切换大类 - 仅内部使用，用户不能直接切换 */
-const handleMajorChange = (catalogId: number) => {
-  activeMajor.value = catalogId
-  queryParams.catalogId = catalogId
-  queryParams.pageNo = 1
-  activeExamType.value = 0
-  fetchDocumentList()
-}
-
-/* 切换考试类型 */
-const handleExamTypeChange = (catalogId: number) => {
-  activeExamType.value = catalogId
-  queryParams.catalogId = catalogId
-  queryParams.pageNo = 1
-  fetchDocumentList()
-}
-
 
 /* 切换年份 */
 const handleYearChange = () => {
@@ -134,26 +124,34 @@ const handleYearChange = () => {
     queryParams.tags = []
   }
   queryParams.pageNo = 1
-  fetchDocumentList()
+  refreshDocumentList()
 }
+
+const handleTagChange = (tagId: number) => {
+  activeTag.value = tagId
+  queryParams.tags = tagId === 0 ? [] : [tagId]
+  queryParams.pageNo = 1
+  refreshDocumentList()
+}
+
 
 /* 搜索 */
 const handleSearch = () => {
   queryParams.pageNo = 1
-  fetchDocumentList()
+  refreshDocumentList()
 }
 
 /* 分页 */
 const handlePageChange = (page: number) => {
   queryParams.pageNo = page
-  fetchDocumentList()
+  refreshDocumentList()
 }
 
 /* 排序变化 */
 const handleSortChange = () => {
   queryParams.sortType = activeSort.value
   queryParams.pageNo = 1
-  fetchDocumentList()
+  refreshDocumentList()
 }
 
 /* 查看详情 */
@@ -169,31 +167,28 @@ const currentExamName = computed(() => {
 /* 处理考试选择 */
 const handleExamSelect = (industry: any, exam: any) => {
   selectExam(industry, exam)
-  activeMajor.value = industry.id
   queryParams.catalogId = exam.id
   queryParams.pageNo = 1
-  fetchDocumentList()
+  refreshDocumentList()
+  refreshHotDocuments()
 }
+const isClientReady = ref(false)
 
 /* 初始化 */
 onMounted(() => {
+  isClientReady.value = true
   /* 初始化考试偏好 */
-  const hasPreference = initPreference(categories.value)
+  const hasPreference = initPreference()
 
-  if (hasPreference && currentIndustry.value && currentExam.value) {
+  if (hasPreference && currentExam.value) {
     /* 已选择过考试，使用该考试 */
-    activeMajor.value = currentIndustry.value.id
     queryParams.catalogId = currentExam.value.id
+    fetchDocumentList()
+    refreshHotDocuments()
   } else {
-    /* 未选择过，默认使用第一个行业的第一个考试 */
-    const firstCategory = categories.value?.[0]
-    const firstExam = firstCategory?.children?.[0]
-    activeMajor.value = firstCategory?.id || 0
-    queryParams.catalogId = firstExam?.id
+    openGuide()
   }
-
   fetchYearOptions()
-  fetchDocumentList()
 })
 </script>
 
@@ -232,9 +227,9 @@ onMounted(() => {
 
     <div class="container mx-auto px-4 py-8">
       <!-- 行业选择引导弹窗 -->
-      <IndustryGuide
+      <IndustryGuide 
+          v-if="isClientReady"
         v-model="showGuide"
-        :categories="categories || []"
         @select="handleExamSelect"
       />
 
@@ -247,7 +242,12 @@ onMounted(() => {
             <span class="text-sm font-medium text-slate-500 shrink-0">当前选择</span>
             <div class="flex items-center gap-2">
               <span class="px-4 py-2 text-sm font-medium rounded-full bg-gradient-to-r from-blue-500 to-cyan-500 text-white shadow-lg shadow-blue-500/30">
-                {{ currentIndustry?.name }} / {{ currentExamName }}
+                <template v-if="isClientReady">
+                  {{ currentIndustry?.name }} / {{ currentExamName }}
+                </template>
+                <template v-else>
+                  加载中...
+                </template>
               </span>
               <button
                 class="px-3 py-1.5 text-sm text-blue-600 hover:text-blue-700 hover:bg-blue-50 rounded-full transition-all duration-200 flex items-center gap-1"
@@ -258,6 +258,26 @@ onMounted(() => {
               </button>
             </div>
           </div>
+
+          <!-- 分类 -->
+          <div class="flex items-start gap-3">
+            <span class="text-sm font-medium text-slate-500 pt-1.5 shrink-0 w-12">分类</span>
+            <div class="flex items-center gap-2 flex-wrap">
+              <button
+                  v-for="tag in tags"
+                  :key="tag.id"
+                  :class="activeTag === tag.id
+                      ? 'bg-gradient-to-r from-blue-500 to-cyan-500 text-white shadow-lg shadow-blue-500/30'
+                      : 'bg-slate-100 text-slate-600 hover:bg-slate-200'
+                    "
+                  class="px-3 py-1.5 text-sm font-medium rounded-full transition-all duration-200"
+                  @click="handleTagChange(tag.id)"
+              >
+                {{ tag.word }}
+              </button>
+            </div>
+          </div>
+          
         </div>
 
         <!-- 搜索和排序 - 渐变背景 -->
@@ -271,8 +291,14 @@ onMounted(() => {
                   :value="opt.value"
               />
             </el-select>
-            <el-select v-model="activeYear" size="default" class="!w-32" placeholder="全部年份"
-                       clearable @change="handleYearChange">
+            <el-select 
+                v-model="activeYear" 
+                size="default" 
+                class="!w-32" 
+                placeholder="全部年份"
+                clearable 
+                @change="handleYearChange"
+            >
               <el-option
                   v-for="year in yearOptions"
                   :key="year.id"
@@ -282,7 +308,7 @@ onMounted(() => {
             </el-select>
           </div>
           <div class="flex items-center gap-3">
-            <div class="flex items-center gap-2 text-sm text-slate-600">
+            <div class="flex items-center gap-2 text-sm text-slate-600 w-66">
               <div
                   class="w-8 h-8 rounded-lg bg-gradient-to-br from-blue-500 to-cyan-500 flex items-center justify-center">
                 <Icon name="ep:document" class="text-white text-sm"/>
@@ -294,14 +320,20 @@ onMounted(() => {
                 placeholder="搜索资料名称"
                 size="default"
                 clearable
-                class="w-48"
+                class="w-30"
                 @keyup.enter="handleSearch"
             >
-              <template #suffix>
-                <Icon name="ep:search" class="text-slate-400 cursor-pointer hover:text-blue-500 transition-colors"
-                      @click="handleSearch"/>
+              <template #prefix>
+                <Icon name="ep:search" class="text-slate-400"/>
               </template>
             </el-input>
+            <button
+                class="px-5 py-2.5 bg-gradient-to-r from-blue-500 to-cyan-500 text-white rounded-lg hover:from-blue-600 hover:to-cyan-600 transition-all duration-300 flex items-center gap-2 shadow-lg shadow-blue-500/30 hover:shadow-xl hover:shadow-blue-500/40 transform hover:-translate-y-0.5"
+                @click="handleSearch"
+            >
+              <Icon name="ep:search" class="text-sm"/>
+              <span class="w-10">搜索</span>
+            </button>
           </div>
         </div>
       </div>
@@ -313,8 +345,10 @@ onMounted(() => {
           <!-- 文档列表 -->
           <div v-loading="loading" class="space-y-4">
             <!-- 空状态 -->
-            <el-empty v-if="documentList.length === 0 && !loading" description="暂无文档"
-                      class="py-16 bg-white rounded-2xl shadow-lg"/>
+            <el-empty
+                v-if="(!documentList || documentList.length === 0 ) && !loading"
+                description="暂无文档"
+                class="py-16 bg-white rounded-2xl shadow-lg"/>
 
             <!-- 文档列表 - 彩色卡片 -->
             <div class="bg-white rounded-xl shadow-lg shadow-blue-100/30 border border-blue-100 overflow-hidden">
@@ -331,7 +365,8 @@ onMounted(() => {
                         class="w-16 h-20 bg-gradient-to-br from-blue-100 to-cyan-200 rounded-lg flex items-center justify-center shadow-sm group-hover:shadow-md transition-shadow">
                       <Icon name="ep:document" class="text-3xl text-blue-500"/>
                     </div>
-                    <div v-if="index < 3"
+                    <div
+v-if="index < 3"
                          class="absolute -top-2 -right-2 w-6 h-6 bg-gradient-to-br from-red-500 to-pink-500 text-white text-xs rounded-full flex items-center justify-center shadow-lg">
                       {{ ['一', '二', '三'][index] }}
                     </div>
@@ -405,7 +440,8 @@ onMounted(() => {
         <div class="hidden lg:block lg:col-span-1 space-y-6">
           <!-- 用户信息卡片 -->
           <ClientOnly>
-            <div v-if="authStore.isLogin"
+            <div
+                v-if="isLogin"
                  class="bg-white rounded-xl shadow-lg shadow-blue-100/50 border border-blue-100 overflow-hidden">
               <!-- 头部渐变 -->
               <div class="h-20 bg-gradient-to-r from-blue-500 to-cyan-500 relative">
@@ -432,27 +468,30 @@ onMounted(() => {
                 </div>
                 <!-- 快捷入口 -->
                 <div class="grid grid-cols-3 gap-2 pt-4 border-t border-slate-100">
-                  <a href="/account/profile"
+                  <NuxtLink
+                    to="/account/profile"
                      class="flex flex-col items-center gap-1 p-2 rounded-lg hover:bg-blue-50 transition-colors">
                     <div class="w-10 h-10 rounded-full bg-blue-100 flex items-center justify-center">
                       <Icon name="ep:user-filled" class="text-xl text-blue-500"/>
                     </div>
                     <span class="text-xs text-slate-600">个人中心</span>
-                  </a>
-                  <a href="/account/favorites"
+                  </NuxtLink>
+                  <NuxtLink
+                      to="/account/favorites"
                      class="flex flex-col items-center gap-1 p-2 rounded-lg hover:bg-yellow-50 transition-colors">
                     <div class="w-10 h-10 rounded-full bg-yellow-100 flex items-center justify-center">
                       <Icon name="ep:star-filled" class="text-xl text-yellow-500"/>
                     </div>
                     <span class="text-xs text-slate-600">我的收藏</span>
-                  </a>
-                  <a href="/account/downloads"
+                  </NuxtLink>
+                  <NuxtLink
+                      to="/account/downloads"
                      class="flex flex-col items-center gap-1 p-2 rounded-lg hover:bg-cyan-50 transition-colors">
                     <div class="w-10 h-10 rounded-full bg-cyan-100 flex items-center justify-center">
                       <Icon name="ep:download" class="text-xl text-cyan-500"/>
                     </div>
                     <span class="text-xs text-slate-600">下载记录</span>
-                  </a>
+                  </NuxtLink>
                 </div>
               </div>
             </div>
@@ -518,22 +557,26 @@ onMounted(() => {
                 <h3 class="font-bold text-lg">快速导航</h3>
               </div>
               <div class="grid grid-cols-2 gap-3">
-                <a href="/article"
+                <a
+href="/article"
                    class="flex flex-col items-center gap-2 p-3 rounded-lg bg-white/20 hover:bg-white/30 transition-colors">
                   <Icon name="mdi:newspaper-variant-multiple-outline" class="text-2xl"/>
                   <span class="text-sm">考试资讯</span>
                 </a>
-                <a href="/qBank"
+                <a
+href="/qBank"
                    class="flex flex-col items-center gap-2 p-3 rounded-lg bg-white/20 hover:bg-white/30 transition-colors">
                   <Icon name="ep:edit" class="text-2xl"/>
                   <span class="text-sm">题库练习</span>
                 </a>
-                <a href="/exam/smart"
+                <a
+href="/exam/smart"
                    class="flex flex-col items-center gap-2 p-3 rounded-lg bg-white/20 hover:bg-white/30 transition-colors">
                   <Icon name="ep:magic-stick" class="text-2xl"/>
                   <span class="text-sm">智能组卷</span>
                 </a>
-                <a href="/ranking"
+                <a
+href="/ranking"
                    class="flex flex-col items-center gap-2 p-3 rounded-lg bg-white/20 hover:bg-white/30 transition-colors">
                   <Icon name="ep:trophy" class="text-2xl"/>
                   <span class="text-sm">排行榜</span>
