@@ -1,6 +1,6 @@
 <script setup lang="ts">
 import {ArticleApi} from '~/api/article'
-
+import {formatCount} from "~/utils";
 const route = useRoute()
 const router = useRouter()
 
@@ -40,7 +40,7 @@ const { data: article, pending: loading } = await useAsyncData(
 
 const industryStore = useIndustryStore()
 const { currentExam } = storeToRefs(industryStore)
-const {data: relatedArticles, refresh: fetchRelatedArticles} = await useAsyncData(
+const {data: relatedArticles} = await useAsyncData(
     'hotArticles',
     async () => {
       const data = await ArticleApi.getArticleList({
@@ -93,7 +93,6 @@ onMounted(() => {
     return
   }
   ArticleApi.incrementViewCount(currentId).catch(() => {})
-  fetchRelatedArticles()
 })
 
 </script>
@@ -168,7 +167,7 @@ onMounted(() => {
                 </span>
                 <span class="flex items-center gap-2">
                   <Icon name="ep:view" class="text-blue-500" />
-                  {{ article?.viewCount || 0 }} 阅读
+                  {{ formatCount(article?.viewCount) || 0 }} 阅读
                 </span>
                 <span v-if="article?.source" class="flex items-center gap-2">
                   <Icon name="ep:link" class="text-blue-500" />
