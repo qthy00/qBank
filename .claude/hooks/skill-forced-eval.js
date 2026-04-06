@@ -42,16 +42,20 @@ const instructions = `## 强制技能激活流程（必须执行）
 - nuxt4-patterns: Nuxt 4模式/SSR/hydration/性能优化/路由规则
 - mock-data: Mock数据/模拟数据/假数据/测试数据生成规范
 - api-docs: API接口文档/接口定义/Swagger文档/后端接口规范
+- frontend-design: 前端界面设计/UI设计/页面设计/组件设计
+- design-system: 设计系统规范/蓝色渐变设计系统/样式规范
 
 【业务集成】
 - payment-integration: 支付/微信支付/支付宝/退款/订单
 - wechat-integration: 微信/小程序登录/公众号/订阅消息
 - file-oss-management: 文件上传/OSS/云存储/MinIO/本地存储
 - media-processing: 图片处理/二维码/水印/Excel导入导出/PDF
+- api-doc-generator: 自动生成API文档/后端接口对接文档
 
 【调试与优化】
 - bug-detective: BUG/报错/异常/不工作/排查修复
 - security-guard: 安全/Sa-Token/认证授权/加密/XSS/CSRF防护
+- simplify: 代码简化/重构优化/代码质量提升
 
 【工程化】
 - architecture-design: 架构/模块划分/重构/依赖管理
@@ -61,6 +65,7 @@ const instructions = `## 强制技能激活流程（必须执行）
 - tech-decision: 技术选型/方案对比/架构决策
 - brainstorm: 头脑风暴/创意/方案设计/功能规划
 - task-tracker: 任务跟踪/记录进度/继续任务/恢复上下文/多步骤开发
+- refactor-clean: 死代码清理/重构清理/未使用代码移除
 
 【通用技能】
 - blueprint: 蓝图规划/多会话任务/复杂工程规划/分步实施计划
@@ -76,6 +81,7 @@ const instructions = `## 强制技能激活流程（必须执行）
 - continuous-learning: 持续学习/本能系统/模式提取
 - grill-me: 计划压力测试/严格审视/拷问我
 - chinese-localization: 文档翻译/中文化/本地化
+- design-discussion: 深度需求分析/设计方案讨论/架构设计讨论
 
 ### 步骤 2 - 激活（紧接步骤1立即执行，逐个调用，等待每个完成）
 

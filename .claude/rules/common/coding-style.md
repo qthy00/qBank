@@ -52,6 +52,84 @@ CORRECT: update(original, field, value) → 返回包含更改的新副本
 * \[ ] 没有突变（使用不可变模式）
 * \[ ] 配置文件语法正确（编辑后必须验证构建）
 
+## CSS/SCSS 注释规范
+
+CSS 和 SCSS 文件必须使用 `/* */` 格式注释，禁止使用 `//`。
+
+```scss
+/* ✅ 正确 */
+.page-container {
+  padding: 16px; /* 使用px单位 */
+}
+
+/* ❌ 错误 */
+// 这是错误的注释
+.page-container {
+  padding: 16px; // 错误注释
+}
+```
+
+> **为什么**：SCSS 编译器可能将 `//` 注释保留在生产代码中，或在某些配置下导致解析错误。`/* */` 是 CSS 标准注释格式，更可靠。
+
+## SSR 安全规范（Nuxt 项目）
+
+在使用 Nuxt SSR 时，遵循以下规则确保服务端和客户端渲染一致性：
+
+### 1. 仅浏览器逻辑隔离
+
+将访问浏览器 API 的代码隔离在以下位置：
+
+```typescript
+// ✅ 正确：使用 onMounted
+onMounted(() => {
+  window.addEventListener('scroll', handleScroll)
+})
+
+// ✅ 正确：使用 import.meta.client
+if (import.meta.client) {
+  const width = window.innerWidth
+}
+
+// ✅ 正确：使用 ClientOnly 组件
+<ClientOnly>
+  <BrowserOnlyComponent />
+</ClientOnly>
+```
+
+### 2. 避免水合不匹配
+
+- 不要使用 `Date.now()`、`Math.random()` 驱动 SSR 渲染的模板状态
+- 不要使用 `route.fullPath` 驱动 SSR 渲染标记（URL 片段仅客户端可用）
+- 将 `ssr: false` 视为仅浏览器区域的逃生舱，而不是水合不匹配的默认修复
+
+### 3. 数据处理
+
+- 首屏关键数据使用 `useAsyncData` / `useFetch` 进行 SSR 获取
+- 非关键数据使用 `lazy: true` 或 `server: false` 延迟加载
+- 用户相关数据（需登录态）在客户端获取
+
+## 样式单位规范
+
+CSS 样式统一使用 **px** 单位，禁止使用 rem/em/vw/vh 等相对单位。
+
+```scss
+/* ✅ 正确 */
+.page-container {
+  padding: 16px;
+  font-size: 14px;
+  width: 120px;
+}
+
+/* ❌ 错误 */
+.page-container {
+  padding: 1rem;
+  font-size: 0.875em;
+  width: 10vw;
+}
+```
+
+> **为什么**：项目使用 UnoCSS + 设计系统，所有尺寸已基于 px 标准化。混合使用相对单位会导致在不同设备或浏览器设置下出现不可预期的布局问题。
+
 ## 配置文件编辑规则
 
 ### Nuxt 配置文件

@@ -343,6 +343,41 @@ export const deleteUserApi = (id: number): Promise<CommonResult<boolean>> => {
 }
 ```
 
+### HTTP 请求封装规范（Nuxt $fetch）
+
+**必须使用**项目封装的 `httpGet`/`httpPost`/`httpPut`/`httpUpload`/`httpDelete` 函数，**禁止**直接使用 `$fetch` 或 `axios`。
+
+```typescript
+// ❌ 禁止：直接使用 $fetch 或 axios
+const data = await $fetch('/api/user')
+const res = await axios.get('/api/user')
+
+// ✅ 正确：使用项目封装的 HTTP 函数
+import { httpGet, httpPost, httpPut, httpUpload, httpDelete } from '~/composables/useHttp'
+
+// GET 请求
+const user = await httpGet('UserInfo', '/member/user/get')
+
+// 带参数的 GET
+const list = await httpGet('UserList', '/member/user/list', { query: { page: 1 } })
+
+// POST 请求
+await httpPost('createUser', '/member/user/create', data)
+
+// PUT 请求
+await httpPut('updateUser', '/member/user/update', data)
+
+// 删除请求
+await httpDelete('deleteUser', '/member/user/delete', { query: { id } })
+
+// 上传文件
+const formData = new FormData()
+formData.append('file', file)
+await httpUpload('uploadAvatar', '/infra/file/upload', formData)
+```
+
+> **为什么**：封装函数已集成统一错误处理、Token 自动注入、请求拦截、缓存策略等功能，直接使用底层客户端会导致这些能力失效。
+
 ### Pinia Store 规范
 
 ```typescript

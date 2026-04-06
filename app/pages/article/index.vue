@@ -39,16 +39,32 @@ const getRankStyle = (index: number) => {
 const activeTag = ref<number>(tagId)
 
 const {data: tags} = await useAsyncData(
+    'articleTags',
     async () => {
       const data = await DocumentApi.getInfoTags("news")
       return [{id: 0, word: '全部'}, ...data]
     }
 )
-/* 列表数据 */
-const loading = ref(false)
-const articleList = ref<ArticleVO[]>([])
-const total = ref(0)
 
+/* 列表数据 - 使用 useAsyncData 实现 SSR */
+const total = ref(0)
+const { data: articleList, pending: loading, refresh: refreshArticleList } = await useAsyncData(
+  'articleList',
+  async () => {
+    const data = await ArticleApi.getArticleList({
+      page: queryParams.pageNo,
+      limit: queryParams.pageSize,
+      catalogId: queryParams.catalogId,
+      tags: queryParams.tags,
+      keyword: queryParams.keyword
+    })
+    total.value = data.total || 0
+    return data.list || []
+  },
+  {
+    watch: [() => queryParams.pageNo, () => queryParams.catalogId, () => queryParams.tags, () => queryParams.keyword]
+  }
+)
 
 /* 查询参数 */
 const queryParams = reactive({
@@ -60,55 +76,34 @@ const queryParams = reactive({
 })
 
 /* 获取热门资讯 */
-const {data: hotArticles} = await useAsyncData(
+const {data: hotArticles, refresh: refreshHotArticles} = await useAsyncData(
+    'hotArticles',
     async () => {
       const data = await ArticleApi.getArticleList({
-        ...queryParams,
-        pageSize: 5,
+        catalogId: queryParams.catalogId,
+        limit: 5,
         hasAttr: ['推荐'],
       })
       return data.list?.slice(0, 5) || []
     }
 )
-const getHotsArticleList = async () => {
-  const data = await ArticleApi.getArticleList({
-    ...queryParams,
-    pageSize: 5,
-    hasAttr: ['推荐'],
-  })
-  hotArticles.value = data.list?.slice(0, 5) || []
-}
-/* 获取资讯列表 */
-const fetchArticleList = async () => {
-  loading.value = true
-  try {
-    const data = await ArticleApi.getArticleList(queryParams)
-    articleList.value = data.list || []
-    total.value = data.total || 0
-  } catch (error) {
-    console.error('获取资讯列表失败:', error)
-  } finally {
-    loading.value = false
-  }
-}
-
 const handleTagChange = (tagId: number) => {
   activeTag.value = tagId
   queryParams.tags = tagId === 0 ? [] : [tagId]
   queryParams.pageNo = 1
-  fetchArticleList()
+  refreshArticleList()
 }
 
 /* 搜索 */
 const handleSearch = () => {
   queryParams.pageNo = 1
-  fetchArticleList()
+  refreshArticleList()
 }
 
 /* 分页 */
 const handlePageChange = (page: number) => {
   queryParams.pageNo = page
-  fetchArticleList()
+  refreshArticleList()
 }
 
 /* 查看详情 */
@@ -126,7 +121,8 @@ const handleExamSelect = (industry: any, exam: any) => {
   selectExam(industry, exam)
   queryParams.catalogId = exam.id
   queryParams.pageNo = 1
-  fetchArticleList()
+  refreshArticleList()
+  refreshHotArticles()
 }
 
 
@@ -142,11 +138,11 @@ onMounted(() => {
   if (hasPreference && currentIndustry.value && currentExam.value) {
     /* 已选择过考试，使用该考试 */
     queryParams.catalogId = currentExam.value.id
-    fetchArticleList()
+    refreshArticleList()
+    refreshHotArticles()
   } else {
     openGuide()
   }
-  getHotsArticleList()
 })
 </script>
 
@@ -276,7 +272,7 @@ onMounted(() => {
         <div class="lg:col-span-3">
           <div v-loading="loading" class="space-y-5">
             <!-- 空状态 -->
-            <div v-if="articleList.length === 0 && !loading"
+            <div v-if="(!articleList || articleList.length === 0) && !loading"
                  class="py-16 bg-white rounded-2xl shadow-lg flex flex-col items-center justify-center">
               <div class="w-32 h-32 mb-4 text-slate-300">
                 <Icon name="ep:document" class="w-full h-full"/>
@@ -287,7 +283,7 @@ onMounted(() => {
             <!-- 资讯卡片列表 -->
             <div class="space-y-5">
               <div
-                  v-for="(article, index) in articleList"
+                  v-for="(article, index) in (articleList || [])"
                   :key="article.id"
                   class="group bg-white rounded-xl overflow-hidden cursor-pointer transition-all duration-300 hover:shadow-2xl hover:shadow-blue-200/50 border-2 border-transparent hover:border-blue-200 hover:bg-gradient-to-br from-blue-50 to-cyan-50"
                   :style="{ animationDelay: `${index * 50}ms` }"

@@ -33,8 +33,11 @@ export interface TagVO {
 export interface ArticleListReqVO {
   keyword?: string
   categoryId?: number
+  catalogId?: number
   page?: number
   limit?: number
+  tags?: number[]
+  hasAttr?: string[]
 }
 
 /**
