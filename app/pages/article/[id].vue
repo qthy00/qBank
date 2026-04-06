@@ -1,14 +1,11 @@
 <script setup lang="ts">
 import {ArticleApi} from '~/api/article'
-import type {ArticleDetailVO} from '~/types/article'
 
 const route = useRoute()
 const router = useRouter()
 
-/* 使用计算属性，确保 id 随路由变化更新 */
-const id = computed(() => Number(route.params.id))
 /* 相关资讯 */
-const relatedArticles = ref<ArticleDetailVO[]>([])
+// const relatedArticles = ref<ArticleDetailVO[]>([])
 
 /* 获取资讯详情 */
 const { data: article, pending: loading } = await useAsyncData(
@@ -41,46 +38,19 @@ const { data: article, pending: loading } = await useAsyncData(
 )
 
 
-const fetchArticleDetail = async () => {
-  const currentId = Number(route.params.id)
-  if (!currentId) {
-    navigateTo('/article')
-    return
-  }
-  loading.value = true
-  try {
-    const data = await ArticleApi.getArticleDetailById(currentId)
-    article.value = data
-    /* 设置页面标题 */
-    if (data?.title) {
-      useHead({
-        title: data.title
+const industryStore = useIndustryStore()
+const { currentExam } = storeToRefs(industryStore)
+const {data: relatedArticles, refresh: fetchRelatedArticles} = await useAsyncData(
+    'hotArticles',
+    async () => {
+      const data = await ArticleApi.getArticleList({
+        catalogId: currentExam.value?.id || 1,
+        limit: 5,
+        hasAttr: ['推荐'],
       })
+      return data.list?.slice(0, 5) || []
     }
-    /* 增加浏览量 */
-    ArticleApi.incrementViewCount(currentId).catch(() => {})
-  } catch (error) {
-    console.error('获取资讯详情失败:', error)
-  } finally {
-    loading.value = false
-  }
-}
-
-/* 获取相关资讯 */
-const fetchRelatedArticles = async () => {
-  try {
-    const data = await ArticleApi.getArticleList({
-      page: 1,
-      limit: 5,
-    })
-    /* 过滤掉当前文章 */
-    relatedArticles.value = (data.list || [])
-      .filter(item => item.id !== Number(route.params.id))
-      .slice(0, 4)
-  } catch (error) {
-    console.error('获取相关资讯失败:', error)
-  }
-}
+)
 
 /* 返回列表 */
 const handleBack = () => {
@@ -126,13 +96,6 @@ onMounted(() => {
   fetchRelatedArticles()
 })
 
-/* 监听路由变化，切换文章时重新加载 */
-watch(() => route.params.id, () => {
-  if (route.params.id) {
-    fetchArticleDetail()
-    fetchRelatedArticles()
-  }
-})
 </script>
 
 <template>
@@ -201,7 +164,7 @@ watch(() => route.params.id, () => {
                 </span>
                 <span v-if="article?.publishDate" class="flex items-center gap-2">
                   <Icon name="ep:clock" class="text-blue-500" />
-                  {{ formatDate(article.publishDate) }}
+                  {{ formatDate(article.publishDate, 'YYYY-MM-DD') }}
                 </span>
                 <span class="flex items-center gap-2">
                   <Icon name="ep:view" class="text-blue-500" />
@@ -342,7 +305,7 @@ watch(() => route.params.id, () => {
                       {{ item.title }}
                     </h4>
                     <span class="text-xs text-slate-400 mt-1">
-                      {{ item.publishDate ? formatDate(item.publishDate) : '' }}
+                      {{ item.publishDate ? formatDate(item.publishDate, 'YYYY-MM-DD') : '' }}
                     </span>
                   </div>
                 </div>
