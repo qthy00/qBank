@@ -5,26 +5,33 @@
 /**
  * 资讯基础信息
  */
+export interface ArticleDetailVO  extends ArticleVO{
+  content?: string
+  keywords?: string
+  author?: string
+  source?: string
+  isTop?: boolean
+  isHot?: boolean
+  prevArticle?: ArticleNavVO
+  nextArticle?: ArticleNavVO
+}
+
+
 export interface ArticleVO {
   id: number
   title: string
-  summary?: string
-  content?: string
-  logo?: string
-  author?: string
-  source?: string
+  summary: string
+  cover?: string
   viewCount: number
   publishDate: number
-  catalogId?: number
-  catalogName?: string
+  categoryId: number
+  categoryName: string
   tags?: TagVO[]
-  isTop?: boolean
-  isHot?: boolean
 }
 
 export interface TagVO {
   id: number
-  word: string
+  name: string
 }
 
 /**
@@ -48,14 +55,6 @@ export interface ArticleListRespVO {
   total: number
 }
 
-/**
- * 资讯详情
- */
-export interface ArticleDetailVO extends ArticleVO {
-  content: string
-  prevArticle?: ArticleNavVO
-  nextArticle?: ArticleNavVO
-}
 
 /**
  * 资讯导航（上一篇/下一篇）

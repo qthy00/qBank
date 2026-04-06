@@ -98,7 +98,7 @@ const handlePageChange = (page: number) => {
 }
 
 /* 查看详情 */
-const handleViewDetail = (id: number) => {
+const handleViewDetail = (id:number) => {
   navigateTo(`/article/${id}`)
 }
 
@@ -309,8 +309,8 @@ onMounted(() => {
                     <!-- 封面图片 - 彩色遮罩 -->
                     <div class="flex-shrink-0 w-52 h-36 relative overflow-hidden">
                       <img
-                          v-if="article.logo"
-                          :src="article.logo"
+                          v-if="article.cover"
+                          :src="article.cover"
                           :alt="article.title"
                           class="w-full h-full object-cover transition-transform duration-500 group-hover:scale-110"
                       >
@@ -350,7 +350,7 @@ onMounted(() => {
                             tagIndex === 0 ? 'bg-emerald-100 text-emerald-700' : 'bg-amber-100 text-amber-700'
                           ]"
                         >
-                          {{ tag.word }}
+                          {{ tag.name }}
                         </span>
                           </template>
                         </div>
@@ -385,8 +385,8 @@ onMounted(() => {
                     <!-- 封面图片 -->
                     <div class="w-full h-44 relative overflow-hidden">
                       <img
-                          v-if="article.logo"
-                          :src="article.logo"
+                          v-if="article.cover"
+                          :src="article.cover"
                           :alt="article.title"
                           class="w-full h-full object-cover"
                       >
@@ -421,7 +421,7 @@ onMounted(() => {
                           tagIndex === 0 ? 'bg-emerald-100 text-emerald-700' : 'bg-amber-100 text-amber-700'
                         ]"
                       >
-                        {{ tag.word }}
+                        {{ tag.name }}
                       </span>
                         </template>
                       </div>

@@ -2,42 +2,63 @@
 import {ArticleApi} from '~/api/article'
 import type {ArticleDetailVO} from '~/types/article'
 
-definePageMeta({
-  layout: 'default'
-})
-
 const route = useRoute()
 const router = useRouter()
 
-/* 资讯详情 */
-const article = ref<ArticleDetailVO | null>(null)
-const loading = ref(false)
-
+/* 使用计算属性，确保 id 随路由变化更新 */
+const id = computed(() => Number(route.params.id))
 /* 相关资讯 */
 const relatedArticles = ref<ArticleDetailVO[]>([])
 
 /* 获取资讯详情 */
+const { data: article, pending: loading } = await useAsyncData(
+    () => `articleDetail-${route.params.id}`,
+    async () => {
+      const currentId = Number(route.params.id)
+      const data = await ArticleApi.getArticleDetailById(currentId)
+      if (data?.title) {
+        useHead({
+          title: data.title,
+          meta: [
+            {
+              name: "description",
+              content: computed(() => data.summary ),
+              tagPriority: 1
+            },
+              {
+                name: "keywords",
+                content: computed(() => data.keywords ),
+                tagPriority: 1
+              }
+          ]
+        })
+      }
+      return data
+    },{
+      watch: [() => route.params.id],
+      immediate:  true
+    }
+)
+
+
 const fetchArticleDetail = async () => {
-  const id = Number(route.params.id)
-  if (!id) {
-    router.push('/article')
+  const currentId = Number(route.params.id)
+  if (!currentId) {
+    navigateTo('/article')
     return
   }
-
   loading.value = true
   try {
-    const data = await ArticleApi.getArticleDetailById(id)
+    const data = await ArticleApi.getArticleDetailById(currentId)
     article.value = data
-
     /* 设置页面标题 */
     if (data?.title) {
       useHead({
         title: data.title
       })
     }
-
     /* 增加浏览量 */
-    ArticleApi.incrementViewCount(id).catch(() => {})
+    ArticleApi.incrementViewCount(currentId).catch(() => {})
   } catch (error) {
     console.error('获取资讯详情失败:', error)
   } finally {
@@ -63,7 +84,7 @@ const fetchRelatedArticles = async () => {
 
 /* 返回列表 */
 const handleBack = () => {
-  router.push('/article')
+  navigateTo('/article')
 }
 
 /* 查看详情 */
@@ -96,7 +117,12 @@ const handleShare = async (type: 'wechat' | 'weibo' | 'link') => {
 
 /* 初始化 */
 onMounted(() => {
-  fetchArticleDetail()
+  const currentId = Number(route.params.id)
+  if (!currentId) {
+    navigateTo('/article')
+    return
+  }
+  ArticleApi.incrementViewCount(currentId).catch(() => {})
   fetchRelatedArticles()
 })
 
@@ -123,7 +149,7 @@ watch(() => route.params.id, () => {
     <div class="max-w-6xl mx-auto px-4 -mt-24 relative z-10">
       <!-- 面包屑导航 -->
       <div class="flex items-center text-sm text-white/80 mb-6">
-        <span class="cursor-pointer hover:text-white transition-colors" @click="router.push('/')">首页</span>
+        <span class="cursor-pointer hover:text-white transition-colors" @click="navigateTo('/')">首页</span>
         <Icon name="ep:arrow-right" class="mx-2 text-xs" />
         <span class="cursor-pointer hover:text-white transition-colors" @click="handleBack">资讯中心</span>
         <Icon name="ep:arrow-right" class="mx-2 text-xs" />
@@ -149,7 +175,7 @@ watch(() => route.params.id, () => {
                   class="px-3 py-1.5 text-xs font-medium text-white bg-red-500 rounded-full"
                 >
                   <Icon name="ep:top" class="mr-1" />
-                  置顶
+                  推荐
                 </span>
                 <span
                   v-if="article?.isHot"
@@ -173,9 +199,9 @@ watch(() => route.params.id, () => {
                   </div>
                   {{ article.author }}
                 </span>
-                <span v-if="article?.publishTime" class="flex items-center gap-2">
+                <span v-if="article?.publishDate" class="flex items-center gap-2">
                   <Icon name="ep:clock" class="text-blue-500" />
-                  {{ formatDate(article.publishTime) }}
+                  {{ formatDate(article.publishDate) }}
                 </span>
                 <span class="flex items-center gap-2">
                   <Icon name="ep:view" class="text-blue-500" />
@@ -191,9 +217,9 @@ watch(() => route.params.id, () => {
             <!-- 文章内容 -->
             <div class="p-8">
               <!-- 封面图 -->
-              <div v-if="article?.coverImage" class="mb-8 rounded-xl overflow-hidden shadow-lg">
+              <div v-if="article?.cover" class="mb-8 rounded-xl overflow-hidden shadow-lg">
                 <img
-                  :src="article.coverImage"
+                  :src="article.cover"
                   :alt="article.title"
                   class="w-full h-80 object-cover"
                 >
@@ -211,10 +237,10 @@ watch(() => route.params.id, () => {
                   </span>
                   <span
                     v-for="tag in article.tags"
-                    :key="tag"
+                    :key="tag.id"
                     class="px-4 py-1.5 text-sm text-blue-600 bg-blue-50 rounded-full hover:bg-blue-500 hover:text-white cursor-pointer transition-all duration-300"
                   >
-                    {{ tag }}
+                    {{ tag.name }}
                   </span>
                 </div>
               </div>
@@ -248,7 +274,7 @@ watch(() => route.params.id, () => {
         </div>
 
         <!-- 右侧侧边栏 -->
-        <div class="lg:col-span-1 space-y-6">
+        <div class="lg:col-span-1 space-y-6 lg:self-start lg:sticky lg:top-24">
           <!-- 分享卡片 -->
           <div class="bg-white rounded-2xl shadow-lg shadow-blue-100/50 p-6 border border-blue-100">
             <h3 class="text-lg font-semibold text-slate-800 mb-5 flex items-center gap-2">
@@ -302,8 +328,8 @@ watch(() => route.params.id, () => {
                 <div class="flex gap-3">
                   <div class="w-20 h-14 rounded-lg overflow-hidden bg-slate-100 flex-shrink-0">
                     <img
-                      v-if="item.coverImage"
-                      :src="item.coverImage"
+                      v-if="item.cover"
+                      :src="item.cover"
                       :alt="item.title"
                       class="w-full h-full object-cover group-hover:scale-110 transition-transform duration-300"
                     >
@@ -316,7 +342,7 @@ watch(() => route.params.id, () => {
                       {{ item.title }}
                     </h4>
                     <span class="text-xs text-slate-400 mt-1">
-                      {{ item.publishTime ? formatDate(item.publishTime) : '' }}
+                      {{ item.publishDate ? formatDate(item.publishDate) : '' }}
                     </span>
                   </div>
                 </div>

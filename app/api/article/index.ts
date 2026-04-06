@@ -55,15 +55,7 @@ export const ArticleApi = {
    * @param id 资讯ID
    */
   getArticleDetailById: async (id: number): Promise<ArticleDetailVO> => {
-    /* 开发环境使用 Mock 数据 */
-    if (useMock()) {
-      const detail = getMockArticleDetail(id)
-      if (!detail) {
-        throw new Error('资讯不存在')
-      }
-      return detail
-    }
-    return await httpGet('ArticleDetail', `/cms/content/get`, { query: { id } })
+    return await httpGet('ArticleDetail', `/cms/article/detail`, { query: { id } })
   },
 
   /**
