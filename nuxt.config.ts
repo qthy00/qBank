@@ -223,11 +223,11 @@ export default defineNuxtConfig({
     },
     routeRules: {
         // 静态页面预渲染
-        '/': { prerender: true },
+        '/': { swr: 600 },
         '/about': { prerender: true },
         '/contact': { prerender: true },
-        '/article/**': { ssr: false },
-        '/document/**': { ssr: false },
+        '/article/**': { swr: 600 },
+        '/document/**': { isr: 1800 },
         '/qbank': { isr: 1800 },
         // 客户端渲染路由
         '/account/**': { ssr: false },
@@ -235,8 +235,6 @@ export default defineNuxtConfig({
         '/study/**': { ssr: false },
         '/order/**': { ssr: false },
         '/ranking/**': { ssr: false },
-        // API缓存
-        '/api/**': { cache: { maxAge: 60 * 5 } },
     },
     features: {
         devLogs: false,  // 完全禁用，不会在 HTML 中输出 data-nuxt-logs 脚本

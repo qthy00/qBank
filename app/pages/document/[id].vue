@@ -1,75 +1,66 @@
 <script setup lang="ts">
 import {DocumentApi} from '~/api/document'
-import type {DocumentDetailVO, DocumentVO} from '~/types/document'
 import {fileSizeFormatter, formatCount} from "~/utils";
+import {ArticleApi} from "~/api/article";
 
-definePageMeta({
-  layout: 'default'
-})
 
 const route = useRoute()
-const router = useRouter()
 const message = useMessage()
 
-/* 文档详情 */
-const document = ref<DocumentDetailVO | null>(null)
-const loading = ref(false)
-
 /* 热门文档排行 */
-const hotDocuments = ref<DocumentVO[]>([])
+const industryStore = useIndustryStore()
+const { currentExam } = storeToRefs(industryStore)
+const {data: hotDocuments } = await useAsyncData(
+    async () => {
+      const data = await DocumentApi.getDocumentList({
+        catalogId: currentExam.value?.id || 1,
+        pageNo: 1,
+        pageSize: 5
+      })
+      return data.list?.slice(0, 5) || []
+    }
+)
 
 /* 控制底部固定栏显示 */
 const showFixedBar = ref(false)
-
-/* 获取文档详情 */
-const fetchDocumentDetail = async () => {
-  const id = Number(route.params.id)
-  if (!id) {
-    router.push('/document')
-    return
-  }
-
-  loading.value = true
-  try {
-    const data = await DocumentApi.getDocumentDetail(id)
-    document.value = data
-
-    /* 设置页面标题 */
-    if (data?.title) {
-      useHead({
-        title: data.title
-      })
+const { data: document, pending: loading } = await useAsyncData(
+    () => `articleDetail-${route.params.id}`,
+    async () => {
+      const currentId = Number(route.params.id)
+      const data = await DocumentApi.getDocumentDetail(currentId)
+      if (data?.title) {
+        useHead({
+          title: data.title,
+          meta: [
+            {
+              name: "description",
+              content: computed(() => data.summary ),
+              tagPriority: 1
+            },
+            {
+              name: "keywords",
+              content: computed(() => data.keywords ),
+              tagPriority: 1
+            }
+          ]
+        })
+      }
+      return data
+    },{
+      watch: [() => route.params.id],
+      immediate:  true
     }
-  } catch {
-    message.error('文档不存在')
-    router.push('/document')
-  } finally {
-    loading.value = false
-  }
-}
+)
 
-/* 获取热门文档 */
-const fetchHotDocuments = async () => {
-  try {
-    const data = await DocumentApi.getDocumentList({
-      pageNo: 1,
-      pageSize: 5,
-      sort: 'downloads'
-    })
-    hotDocuments.value = data.list || []
-  } catch {
-    /* 静默处理 */
-  }
-}
 
 /* 返回列表 */
 const handleBack = () => {
-  router.push('/document')
+  navigateTo('/document')
 }
 
 /* 查看文档详情 */
 const handleViewDetail = (id: number) => {
-  router.push(`/document/${id}`)
+  navigateTo(`/document/${id}`)
   window.scrollTo({ top: 0, behavior: 'smooth' })
 }
 
@@ -112,8 +103,12 @@ const getRankStyle = (index: number) => {
 
 /* 初始化 */
 onMounted(() => {
-  fetchDocumentDetail()
-  fetchHotDocuments()
+  const currentId = Number(route.params.id)
+  if (!currentId) {
+    navigateTo('/article')
+    return
+  }
+  ArticleApi.incrementViewCount(currentId).catch(() => {})
   window.addEventListener('scroll', handleScroll)
 })
 
@@ -137,9 +132,9 @@ onUnmounted(() => {
       <!-- 面包屑导航 -->
       <div class="relative container mx-auto px-4 py-6">
         <div class="flex items-center text-sm text-white/80">
-          <span class="cursor-pointer hover:text-white transition-colors" @click="router.push('/document')">资料中心</span>
+          <span class="cursor-pointer hover:text-white transition-colors" @click="navigateTo('/document')">资料中心</span>
           <Icon name="ep:arrow-right" class="mx-2 text-xs" />
-          <span class="cursor-pointer hover:text-white transition-colors" @click="router.push('/document')">{{ document?.categoryName || '分类' }}</span>
+          <span class="cursor-pointer hover:text-white transition-colors" @click="navigateTo('/document')">{{ document?.categoryName || '分类' }}</span>
           <Icon name="ep:arrow-right" class="mx-2 text-xs" />
           <span class="text-white line-clamp-1 max-w-xs">{{ document?.title }}</span>
         </div>
@@ -169,7 +164,7 @@ onUnmounted(() => {
                     <span v-else>¥{{ document?.price }}</span>
                   </span>
                   <span>{{ fileSizeFormatter(document?.fileSize) }}</span>
-                  <span>下载数：{{ document?.downloadCount || 0 }}</span>
+                  <span>下载数：{{ formatCount(document?.downloadCount) || 0 }}</span>
                   <span>更新时间：{{ formatDate(document?.updateTime, 'YYYY-MM-DD') }}</span>
                 </div>
               </div>

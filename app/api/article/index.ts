@@ -47,7 +47,7 @@ export const ArticleApi = {
    * @param id 资讯ID
    */
   incrementViewCount: async (id: number): Promise<void> => {
-    await httpGet('IncrementView', `/cms/article/view`, { query: { id } })
+    await httpGet('IncrementView', `/cms/content/view`, { query: { id } })
   },
 }
 

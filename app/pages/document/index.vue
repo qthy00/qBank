@@ -27,14 +27,21 @@ const categoryId = Number(route.query.category) || 1
 /* ==================== 状态定义 ==================== */
 
 /* 年份筛选 */
-const yearOptions = ref<TagOptionVO[]>([])
 const activeYear = ref<number>()
 const activeTag = ref<number>(tagId)
 
 const {data: tags} = await useAsyncData(
-    'articleTags',
+    'documentTags',
     async () => {
       const data = await DocumentApi.getInfoTags("document")
+      return [{id: 0, word: '全部'}, ...data]
+    }
+)
+
+const {data: yearOptions} = await useAsyncData(
+    'yearOptions',
+    async () => {
+      const data = await DocumentApi.getInfoTags("YEAR")
       return [{id: 0, word: '全部'}, ...data]
     }
 )
@@ -82,16 +89,6 @@ const {data: hotDocuments, refresh: refreshHotDocuments} = await useAsyncData(
       return data.list?.slice(0, 5) || []
     }
 )
-
-/* 获取年份选项 */
-const fetchYearOptions = async () => {
-  try {
-    const data = await DocumentApi.getInfoTags('YEAR')
-    yearOptions.value = [{id: 0, word: undefined}, ...data]
-  } catch {
-    // 获取年份选项失败时静默处理
-  }
-}
 
 const { data: documentList, pending: loading, refresh: refreshDocumentList } = await useAsyncData(
     'DocumentList',
@@ -188,7 +185,6 @@ onMounted(() => {
   } else {
     openGuide()
   }
-  fetchYearOptions()
 })
 </script>
 
