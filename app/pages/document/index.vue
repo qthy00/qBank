@@ -1,8 +1,5 @@
 <script setup lang="ts">
 import {DocumentApi} from '~/api/document'
-import type {
-  TagOptionVO
-} from '~/types/document'
 import {fileSizeFormatter, formatCount} from "~/utils";
 import IndustryGuide from '~/components/IndustryGuide.vue'
 
@@ -15,7 +12,7 @@ const route = useRoute()
 const authStore = useAuthStore()
 const userStore = useUserStore()
 const {user} = storeToRefs(userStore)
-const { isLogin } = storeToRefs(authStore)
+const {isLogin} = storeToRefs(authStore)
 const {openModal} = useModal()
 
 /* ==================== 行业偏好管理（使用 Pinia Store）==================== */
@@ -90,7 +87,7 @@ const {data: hotDocuments, refresh: refreshHotDocuments} = await useAsyncData(
     }
 )
 
-const { data: documentList, pending: loading, refresh: refreshDocumentList } = await useAsyncData(
+const {data: documentList, pending: loading, refresh: refreshDocumentList} = await useAsyncData(
     'DocumentList',
     async () => {
       const data = await DocumentApi.getDocumentList(queryParams)
@@ -223,10 +220,10 @@ onMounted(() => {
 
     <div class="container mx-auto px-4 py-8">
       <!-- 行业选择引导弹窗 -->
-      <IndustryGuide 
+      <IndustryGuide
           v-if="isClientReady"
-        v-model="showGuide"
-        @select="handleExamSelect"
+          v-model="showGuide"
+          @select="handleExamSelect"
       />
 
       <!-- 筛选卡片 - 彩色风格 -->
@@ -237,7 +234,8 @@ onMounted(() => {
           <div class="flex items-center gap-3">
             <span class="text-sm font-medium text-slate-500 shrink-0">当前选择</span>
             <div class="flex items-center gap-2">
-              <span class="px-4 py-2 text-sm font-medium rounded-full bg-gradient-to-r from-blue-500 to-cyan-500 text-white shadow-lg shadow-blue-500/30">
+              <span
+                  class="px-4 py-2 text-sm font-medium rounded-full bg-gradient-to-r from-blue-500 to-cyan-500 text-white shadow-lg shadow-blue-500/30">
                 <template v-if="isClientReady">
                   {{ currentIndustry?.name }} / {{ currentExamName }}
                 </template>
@@ -246,8 +244,8 @@ onMounted(() => {
                 </template>
               </span>
               <button
-                class="px-3 py-1.5 text-sm text-blue-600 hover:text-blue-700 hover:bg-blue-50 rounded-full transition-all duration-200 flex items-center gap-1"
-                @click="openGuide"
+                  class="px-3 py-1.5 text-sm text-blue-600 hover:text-blue-700 hover:bg-blue-50 rounded-full transition-all duration-200 flex items-center gap-1"
+                  @click="openGuide"
               >
                 <Icon name="ep:arrow-right" class="text-xs"/>
                 切换考试
@@ -273,11 +271,12 @@ onMounted(() => {
               </button>
             </div>
           </div>
-          
+
         </div>
 
         <!-- 搜索和排序 - 渐变背景 -->
-        <div class="px-5 py-4 bg-gradient-to-r from-blue-50/50 via-cyan-50/50 to-blue-50/50 flex flex-col md:flex-row md:items-center md:justify-between gap-4">
+        <div
+            class="px-5 py-4 bg-gradient-to-r from-blue-50/50 via-cyan-50/50 to-blue-50/50 flex flex-col md:flex-row md:items-center md:justify-between gap-4">
           <div class="flex items-center gap-3">
             <el-select v-model="activeSort" size="default" class="!w-32" @change="handleSortChange">
               <el-option
@@ -287,12 +286,12 @@ onMounted(() => {
                   :value="opt.value"
               />
             </el-select>
-            <el-select 
-                v-model="activeYear" 
-                size="default" 
-                class="!w-32" 
+            <el-select
+                v-model="activeYear"
+                size="default"
+                class="!w-32"
                 placeholder="全部年份"
-                clearable 
+                clearable
                 @change="handleYearChange"
             >
               <el-option
@@ -362,8 +361,8 @@ onMounted(() => {
                       <Icon name="ep:document" class="text-3xl text-blue-500"/>
                     </div>
                     <div
-v-if="index < 3"
-                         class="absolute -top-2 -right-2 w-6 h-6 bg-gradient-to-br from-red-500 to-pink-500 text-white text-xs rounded-full flex items-center justify-center shadow-lg">
+                        v-if="index < 3"
+                        class="absolute -top-2 -right-2 w-6 h-6 bg-gradient-to-br from-red-500 to-pink-500 text-white text-xs rounded-full flex items-center justify-center shadow-lg">
                       {{ ['一', '二', '三'][index] }}
                     </div>
                   </div>
@@ -383,8 +382,10 @@ v-if="index < 3"
                     </div>
 
                     <div class="flex items-center gap-4 text-sm text-slate-500 flex-wrap">
-                    <span v-if="doc.isFree" class="text-emerald-600 font-medium bg-emerald-50 px-2 py-0.5 rounded">免费</span>
-                      <span v-else-if="doc.isVip" class="text-amber-600 font-medium bg-amber-50 px-2 py-0.5 rounded">VIP</span>
+                      <span v-if="doc.isFree"
+                            class="text-emerald-600 font-medium bg-emerald-50 px-2 py-0.5 rounded">免费</span>
+                      <span v-else-if="doc.isVip"
+                            class="text-amber-600 font-medium bg-amber-50 px-2 py-0.5 rounded">VIP</span>
                       <span v-else class="text-red-500 font-medium">¥{{ doc.price }}</span>
                       <span class="flex items-center gap-1">
                       <Icon name="ep:folder" class="text-slate-400"/>
@@ -438,7 +439,7 @@ v-if="index < 3"
           <ClientOnly>
             <div
                 v-if="isLogin"
-                 class="bg-white rounded-xl shadow-lg shadow-blue-100/50 border border-blue-100 overflow-hidden">
+                class="bg-white rounded-xl shadow-lg shadow-blue-100/50 border border-blue-100 overflow-hidden">
               <!-- 头部渐变 -->
               <div class="h-20 bg-gradient-to-r from-blue-500 to-cyan-500 relative">
                 <div class="absolute -bottom-8 left-4">
@@ -465,8 +466,8 @@ v-if="index < 3"
                 <!-- 快捷入口 -->
                 <div class="grid grid-cols-3 gap-2 pt-4 border-t border-slate-100">
                   <NuxtLink
-                    to="/account/profile"
-                     class="flex flex-col items-center gap-1 p-2 rounded-lg hover:bg-blue-50 transition-colors">
+                      to="/account/profile"
+                      class="flex flex-col items-center gap-1 p-2 rounded-lg hover:bg-blue-50 transition-colors">
                     <div class="w-10 h-10 rounded-full bg-blue-100 flex items-center justify-center">
                       <Icon name="ep:user-filled" class="text-xl text-blue-500"/>
                     </div>
@@ -474,7 +475,7 @@ v-if="index < 3"
                   </NuxtLink>
                   <NuxtLink
                       to="/account/favorites"
-                     class="flex flex-col items-center gap-1 p-2 rounded-lg hover:bg-yellow-50 transition-colors">
+                      class="flex flex-col items-center gap-1 p-2 rounded-lg hover:bg-yellow-50 transition-colors">
                     <div class="w-10 h-10 rounded-full bg-yellow-100 flex items-center justify-center">
                       <Icon name="ep:star-filled" class="text-xl text-yellow-500"/>
                     </div>
@@ -482,7 +483,7 @@ v-if="index < 3"
                   </NuxtLink>
                   <NuxtLink
                       to="/account/downloads"
-                     class="flex flex-col items-center gap-1 p-2 rounded-lg hover:bg-cyan-50 transition-colors">
+                      class="flex flex-col items-center gap-1 p-2 rounded-lg hover:bg-cyan-50 transition-colors">
                     <div class="w-10 h-10 rounded-full bg-cyan-100 flex items-center justify-center">
                       <Icon name="ep:download" class="text-xl text-cyan-500"/>
                     </div>
@@ -546,7 +547,8 @@ v-if="index < 3"
           </div>
 
           <!-- 资料分类快捷入口 -->
-          <div class="bg-gradient-to-br from-blue-500 to-cyan-500 rounded-xl shadow-lg shadow-blue-200 overflow-hidden text-white">
+          <div
+              class="bg-gradient-to-br from-blue-500 to-cyan-500 rounded-xl shadow-lg shadow-blue-200 overflow-hidden text-white">
             <div class="p-5">
               <div class="flex items-center gap-2 mb-4">
                 <Icon name="ep:collection" class="text-xl"/>
@@ -554,26 +556,26 @@ v-if="index < 3"
               </div>
               <div class="grid grid-cols-2 gap-3">
                 <a
-href="/article"
-                   class="flex flex-col items-center gap-2 p-3 rounded-lg bg-white/20 hover:bg-white/30 transition-colors">
+                    href="/article"
+                    class="flex flex-col items-center gap-2 p-3 rounded-lg bg-white/20 hover:bg-white/30 transition-colors">
                   <Icon name="mdi:newspaper-variant-multiple-outline" class="text-2xl"/>
                   <span class="text-sm">考试资讯</span>
                 </a>
                 <a
-href="/qBank"
-                   class="flex flex-col items-center gap-2 p-3 rounded-lg bg-white/20 hover:bg-white/30 transition-colors">
+                    href="/qBank"
+                    class="flex flex-col items-center gap-2 p-3 rounded-lg bg-white/20 hover:bg-white/30 transition-colors">
                   <Icon name="ep:edit" class="text-2xl"/>
                   <span class="text-sm">题库练习</span>
                 </a>
                 <a
-href="/exam/smart"
-                   class="flex flex-col items-center gap-2 p-3 rounded-lg bg-white/20 hover:bg-white/30 transition-colors">
+                    href="/exam/smart"
+                    class="flex flex-col items-center gap-2 p-3 rounded-lg bg-white/20 hover:bg-white/30 transition-colors">
                   <Icon name="ep:magic-stick" class="text-2xl"/>
                   <span class="text-sm">智能组卷</span>
                 </a>
                 <a
-href="/ranking"
-                   class="flex flex-col items-center gap-2 p-3 rounded-lg bg-white/20 hover:bg-white/30 transition-colors">
+                    href="/ranking"
+                    class="flex flex-col items-center gap-2 p-3 rounded-lg bg-white/20 hover:bg-white/30 transition-colors">
                   <Icon name="ep:trophy" class="text-2xl"/>
                   <span class="text-sm">排行榜</span>
                 </a>
