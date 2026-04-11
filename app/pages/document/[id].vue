@@ -1,8 +1,8 @@
 <script setup lang="ts">
 import {DocumentApi} from '~/api/document'
-import {fileSizeFormatter, formatCount} from "~/utils";
-import {ArticleApi} from "~/api/article";
-
+import {fileSizeFormatter, formatCount} from "~/utils"
+import {ArticleApi} from "~/api/article"
+import type { DocumentPreviewVO } from '~/types/document'
 
 const route = useRoute()
 const message = useMessage()
@@ -52,6 +52,45 @@ const { data: document, pending: loading } = await useAsyncData(
     }
 )
 
+/* 预览相关状态 */
+const previewData = ref<DocumentPreviewVO | null>(null)
+const previewLoading = ref(false)
+const previewImages = computed(() => previewData.value?.images || [])
+const totalPages = computed(() => previewData.value?.totalPages || 0)
+const hasFullAccess = computed(() => previewData.value?.hasFullAccess || false)
+const previewLimit = computed(() => previewData.value?.previewLimit)
+
+/* 判断用户是否可以下载当前文档 */
+const canDownload = computed(() => {
+  if (!document.value) return false
+  if (document.value.payMode === 0) return true
+  if (document.value.payMode === 1 && hasFullAccess.value) return true
+  return false
+})
+
+/* 获取预览数据 */
+const loadPreview = async () => {
+  if (!document.value || previewLoading.value) return
+  previewLoading.value = true
+  try {
+    const res = await DocumentApi.getDocumentPreview(document.value.id)
+    if (res) {
+      previewData.value = res
+    }
+  } catch (e) {
+    console.error('加载预览失败', e)
+  } finally {
+    previewLoading.value = false
+  }
+}
+
+/* 监听文档加载，加载预览 */
+watch(document, (doc) => {
+  if (doc) {
+    loadPreview()
+  }
+}, { immediate: true })
+
 
 /* 返回列表 */
 const handleBack = () => {
@@ -68,8 +107,11 @@ const handleViewDetail = (id: number) => {
 const handleDownload = async () => {
   if (!document.value) return
 
-  /* 检查是否需要付费 */
-  if (!document.value.isFree && !document.value.isVip) {
+  if (!canDownload.value) {
+    if (document.value.payMode === 1) {
+      navigateTo('/vip')
+      return
+    }
     message.info('请先购买后再下载')
     return
   }
@@ -79,12 +121,23 @@ const handleDownload = async () => {
     const url = await DocumentApi.getDownloadUrl(document.value.id)
     const link = document.createElement('a')
     link.href = url
-    link.download = document.value.title + '.' + document.value.fileType?.toLowerCase()
+    link.download = document.value.title + '.' + (document.value.fileType?.toLowerCase() || 'pdf')
     link.click()
     message.success('开始下载')
   } catch {
     message.error('下载失败')
   }
+}
+
+/* 购买文档 */
+const handlePurchase = () => {
+  if (!document.value) return
+  navigateTo(`/order/pay?id=${document.value.id}&orderType=goods`)
+}
+
+/* 开通 VIP */
+const handleOpenVip = () => {
+  navigateTo('/vip')
 }
 
 /* 监听滚动显示固定栏 */
@@ -159,35 +212,43 @@ onUnmounted(() => {
 
                 <div class="flex flex-wrap items-center gap-x-6 gap-y-2 text-sm text-slate-500">
                   <span class="text-red-500 font-medium">
-                    <span v-if="document?.isFree">免费</span>
-                    <span v-else-if="document?.isVip">VIP专享</span>
-                    <span v-else>¥{{ document?.price }}</span>
+                    <span v-if="document?.payMode == 0">免费</span>
+                    <span v-else-if="document?.payMode == 1">VIP免费</span>
+                    <span v-else>¥{{ document?.downloadPrice }}</span>
                   </span>
-                  <span>{{ fileSizeFormatter(document?.fileSize) }}</span>
+                  <span>{{ document?.fileSize }}</span>
                   <span>下载数：{{ formatCount(document?.downloadCount) || 0 }}</span>
-                  <span>更新时间：{{ formatDate(document?.updateTime, 'YYYY-MM-DD') }}</span>
+                  <span>更新时间：{{ formatDate(document?.publishDate, 'YYYY-MM-DD') }}</span>
                 </div>
               </div>
 
               <!-- 右侧下载按钮 -->
               <div class="flex flex-col items-end gap-2 shrink-0">
                 <button
-                  v-if="document?.isFree"
+                  v-if="document?.payMode == 0"
                   class="px-8 py-2.5 bg-gradient-to-r from-blue-500 to-cyan-500 text-white rounded-full font-medium hover:from-blue-600 hover:to-cyan-600 transition-all shadow-lg shadow-blue-500/30"
                   @click="handleDownload"
                 >
                   立即下载
                 </button>
                 <button
-                  v-else-if="document?.isVip"
-                  class="px-8 py-2.5 bg-gradient-to-r from-amber-500 to-orange-500 text-white rounded-full font-medium hover:from-amber-600 hover:to-orange-600 transition-all shadow-lg shadow-amber-500/30"
+                  v-else-if="document?.payMode == 1 && hasFullAccess"
+                  class="px-8 py-2.5 bg-gradient-to-r from-blue-500 to-cyan-500 text-white rounded-full font-medium hover:from-blue-600 hover:to-cyan-600 transition-all shadow-lg shadow-blue-500/30"
                   @click="handleDownload"
                 >
                   VIP下载
                 </button>
                 <button
+                  v-else-if="document?.payMode == 1"
+                  class="px-8 py-2.5 bg-gradient-to-r from-amber-500 to-orange-500 text-white rounded-full font-medium hover:from-amber-600 hover:to-orange-600 transition-all shadow-lg shadow-amber-500/30"
+                  @click="handleOpenVip"
+                >
+                  开通VIP
+                </button>
+                <button
                   v-else
                   class="px-8 py-2.5 bg-gradient-to-r from-blue-500 to-cyan-500 text-white rounded-full font-medium hover:from-blue-600 hover:to-cyan-600 transition-all shadow-lg shadow-blue-500/30"
+                  @click="handlePurchase"
                 >
                   购买下载
                 </button>
@@ -209,17 +270,91 @@ onUnmounted(() => {
 
           <!-- 文档内容预览 -->
           <div class="bg-white rounded-2xl shadow-lg shadow-blue-100/50 border border-blue-100 overflow-hidden">
-            <div class="document-preview p-8 min-h-[500px]">
-              <!-- 模拟PDF内容预览 -->
-              <div class="max-w-none document-content" v-html="document?.content"/>
+            <!-- 免费文档或已购买用户：显示完整预览 -->
+            <div v-if="document?.payMode == 0 || hasFullAccess" class="p-8">
+              <div class="flex items-center gap-2 mb-4">
+                <Icon name="ep:document" class="text-blue-500" />
+                <span class="font-medium text-slate-700">文档预览</span>
+                <span v-if="totalPages" class="text-xs text-slate-400">（共 {{ totalPages }} 页）</span>
+              </div>
 
-              <!-- 如果没有内容，显示默认预览 -->
-              <div v-if="!document?.content" class="flex flex-col items-center justify-center py-20 text-slate-400">
-                <div class="w-20 h-20 rounded-2xl bg-gradient-to-br from-blue-100 to-cyan-100 flex items-center justify-center mb-4">
-                  <Icon name="ep:document" class="text-4xl text-blue-400" />
+              <!-- 预览图片列表 -->
+              <div v-loading="previewLoading" element-loading-text="正在加载预览..." class="preview-pages">
+                <div
+                  v-for="(img, index) in previewImages"
+                  :key="index"
+                  class="preview-page-item"
+                >
+                  <img :src="img" class="w-full h-auto" :alt="`预览第${index + 1}页`" loading="lazy" />
                 </div>
-                <p>文档内容预览区域</p>
-                <p class="text-sm mt-2">下载后可查看完整内容</p>
+
+                <!-- 无预览数据 -->
+                <div v-if="previewImages.length === 0 && !previewLoading" class="flex flex-col items-center justify-center py-12 text-slate-400">
+                  <div class="w-20 h-20 rounded-2xl bg-gradient-to-br from-blue-100 to-cyan-100 flex items-center justify-center mb-4">
+                    <Icon name="ep:document" class="text-4xl text-blue-400" />
+                  </div>
+                  <p>暂无预览内容</p>
+                </div>
+              </div>
+            </div>
+
+            <!-- 付费文档：部分预览 + 模糊遮罩 -->
+            <div v-else class="document-preview-container">
+              <div v-loading="previewLoading" element-loading-text="正在加载预览..." class="preview-pages">
+                <div
+                  v-for="(img, index) in previewImages"
+                  :key="index"
+                  class="preview-page-item"
+                >
+                  <img :src="img" class="w-full h-auto" :alt="`预览第${index + 1}页`" loading="lazy" />
+                </div>
+
+                <!-- 加载中状态 -->
+                <div v-if="previewLoading" class="min-h-[300px] flex items-center justify-center">
+                  <div class="text-center text-slate-400">
+                    <Icon name="ep:loading" class="text-4xl animate-spin mb-2" />
+                    <p class="text-sm">正在加载预览...</p>
+                  </div>
+                </div>
+
+                <!-- 无预览数据 -->
+                <div v-if="previewImages.length === 0 && !previewLoading" class="min-h-[300px] flex items-center justify-center">
+                  <div class="text-center text-slate-400">
+                    <div class="w-20 h-20 rounded-2xl bg-gradient-to-br from-blue-100 to-cyan-100 flex items-center justify-center mx-auto mb-4">
+                      <Icon name="ep:document" class="text-4xl text-blue-400" />
+                    </div>
+                    <p>暂无预览内容</p>
+                    <p class="text-sm mt-2">下载后可查看完整内容</p>
+                  </div>
+                </div>
+              </div>
+
+              <!-- 模糊遮罩 + 购买引导 -->
+              <div v-if="previewImages.length > 0" class="preview-lock-overlay">
+                <div class="lock-icon-wrapper">
+                  <Icon name="ep:lock" class="text-3xl text-white/80" />
+                </div>
+                <p class="lock-text">
+                  已展示前 {{ previewLimit || 3 }} 页预览，剩余 {{ totalPages - (previewLimit || 3) }} 页需{{ document?.payMode == 1 ? '开通VIP' : '购买后' }}查看
+                </p>
+                <div class="flex gap-3">
+                  <button
+                    v-if="document?.payMode == 1"
+                    class="lock-btn lock-btn-vip"
+                    @click="handleOpenVip"
+                  >
+                    <Icon name="ep:trophy" class="mr-1" />
+                    开通VIP
+                  </button>
+                  <button
+                    v-else
+                    class="lock-btn lock-btn-buy"
+                    @click="handlePurchase"
+                  >
+                    <Icon name="ep:shopping-cart" class="mr-1" />
+                    购买下载
+                  </button>
+                </div>
               </div>
             </div>
           </div>
@@ -387,13 +522,13 @@ onUnmounted(() => {
               </h3>
               <div class="hidden md:flex items-center gap-4 text-xs text-slate-500 shrink-0">
                 <span class="text-red-500">
-                  <span v-if="document?.isFree">免费</span>
-                  <span v-else-if="document?.isVip">VIP专享</span>
-                  <span v-else>¥{{ document?.price }}</span>
+                  <span v-if="document?.payMode == 0">免费</span>
+                  <span v-else-if="document?.payMode == 1">VIP专享</span>
+                  <span v-else>¥{{ document?.downloadPrice }}</span>
                 </span>
                 <span>{{ fileSizeFormatter(document?.fileSize) }}</span>
                 <span>下载数：{{ document?.downloadCount || 0 }}</span>
-                <span>更新时间：{{ formatDate(document?.updateTime, 'YYYY-MM-DD') }}</span>
+                <span>更新时间：{{ formatDate(document?.publishDate, 'YYYY-MM-DD') }}</span>
               </div>
             </div>
 
@@ -401,22 +536,30 @@ onUnmounted(() => {
             <div class="flex items-center gap-3 shrink-0">
               <span class="hidden md:block text-xs text-blue-500 cursor-pointer hover:underline">新人注册即送30个下载币</span>
               <button
-                v-if="document?.isFree"
+                v-if="document?.payMode == 0"
                 class="px-6 py-2 bg-gradient-to-r from-blue-500 to-cyan-500 text-white rounded-full text-sm font-medium hover:from-blue-600 hover:to-cyan-600 transition-all shadow-lg shadow-blue-500/30"
                 @click="handleDownload"
               >
                 立即下载
               </button>
               <button
-                v-else-if="document?.isVip"
-                class="px-6 py-2 bg-gradient-to-r from-amber-500 to-orange-500 text-white rounded-full text-sm font-medium hover:from-amber-600 hover:to-orange-600 transition-all shadow-lg shadow-amber-500/30"
+                v-else-if="document?.payMode == 1 && hasFullAccess"
+                class="px-6 py-2 bg-gradient-to-r from-blue-500 to-cyan-500 text-white rounded-full text-sm font-medium hover:from-blue-600 hover:to-cyan-600 transition-all shadow-lg shadow-blue-500/30"
                 @click="handleDownload"
               >
                 VIP下载
               </button>
               <button
+                v-else-if="document?.payMode == 1"
+                class="px-6 py-2 bg-gradient-to-r from-amber-500 to-orange-500 text-white rounded-full text-sm font-medium hover:from-amber-600 hover:to-orange-600 transition-all shadow-lg shadow-amber-500/30"
+                @click="handleOpenVip"
+              >
+                开通VIP
+              </button>
+              <button
                 v-else
                 class="px-6 py-2 bg-gradient-to-r from-blue-500 to-cyan-500 text-white rounded-full text-sm font-medium hover:from-blue-600 hover:to-cyan-600 transition-all shadow-lg shadow-blue-500/30"
+                @click="handlePurchase"
               >
                 购买下载
               </button>
@@ -429,42 +572,89 @@ onUnmounted(() => {
 </template>
 
 <style scoped>
-/* 文档内容样式 */
-.document-content {
-  line-height: 1.8;
-  color: var(--color-text-primary);
+/* 文档预览容器 */
+.document-preview-container {
+  position: relative;
+  min-height: 500px;
 }
 
-.document-content :deep(p) {
-  margin-bottom: 1rem;
-  text-align: justify;
+/* 预览页面列表 */
+.preview-pages {
+  padding: 16px;
 }
 
-.document-content :deep(h1),
-.document-content :deep(h2),
-.document-content :deep(h3) {
-  margin-top: 1.5rem;
-  margin-bottom: 1rem;
-  font-weight: 600;
-  color: var(--color-text-primary);
+.preview-page-item {
+  margin-bottom: 16px;
+  border-radius: 8px;
+  overflow: hidden;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.08);
 }
 
-.document-content :deep(h2) {
-  font-size: 1.25rem;
+/* 完整预览时可滚动 */
+.preview-pages:has(.preview-page-item) {
+  max-height: 80vh;
+  overflow-y: auto;
 }
 
-.document-content :deep(h3) {
-  font-size: 1.125rem;
+/* 模糊遮罩覆盖层 */
+.preview-lock-overlay {
+  position: relative;
+  padding: 40px 20px;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 12px;
+  background: linear-gradient(to bottom, rgba(255, 255, 255, 0) 0%, rgba(255, 255, 255, 0.95) 20%, rgba(255, 255, 255, 1) 100%);
 }
 
-.document-content :deep(ul),
-.document-content :deep(ol) {
-  margin-bottom: 1rem;
-  padding-left: 1.5rem;
+.lock-icon-wrapper {
+  width: 48px;
+  height: 48px;
+  border-radius: 50%;
+  background: linear-gradient(135deg, #3b82f6, #06b6d4);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  color: white;
 }
 
-.document-content :deep(li) {
-  margin-bottom: 0.5rem;
+.lock-text {
+  font-size: 14px;
+  color: #64748b;
+  font-weight: 500;
+}
+
+.lock-btn {
+  display: inline-flex;
+  align-items: center;
+  padding: 8px 24px;
+  border-radius: 9999px;
+  font-size: 14px;
+  font-weight: 500;
+  color: white;
+  border: none;
+  cursor: pointer;
+  transition: all 0.2s;
+}
+
+.lock-btn-vip {
+  background: linear-gradient(to right, #f59e0b, #f97316);
+  box-shadow: 0 4px 12px rgba(245, 158, 11, 0.3);
+}
+
+.lock-btn-vip:hover {
+  transform: translateY(-1px);
+  box-shadow: 0 6px 16px rgba(245, 158, 11, 0.4);
+}
+
+.lock-btn-buy {
+  background: linear-gradient(to right, #3b82f6, #06b6d4);
+  box-shadow: 0 4px 12px rgba(59, 130, 246, 0.3);
+}
+
+.lock-btn-buy:hover {
+  transform: translateY(-1px);
+  box-shadow: 0 6px 16px rgba(59, 130, 246, 0.4);
 }
 
 /* 底部栏动画 */

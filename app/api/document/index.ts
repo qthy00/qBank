@@ -109,4 +109,17 @@ export const DocumentApi = {
     const res = await httpGet('DownloadUrl', `/member/document/download/url`, { query: { id } })
     return res.url
   },
+
+  /**
+   * 获取文档预览图片
+   * @param docId 文档ID
+   * @param pageSpec 页码规格：'all'（全部）、'1'（第1页）、'1-3'（1到3页）
+   */
+  getDocumentPreview: async (docId: number, pageSpec?: string) => {
+    const query: Record<string, any> = {}
+    if (pageSpec) {
+      query.page = pageSpec
+    }
+    return await httpGet('DocumentPreview', `/cms/docs/preview/${docId}`, { query })
+  },
 }

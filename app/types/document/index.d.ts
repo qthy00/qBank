@@ -23,44 +23,22 @@ export type DocumentStatus = 'online' | 'preview' | 'purchased'
 export interface DocumentVO {
   id: number
   title: string
+  cover?: string
   summary?: string
-  description?: string
-  coverImage?: string
-  fileUrl?: string
   fileSize: number
-  fileType?: string
+  fileType?: DocumentType
   downloadCount: number
-  viewCount: number
-  docType: DocumentType
-  docTypeName?: string
   categoryId?: number
   categoryName?: string
-  /* 大类编码 */
-  majorCode?: string
-  majorName?: string
-  /* 考试类型 */
-  examType?: string
-  examTypeName?: string
-  /* 年份 */
-  year?: number
   /* 等级：free-免费, premium-精品, vip-VIP专享 */
-  level?: DocumentLevel
-  levelName?: string
-  /* 资料类型编码 */
-  materialType?: string
-  materialTypeName?: string
-  /* 状态：online-已上线, preview-预告, purchased-已获权限 */
-  status?: DocumentStatus
-  statusName?: string
-  pages?: number
-  isVip?: boolean
-  isFree?: boolean
-  price?: number
-  tags?: string[]
-  createTime?: string
-  updateTime?: string
+  payMode: number
+  downloadPrice?: number
 }
 
+export interface DocumentDetailVO extends DocumentVO{
+  keywords?: string
+  publishDate: number
+}
 /**
  * 文档列表请求参数
  */
@@ -89,6 +67,18 @@ export interface DocumentDetailVO extends DocumentVO {
   content?: string
   previewImages?: string[]
   relatedDocuments?: DocumentVO[]
+  pageCount?: number
+}
+
+/**
+ * 文档预览响应
+ */
+export interface DocumentPreviewVO {
+  totalPages: number
+  images: string[]
+  payMode: number
+  hasFullAccess: boolean
+  previewLimit: number | null
 }
 
 /**

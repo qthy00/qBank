@@ -1,7 +1,8 @@
 <script setup lang="ts">
 import {DocumentApi} from '~/api/document'
-import {fileSizeFormatter, formatCount} from "~/utils";
+import {formatCount} from "~/utils";
 import IndustryGuide from '~/components/IndustryGuide.vue'
+import type {DocumentVO} from "~/types/document";
 
 
 useHead({
@@ -92,6 +93,10 @@ const {data: documentList, pending: loading, refresh: refreshDocumentList} = awa
     async () => {
       const data = await DocumentApi.getDocumentList(queryParams)
       total.value = data.total || 0
+      data.list?.forEach((item: DocumentVO) => {
+        item.downloadPrice = item.downloadPrice ? item.downloadPrice / 100 : 0
+      })
+
       return data.list || []
     },
     {
@@ -358,7 +363,9 @@ onMounted(() => {
                   <div class="relative shrink-0">
                     <div
                         class="w-16 h-20 bg-gradient-to-br from-blue-100 to-cyan-200 rounded-lg flex items-center justify-center shadow-sm group-hover:shadow-md transition-shadow">
-                      <Icon name="ep:document" class="text-3xl text-blue-500"/>
+                      <el-image v-if="doc.cover" :src="doc.cover" class="w-full h-full rounded-lg"/>
+                      <Icon v-else name="ep:document" class="text-3xl text-blue-500"/>
+
                     </div>
                     <div
                         v-if="index < 3"
@@ -382,14 +389,16 @@ onMounted(() => {
                     </div>
 
                     <div class="flex items-center gap-4 text-sm text-slate-500 flex-wrap">
-                      <span v-if="doc.isFree"
+                      <span
+                          v-if="doc.payMode === 0"
                             class="text-emerald-600 font-medium bg-emerald-50 px-2 py-0.5 rounded">免费</span>
-                      <span v-else-if="doc.isVip"
+                      <span
+                          v-else-if="doc.payMode === 1"
                             class="text-amber-600 font-medium bg-amber-50 px-2 py-0.5 rounded">VIP</span>
-                      <span v-else class="text-red-500 font-medium">¥{{ doc.price }}</span>
+                      <span v-else class="text-red-500 font-medium">¥{{ doc.downloadPrice }}</span>
                       <span class="flex items-center gap-1">
                       <Icon name="ep:folder" class="text-slate-400"/>
-                      {{ fileSizeFormatter(doc.fileSize) }}
+                      {{ doc.fileSize }}
                     </span>
                       <span class="flex items-center gap-1">
                       <Icon name="ep:download" class="text-slate-400"/>
@@ -536,9 +545,9 @@ onMounted(() => {
                     {{ doc.title }}
                   </p>
                   <div class="flex items-center justify-between mt-2 text-xs text-slate-400">
-                    <span v-if="doc.isFree" class="text-emerald-600">免费</span>
-                    <span v-else-if="doc.isVip" class="text-amber-600">VIP</span>
-                    <span v-else class="text-red-500">¥{{ doc.price }}</span>
+                    <span v-if="doc.payMode === 0" class="text-emerald-600">免费</span>
+                    <span v-else-if="doc.payMode === 1" class="text-amber-600">VIP</span>
+                    <span v-else class="text-red-500">¥{{ doc.downloadPrice }}</span>
                     <span>{{ formatCount(doc.downloadCount) }}次下载</span>
                   </div>
                 </div>
