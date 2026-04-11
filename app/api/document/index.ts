@@ -40,14 +40,7 @@ export const DocumentApi = {
    * @param id 文档ID
    */
   getDocumentDetail: async (id: number): Promise<DocumentDetailVO> => {
-    if (useMock()) {
-      const detail = getMockDocumentDetail(id)
-      if (!detail) {
-        throw new Error('文档不存在')
-      }
-      return detail
-    }
-    return await httpGet('DocumentDetail', `/member/document/get`, { query: { id } })
+    return await httpGet('DocumentDetail', `/cms/docs/detail`, { query: { id } })
   },
 
   /**

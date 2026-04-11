@@ -6,6 +6,10 @@ import type { DocumentPreviewVO } from '~/types/document'
 
 const route = useRoute()
 const message = useMessage()
+const authStore = useAuthStore()
+const userStore = useUserStore()
+const {user} = storeToRefs(userStore)
+const {isLogin} = storeToRefs(authStore)
 
 /* 热门文档排行 */
 const industryStore = useIndustryStore()
@@ -252,7 +256,7 @@ onUnmounted(() => {
                 >
                   购买下载
                 </button>
-                <span class="text-xs text-blue-500 cursor-pointer hover:underline">新人注册即送30个下载币</span>
+<!--                <span class="text-xs text-blue-500 cursor-pointer hover:underline">新人注册即送30个下载币</span>-->
               </div>
             </div>
           </div>
@@ -362,56 +366,133 @@ onUnmounted(() => {
 
         <!-- 右侧侧边栏 -->
         <div class="lg:col-span-3 space-y-6">
+          <!-- 用户信息卡片 -->
+          <ClientOnly>
+            <div
+                v-if="isLogin"
+                class="bg-white rounded-xl shadow-lg shadow-blue-100/50 border border-blue-100 overflow-hidden">
+              <!-- 头部渐变 -->
+              <div class="h-20 bg-gradient-to-r from-blue-500 to-cyan-500 relative">
+                <div class="absolute -bottom-8 left-4">
+                  <el-avatar :size="64" :src="user?.avatar" class="border-4 border-white shadow-md"/>
+                </div>
+              </div>
+              <!-- 用户信息 -->
+              <div class="pt-10 pb-4 px-4">
+                <div class="text-center mb-4">
+                  <h3 class="font-bold text-slate-800 text-lg">{{ user?.nickname || '用户' }}</h3>
+                  <p class="text-sm text-slate-500 mt-1">{{ user?.level?.name || '普通会员' }}</p>
+                </div>
+                <!-- 统计数据 -->
+                <div class="grid grid-cols-2 gap-3 mb-4">
+                  <div class="bg-gradient-to-br from-blue-50 to-cyan-50 rounded-lg p-3 text-center">
+                    <div class="text-xl font-bold text-blue-600">{{ user?.point || 0 }}</div>
+                    <div class="text-xs text-slate-500 mt-0.5">我的积分</div>
+                  </div>
+                  <div class="bg-gradient-to-br from-emerald-50 to-teal-50 rounded-lg p-3 text-center">
+                    <div class="text-xl font-bold text-emerald-600">{{ user?.experience || 0 }}</div>
+                    <div class="text-xs text-slate-500 mt-0.5">我的经验</div>
+                  </div>
+                </div>
+                <!-- 快捷入口 -->
+                <div class="grid grid-cols-3 gap-2 pt-4 border-t border-slate-100">
+                  <NuxtLink
+                      to="/account/profile"
+                      class="flex flex-col items-center gap-1 p-2 rounded-lg hover:bg-blue-50 transition-colors">
+                    <div class="w-10 h-10 rounded-full bg-blue-100 flex items-center justify-center">
+                      <Icon name="ep:user-filled" class="text-xl text-blue-500"/>
+                    </div>
+                    <span class="text-xs text-slate-600">个人中心</span>
+                  </NuxtLink>
+                  <NuxtLink
+                      to="/account/favorites"
+                      class="flex flex-col items-center gap-1 p-2 rounded-lg hover:bg-yellow-50 transition-colors">
+                    <div class="w-10 h-10 rounded-full bg-yellow-100 flex items-center justify-center">
+                      <Icon name="ep:star-filled" class="text-xl text-yellow-500"/>
+                    </div>
+                    <span class="text-xs text-slate-600">我的收藏</span>
+                  </NuxtLink>
+                  <NuxtLink
+                      to="/account/downloads"
+                      class="flex flex-col items-center gap-1 p-2 rounded-lg hover:bg-cyan-50 transition-colors">
+                    <div class="w-10 h-10 rounded-full bg-cyan-100 flex items-center justify-center">
+                      <Icon name="ep:download" class="text-xl text-cyan-500"/>
+                    </div>
+                    <span class="text-xs text-slate-600">下载记录</span>
+                  </NuxtLink>
+                </div>
+              </div>
+            </div>
+
+            <!-- 未登录状态 -->
+            <div v-else class="bg-white rounded-xl shadow-lg shadow-blue-100/50 border border-blue-100 p-5">
+              <div class="text-center">
+                <div
+                    class="w-16 h-16 mx-auto mb-3 rounded-full bg-gradient-to-br from-blue-100 to-cyan-100 flex items-center justify-center">
+                  <Icon name="ep:user" class="text-3xl text-blue-500"/>
+                </div>
+                <h3 class="font-bold text-slate-800 mb-2">欢迎来到学次元</h3>
+                <p class="text-sm text-slate-500 mb-4">登录后下载更多精品资料</p>
+                <button
+                    class="w-full py-2.5 bg-gradient-to-r from-blue-500 to-cyan-500 text-white rounded-lg hover:from-blue-600 hover:to-cyan-600 transition-all duration-300 shadow-lg shadow-blue-500/30"
+                    @click="openModal('login')"
+                >
+                  立即登录
+                </button>
+              </div>
+            </div>
+          </ClientOnly>
+
           <!-- 广告Banner -->
-          <div class="bg-gradient-to-br from-blue-500 to-cyan-500 rounded-2xl p-5 text-white overflow-hidden shadow-lg shadow-blue-200">
-            <div class="text-xs text-white/80 mb-1">在线题库网 | 一建新教材1月发布</div>
-            <h3 class="text-lg font-bold mb-2">2026一建新课火热开播</h3>
-            <p class="text-xs text-white/80 mb-3">新课低至6.4折，买课送【书籍大礼包】</p>
-            <button class="px-4 py-1.5 text-sm bg-white text-blue-600 rounded-full hover:bg-white/90 transition-colors font-medium">
-              立即下单▶
-            </button>
-          </div>
+<!--          <div class="bg-gradient-to-br from-blue-500 to-cyan-500 rounded-2xl p-5 text-white overflow-hidden shadow-lg shadow-blue-200">-->
+<!--            <div class="text-xs text-white/80 mb-1">在线题库网 | 一建新教材1月发布</div>-->
+<!--            <h3 class="text-lg font-bold mb-2">2026一建新课火热开播</h3>-->
+<!--            <p class="text-xs text-white/80 mb-3">新课低至6.4折，买课送【书籍大礼包】</p>-->
+<!--            <button class="px-4 py-1.5 text-sm bg-white text-blue-600 rounded-full hover:bg-white/90 transition-colors font-medium">-->
+<!--              立即下单▶-->
+<!--            </button>-->
+<!--          </div>-->
 
           <!-- 看过的人都在学 -->
-          <div class="bg-white rounded-2xl shadow-lg shadow-blue-100/50 border border-blue-100 p-5">
-            <h3 class="font-bold text-slate-800 mb-4 flex items-center gap-2">
-              <Icon name="mdi:fire" class="text-red-500" />
-              看过的人都在学
-            </h3>
-            <div class="space-y-4">
-              <div class="flex gap-3">
-                <div class="w-20 h-14 rounded-lg overflow-hidden bg-gradient-to-br from-amber-100 to-orange-100 shrink-0 flex items-center justify-center">
-                  <Icon name="ep:alarm-clock" class="text-amber-500 text-xl" />
-                </div>
-                <div class="flex-1 min-w-0">
-                  <h4 class="text-sm font-medium text-slate-700 line-clamp-2 mb-2">
-                    6月17日报名！2026年一建报考答疑+备考指导
-                  </h4>
-                  <button class="px-4 py-1 text-xs text-blue-600 border border-blue-200 bg-blue-50 rounded-full hover:bg-blue-500 hover:text-white transition-colors">
-                    免费报名
-                  </button>
-                </div>
-              </div>
-            </div>
-          </div>
+<!--          <div class="bg-white rounded-2xl shadow-lg shadow-blue-100/50 border border-blue-100 p-5">-->
+<!--            <h3 class="font-bold text-slate-800 mb-4 flex items-center gap-2">-->
+<!--              <Icon name="mdi:fire" class="text-red-500" />-->
+<!--              看过的人都在学-->
+<!--            </h3>-->
+<!--            <div class="space-y-4">-->
+<!--              <div class="flex gap-3">-->
+<!--                <div class="w-20 h-14 rounded-lg overflow-hidden bg-gradient-to-br from-amber-100 to-orange-100 shrink-0 flex items-center justify-center">-->
+<!--                  <Icon name="ep:alarm-clock" class="text-amber-500 text-xl" />-->
+<!--                </div>-->
+<!--                <div class="flex-1 min-w-0">-->
+<!--                  <h4 class="text-sm font-medium text-slate-700 line-clamp-2 mb-2">-->
+<!--                    6月17日报名！2026年一建报考答疑+备考指导-->
+<!--                  </h4>-->
+<!--                  <button class="px-4 py-1 text-xs text-blue-600 border border-blue-200 bg-blue-50 rounded-full hover:bg-blue-500 hover:text-white transition-colors">-->
+<!--                    免费报名-->
+<!--                  </button>-->
+<!--                </div>-->
+<!--              </div>-->
+<!--            </div>-->
+<!--          </div>-->
 
           <!-- 加学霸君 -->
-          <div class="bg-white rounded-2xl shadow-lg shadow-blue-100/50 border border-blue-100 p-5">
-            <h3 class="font-bold text-slate-800 mb-4 flex items-center gap-2">
-              <Icon name="ep:user" class="text-blue-500" />
-              加学霸君 距考过更近一步
-            </h3>
-            <div class="flex items-start gap-3">
-              <div class="w-24 h-24 bg-gradient-to-br from-blue-50 to-cyan-50 rounded-xl flex items-center justify-center shrink-0">
-                <Icon name="mdi:qrcode" class="text-4xl text-blue-400" />
-              </div>
-              <div class="text-sm text-slate-500 space-y-1">
-                <p>免费领精品资料</p>
-                <p>掌握考情信息</p>
-                <p>知晓资料更新进度</p>
-              </div>
-            </div>
-          </div>
+<!--          <div class="bg-white rounded-2xl shadow-lg shadow-blue-100/50 border border-blue-100 p-5">-->
+<!--            <h3 class="font-bold text-slate-800 mb-4 flex items-center gap-2">-->
+<!--              <Icon name="ep:user" class="text-blue-500" />-->
+<!--              加学霸君 距考过更近一步-->
+<!--            </h3>-->
+<!--            <div class="flex items-start gap-3">-->
+<!--              <div class="w-24 h-24 bg-gradient-to-br from-blue-50 to-cyan-50 rounded-xl flex items-center justify-center shrink-0">-->
+<!--                <Icon name="mdi:qrcode" class="text-4xl text-blue-400" />-->
+<!--              </div>-->
+<!--              <div class="text-sm text-slate-500 space-y-1">-->
+<!--                <p>免费领精品资料</p>-->
+<!--                <p>掌握考情信息</p>-->
+<!--                <p>知晓资料更新进度</p>-->
+<!--              </div>-->
+<!--            </div>-->
+<!--          </div>-->
 
           <!-- 推荐相关资料 -->
           <div v-if="document?.relatedDocuments && document.relatedDocuments.length > 0" class="bg-white rounded-2xl shadow-lg shadow-blue-100/50 border border-blue-100 p-5">
@@ -481,27 +562,27 @@ onUnmounted(() => {
           </div>
 
           <!-- 其他考友都在做 -->
-          <div class="bg-white rounded-2xl shadow-lg shadow-blue-100/50 border border-blue-100 p-5">
-            <div class="flex items-center justify-between mb-4">
-              <h3 class="font-bold text-slate-800 flex items-center gap-2">
-                <Icon name="ep:edit" class="text-cyan-500" />
-                其他考友都在做
-              </h3>
-              <span class="text-sm text-blue-500 cursor-pointer hover:underline">更多</span>
-            </div>
-            <div class="space-y-3">
-              <div class="flex items-center gap-3 cursor-pointer group">
-                <div class="w-8 h-10 bg-gradient-to-br from-red-100 to-pink-100 rounded flex items-center justify-center shrink-0">
-                  <span class="text-red-500 text-xs font-bold">真题</span>
-                </div>
-                <div class="flex-1 min-w-0">
-                  <h4 class="text-sm text-slate-700 line-clamp-1 group-hover:text-blue-600 transition-colors">
-                    2025年一级建造师考试《建设工程项目管理》真题及解析
-                  </h4>
-                </div>
-              </div>
-            </div>
-          </div>
+<!--          <div class="bg-white rounded-2xl shadow-lg shadow-blue-100/50 border border-blue-100 p-5">-->
+<!--            <div class="flex items-center justify-between mb-4">-->
+<!--              <h3 class="font-bold text-slate-800 flex items-center gap-2">-->
+<!--                <Icon name="ep:edit" class="text-cyan-500" />-->
+<!--                其他考友都在做-->
+<!--              </h3>-->
+<!--              <span class="text-sm text-blue-500 cursor-pointer hover:underline">更多</span>-->
+<!--            </div>-->
+<!--            <div class="space-y-3">-->
+<!--              <div class="flex items-center gap-3 cursor-pointer group">-->
+<!--                <div class="w-8 h-10 bg-gradient-to-br from-red-100 to-pink-100 rounded flex items-center justify-center shrink-0">-->
+<!--                  <span class="text-red-500 text-xs font-bold">真题</span>-->
+<!--                </div>-->
+<!--                <div class="flex-1 min-w-0">-->
+<!--                  <h4 class="text-sm text-slate-700 line-clamp-1 group-hover:text-blue-600 transition-colors">-->
+<!--                    2025年一级建造师考试《建设工程项目管理》真题及解析-->
+<!--                  </h4>-->
+<!--                </div>-->
+<!--              </div>-->
+<!--            </div>-->
+<!--          </div>-->
         </div>
       </div>
     </div>
