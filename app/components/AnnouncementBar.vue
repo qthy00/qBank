@@ -90,7 +90,7 @@ onUnmounted(() => {
     <div class="bar-container">
       <!-- 左侧图标 -->
       <div class="bar-icon">
-        <Icon name="ep:megaphone" />
+        <Icon name="mdi:megaphone-outline" />
         <span v-if="announcements.length > 1" class="announcement-count">
           {{ announcements.length }}
         </span>

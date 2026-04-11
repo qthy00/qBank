@@ -2,7 +2,7 @@
 import {DocumentApi} from '~/api/document'
 import {fileSizeFormatter, formatCount} from "~/utils"
 import {ArticleApi} from "~/api/article"
-import type { DocumentPreviewVO } from '~/types/document'
+import type {DocumentPreviewVO} from '~/types/document'
 
 const route = useRoute()
 const message = useMessage()
@@ -14,7 +14,9 @@ const {isLogin} = storeToRefs(authStore)
 /* 热门文档排行 */
 const industryStore = useIndustryStore()
 const { currentExam } = storeToRefs(industryStore)
+const hotDocsKey = computed(() => `hot-docs`)
 const {data: hotDocuments } = await useAsyncData(
+    hotDocsKey.value,
     async () => {
       const data = await DocumentApi.getDocumentList({
         catalogId: currentExam.value?.id || 1,
@@ -22,39 +24,49 @@ const {data: hotDocuments } = await useAsyncData(
         pageSize: 5
       })
       return data.list?.slice(0, 5) || []
+    },
+    {
+      lazy: true,
+      server: true
     }
 )
 
 /* 控制底部固定栏显示 */
 const showFixedBar = ref(false)
+
+/* 获取文档详情 - 使用稳定的字符串键 */
+const documentKey = computed(() => `document-${route.params.id}`)
 const { data: document, pending: loading } = await useAsyncData(
-    () => `articleDetail-${route.params.id}`,
+    documentKey.value,
     async () => {
       const currentId = Number(route.params.id)
-      const data = await DocumentApi.getDocumentDetail(currentId)
-      if (data?.title) {
-        useHead({
-          title: data.title,
-          meta: [
-            {
-              name: "description",
-              content: computed(() => data.summary ),
-              tagPriority: 1
-            },
-            {
-              name: "keywords",
-              content: computed(() => data.keywords ),
-              tagPriority: 1
-            }
-          ]
-        })
-      }
-      return data
-    },{
+      if (!currentId) return null
+      return await DocumentApi.getDocumentDetail(currentId)
+    },
+    {
       watch: [() => route.params.id],
-      immediate:  true
+      server: true
     }
 )
+
+/* 设置页面元数据 - 在客户端安全地设置 */
+watchEffect(() => {
+  if (document.value?.title && import.meta.client) {
+    useHead({
+      title: document.value.title,
+      meta: [
+        {
+          name: "description",
+          content: document.value.summary || ''
+        },
+        {
+          name: "keywords",
+          content: document.value.keywords || ''
+        }
+      ]
+    })
+  }
+})
 
 /* 预览相关状态 */
 const previewData = ref<DocumentPreviewVO | null>(null)
@@ -134,9 +146,10 @@ const handleDownload = async () => {
 }
 
 /* 购买文档 */
-const handlePurchase = () => {
+const {redirectToPay} = usePayWithPopup()
+const handlePurchase = async () => {
   if (!document.value) return
-  navigateTo(`/order/pay?id=${document.value.id}&orderType=goods`)
+  await redirectToPay(document.value)
 }
 
 /* 开通 VIP */
@@ -146,7 +159,8 @@ const handleOpenVip = () => {
 
 /* 监听滚动显示固定栏 */
 const handleScroll = () => {
-  const scrollTop = window.scrollY || document.documentElement.scrollTop
+  if (import.meta.server) return
+  const scrollTop = window.scrollY || document.documentElement?.scrollTop || 0
   showFixedBar.value = scrollTop > 300
 }
 
